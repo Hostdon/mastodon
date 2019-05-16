@@ -716,7 +716,8 @@ DEPENDENCIES
   microformats (~> 4.1)
   mime-types (~> 3.2)
   net-ldap (~> 0.10)
-  nokogiri (~> 1.8)
+  nokogiri (~> 1.10)
+  noxa-sidekiq-killer
   nsa (~> 0.2)
   oj (~> 3.7)
   omniauth (~> 1.9)
