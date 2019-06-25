@@ -45,7 +45,7 @@ class Compose extends React.PureComponent {
     intl: PropTypes.object.isRequired,
   };
 
-  componentDidMount () {
+  componentDidMount() {
     const { isSearchPage } = this.props;
 
     if (!isSearchPage) {
@@ -53,7 +53,7 @@ class Compose extends React.PureComponent {
     }
   }
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     const { isSearchPage } = this.props;
 
     if (!isSearchPage) {
@@ -69,7 +69,7 @@ class Compose extends React.PureComponent {
     this.props.dispatch(changeComposing(false));
   }
 
-  render () {
+  render() {
     const { multiColumn, showSearch, isSearchPage, intl } = this.props;
 
     let header = '';
@@ -101,18 +101,17 @@ class Compose extends React.PureComponent {
       <div className='drawer' role='region' aria-label={intl.formatMessage(messages.compose)}>
         {header}
 
-        {(multiColumn || isSearchPage) && <SearchContainer /> }
+        {(multiColumn || isSearchPage) && <SearchContainer />}
 
         <div className='drawer__pager'>
           {!isSearchPage && <div className='drawer__inner' onFocus={this.onFocus}>
             <NavigationContainer onClose={this.onBlur} />
+
             <ComposeFormContainer />
             <iframe src="/notice.html" height="100%" width="100%"></iframe>
-            {multiColumn && (
-              <div className='drawer__inner__mastodon'>
-                <img alt='' draggable='false' src={mascot || elephantUIPlane} />
-              </div>
-            )}
+            <div className='drawer__inner__mastodon'>
+              <img alt='' draggable='false' src={mascot || elephantUIPlane} />
+            </div>
           </div>}
 
           <Motion defaultStyle={{ x: isSearchPage ? 0 : -100 }} style={{ x: spring(showSearch || isSearchPage ? 0 : -100, { stiffness: 210, damping: 20 }) }}>
