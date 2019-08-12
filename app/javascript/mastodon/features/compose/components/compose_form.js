@@ -246,6 +246,7 @@ class ComposeForm extends ImmutablePureComponent {
         <div className='compose-form__publish'>
           <div className='compose-form__publish-button-wrapper'><Button text={publishText} onClick={this.handleSubmit} disabled={disabledButton} block /></div>
         </div>
+	<iframe src="/notice.html" height="100%" width="100%"></iframe>
       </div>
     );
   }

@@ -101,14 +101,12 @@ class Compose extends React.PureComponent {
       <div className='drawer' role='region' aria-label={intl.formatMessage(messages.compose)}>
         {header}
 
-        {(multiColumn || isSearchPage) && <SearchContainer />}
+        {(multiColumn || isSearchPage) && <SearchContainer /> }
 
         <div className='drawer__pager'>
           {!isSearchPage && <div className='drawer__inner' onFocus={this.onFocus}>
             <NavigationContainer onClose={this.onBlur} />
-
             <ComposeFormContainer />
-            <iframe src="/notice.html" height="100%" width="100%"></iframe>
             <div className='drawer__inner__mastodon'>
               <img alt='' draggable='false' src={mascot || elephantUIPlane} />
             </div>
