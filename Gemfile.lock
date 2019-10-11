@@ -742,6 +742,7 @@ DEPENDENCIES
   net-ldap (~> 0.10)
   nilsimsa!
   nokogiri (~> 1.10)
+  noxa-sidekiq-killer
   nsa (~> 0.2)
   oj (~> 3.9)
   omniauth (~> 1.9)
