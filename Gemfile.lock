@@ -379,9 +379,6 @@ GEM
       mini_portile2 (~> 2.4.0)
     nokogumbo (2.0.1)
       nokogiri (~> 1.8, >= 1.8.4)
-    noxa-sidekiq-killer (0.1.0)
-      get_process_mem
-      sidekiq
     nsa (0.2.7)
       activesupport (>= 4.2, < 6)
       concurrent-ruby (~> 1.0, >= 1.0.2)
@@ -731,7 +728,6 @@ DEPENDENCIES
   net-ldap (~> 0.16)
   nilsimsa!
   nokogiri (~> 1.10)
-  noxa-sidekiq-killer
   nsa (~> 0.2)
   oj (~> 3.10)
   omniauth (~> 1.9)
@@ -793,3 +789,9 @@ DEPENDENCIES
   webmock (~> 3.8)
   webpacker (~> 4.2)
   webpush
+
+RUBY VERSION
+   ruby 2.6.5p114
+
+BUNDLED WITH
+   1.17.2
