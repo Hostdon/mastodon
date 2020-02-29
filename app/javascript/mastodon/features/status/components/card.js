@@ -56,6 +56,10 @@ const addAutoPlay = html => {
 
 export default class Card extends React.PureComponent {
 
+  static contextTypes = {
+    router: PropTypes.object,
+  };
+
   static propTypes = {
     card: ImmutablePropTypes.map,
     maxDescription: PropTypes.number,
@@ -63,6 +67,7 @@ export default class Card extends React.PureComponent {
     compact: PropTypes.bool,
     defaultWidth: PropTypes.number,
     cacheWidth: PropTypes.func,
+    quote: PropTypes.bool,
   };
 
   static defaultProps = {
@@ -98,7 +103,7 @@ export default class Card extends React.PureComponent {
           },
         },
       ]),
-      0
+      0,
     );
   };
 
@@ -137,7 +142,7 @@ export default class Card extends React.PureComponent {
   }
 
   render () {
-    const { card, maxDescription, compact } = this.props;
+    const { card, maxDescription, compact, quote } = this.props;
     const { width, embedded } = this.state;
 
     if (card === null) {
@@ -150,7 +155,11 @@ export default class Card extends React.PureComponent {
     const className   = classnames('status-card', { horizontal, compact, interactive });
     const title       = interactive ? <a className='status-card__title' href={card.get('url')} title={card.get('title')} rel='noopener noreferrer' target='_blank'><strong>{card.get('title')}</strong></a> : <strong className='status-card__title' title={card.get('title')}>{card.get('title')}</strong>;
     const ratio       = card.get('width') / card.get('height');
-    const height      = (compact && !embedded) ? (width / (16 / 9)) : (width / ratio);
+    let height      = (compact && !embedded) ? (width / (16 / 9)) : (width / ratio);
+
+    if (quote && height) {
+      height /= 2;
+    }
 
     const description = (
       <div className='status-card__content'>

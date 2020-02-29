@@ -109,6 +109,7 @@ class Video extends React.PureComponent {
     intl: PropTypes.object.isRequired,
     blurhash: PropTypes.string,
     link: PropTypes.node,
+    quote: PropTypes.bool,
   };
 
   state = {
@@ -403,7 +404,7 @@ class Video extends React.PureComponent {
   }
 
   render () {
-    const { preview, src, inline, startTime, onOpenVideo, onCloseVideo, intl, alt, detailed, sensitive, link, editable } = this.props;
+    const { preview, src, inline, startTime, onOpenVideo, onCloseVideo, intl, alt, detailed, sensitive, link, editable, quote } = this.props;
     const { containerWidth, currentTime, duration, volume, buffer, dragging, paused, fullscreen, hovered, muted, revealed } = this.state;
     const progress = (currentTime / duration) * 100;
 
@@ -417,6 +418,11 @@ class Video extends React.PureComponent {
       width  = containerWidth;
       height = containerWidth / (16/9);
 
+      playerStyle.height = height;
+    }
+
+    if (quote && height) {
+      height /= 2;
       playerStyle.height = height;
     }
 
