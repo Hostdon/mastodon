@@ -45,7 +45,7 @@ class Api::V1::StatusesController < Api::BaseController
                                          scheduled_at: status_params[:scheduled_at],
                                          application: doorkeeper_token.application,
                                          poll: status_params[:poll],
-                                         idempotency: request.headers['Idempotency-Key'])
+                                         idempotency: request.headers['Idempotency-Key'],
                                          with_rate_limit: true,
                                          quote_id: status_params[:quote_id].presence)
 
