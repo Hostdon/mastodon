@@ -18,6 +18,9 @@
 !/log/.keep
 /tmp
 coverage
+public/android-chrome-192x192.png
+public/apple-touch-icon.png
+public/favicon.ico
 public/system
 public/assets
 public/packs
