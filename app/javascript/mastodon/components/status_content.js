@@ -25,6 +25,7 @@ export default class StatusContent extends React.PureComponent {
     onClick: PropTypes.func,
     collapsable: PropTypes.bool,
     onCollapsedToggle: PropTypes.func,
+    quote: PropTypes.bool,
   };
 
   state = {
@@ -39,8 +40,6 @@ export default class StatusContent extends React.PureComponent {
     }
 
     const links = node.querySelectorAll('a');
-    const QuoteUrlFormat = /(?:https?|ftp):\/\/[-_.!~*\'()a-zA-Z0-9;\/?:\@&=+\$,%#]+\/users\/[\w-_]+(\/statuses\/\w+)/;
-    const quote = node.innerText.match(new RegExp(`\\[(\\w+)\\]\\[${QuoteUrlFormat.source}\\]`));
 
     for (var i = 0; i < links.length; ++i) {
       let link = links[i];
@@ -48,12 +47,6 @@ export default class StatusContent extends React.PureComponent {
         continue;
       }
       link.classList.add('status-link');
-
-      if (quote) {
-        if (link.href.match(QuoteUrlFormat)) {
-          link.addEventListener('click', this.onQuoteClick.bind(this, quote[1]), false);
-        }
-      }
 
       let mention = this.props.status.get('mentions').find(item => link.href === item.get('url'));
 
@@ -131,15 +124,6 @@ export default class StatusContent extends React.PureComponent {
     }
   }
 
-  onQuoteClick = (statusId, e) => {
-    let statusUrl = `/statuses/${statusId}`;
-
-    if (this.context.router && e.button === 0) {
-      e.preventDefault();
-      this.context.router.history.push(statusUrl);
-    }
-  }
-
   handleEmojiMouseEnter = ({ target }) => {
     target.src = target.getAttribute('data-original');
   }
@@ -191,7 +175,7 @@ export default class StatusContent extends React.PureComponent {
   }
 
   render () {
-    const { status } = this.props;
+    const { status, quote } = this.props;
 
     if (status.get('content').length === 0) {
       return null;
@@ -253,7 +237,7 @@ export default class StatusContent extends React.PureComponent {
 
           <div tabIndex={!hidden ? 0 : null} className={`status__content__text ${!hidden ? 'status__content__text--visible' : ''}`} style={directionStyle} dangerouslySetInnerHTML={content} />
 
-          {!hidden && !!status.get('poll') && <PollContainer pollId={status.get('poll')} />}
+          {!quote && !hidden && !!status.get('poll') && <PollContainer pollId={status.get('poll')} />}
 
           {renderViewThread && showThreadButton}
         </div>
@@ -263,7 +247,7 @@ export default class StatusContent extends React.PureComponent {
         <div className={classNames} ref={this.setRef} tabIndex='0' style={directionStyle} onMouseDown={this.handleMouseDown} onMouseUp={this.handleMouseUp} key='status-content'>
           <div className='status__content__text status__content__text--visible' style={directionStyle} dangerouslySetInnerHTML={content} />
 
-          {!!status.get('poll') && <PollContainer pollId={status.get('poll')} />}
+          {!quote && !!status.get('poll') && <PollContainer pollId={status.get('poll')} />}
 
           {renderViewThread && showThreadButton}
         </div>,
@@ -279,7 +263,7 @@ export default class StatusContent extends React.PureComponent {
         <div className={classNames} ref={this.setRef} tabIndex='0' style={directionStyle}>
           <div className='status__content__text status__content__text--visible' style={directionStyle} dangerouslySetInnerHTML={content} />
 
-          {!!status.get('poll') && <PollContainer pollId={status.get('poll')} />}
+          {!quote && !!status.get('poll') && <PollContainer pollId={status.get('poll')} />}
 
           {renderViewThread && showThreadButton}
         </div>

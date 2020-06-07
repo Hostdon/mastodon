@@ -32,6 +32,8 @@ import {
   deleteStatus,
   hideStatus,
   revealStatus,
+  hideQuote,
+  revealQuote,
 } from '../../actions/statuses';
 import {
   unblockAccount,
@@ -173,6 +175,7 @@ class Status extends ImmutablePureComponent {
   state = {
     fullscreen: false,
     showMedia: defaultMediaVisibility(this.props.status),
+    showQuoteMedia: defaultMediaVisibility(this.props.status ? this.props.status.get('quote', null) : null),
     loadedStatusId: undefined,
   };
 
@@ -191,12 +194,17 @@ class Status extends ImmutablePureComponent {
     }
 
     if (nextProps.status && nextProps.status.get('id') !== this.state.loadedStatusId) {
-      this.setState({ showMedia: defaultMediaVisibility(nextProps.status), loadedStatusId: nextProps.status.get('id') });
+      this.setState({ showMedia: defaultMediaVisibility(nextProps.status), loadedStatusId: nextProps.status.get('id'),
+        showQuoteMedia: defaultMediaVisibility(nextProps.status.get('quote', null)) });
     }
   }
 
   handleToggleMediaVisibility = () => {
     this.setState({ showMedia: !this.state.showMedia });
+  }
+
+  handleToggleQuoteMediaVisibility = () => {
+    this.setState({ showQuoteMedia: !this.state.showQuoteMedia });
   }
 
   handleFavouriteClick = (status) => {
@@ -319,6 +327,14 @@ class Status extends ImmutablePureComponent {
       this.props.dispatch(revealStatus(status.get('id')));
     } else {
       this.props.dispatch(hideStatus(status.get('id')));
+    }
+  }
+
+  handleQuoteToggleHidden = (status) => {
+    if (status.get('quote_hidden')) {
+      this.props.dispatch(revealQuote(status.get('id')));
+    } else {
+      this.props.dispatch(hideQuote(status.get('id')));
     }
   }
 
@@ -555,6 +571,9 @@ class Status extends ImmutablePureComponent {
                   domain={domain}
                   showMedia={this.state.showMedia}
                   onToggleMediaVisibility={this.handleToggleMediaVisibility}
+                  onQuoteToggleHidden={this.handleQuoteToggleHidden}
+                  showQuoteMedia={this.state.showQuoteMedia}
+                  onToggleQuoteMediaVisibility={this.handleToggleQuoteMediaVisibility}
                 />
 
                 <ActionBar
