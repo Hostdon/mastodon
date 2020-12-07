@@ -123,8 +123,7 @@ GEM
     colorize (0.8.1)
     concurrent-ruby (1.0.5)
     connection_pool (2.2.1)
-    crack (0.4.3)
-      safe_yaml (~> 1.0.0)
+    crack (0.4.4)
     crass (1.0.3)
     css_parser (1.6.0)
       addressable
@@ -216,7 +215,7 @@ GEM
       railties (>= 4.0.1)
     hamster (3.0.0)
       concurrent-ruby (~> 1.0)
-    hashdiff (0.3.7)
+    hashdiff (1.0.1)
     hashie (3.5.7)
     highline (1.7.10)
     hiredis (0.6.1)
@@ -377,7 +376,7 @@ GEM
       method_source (~> 0.9.0)
     pry-rails (0.3.6)
       pry (>= 0.10.4)
-    public_suffix (3.0.1)
+    public_suffix (3.1.1)
     puma (3.11.0)
     pundit (1.1.0)
       activesupport (>= 3.0.0)
@@ -495,7 +494,6 @@ GEM
       nokogiri (>= 1.5.10)
     rufus-scheduler (3.4.2)
       et-orbi (~> 1.0)
-    safe_yaml (1.0.4)
     sanitize (4.5.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.4.4)
@@ -586,10 +584,10 @@ GEM
     uniform_notifier (1.10.0)
     warden (1.2.7)
       rack (>= 1.0)
-    webmock (3.1.1)
+    webmock (3.10.0)
       addressable (>= 2.3.6)
       crack (>= 0.3.2)
-      hashdiff
+      hashdiff (>= 0.4.0, < 2.0.0)
     webpacker (3.0.2)
       activesupport (>= 4.2)
       rack-proxy (>= 0.6.1)
@@ -715,7 +713,7 @@ DEPENDENCIES
   tty-prompt
   twitter-text (~> 1.14)
   tzinfo-data (~> 1.2017)
-  webmock (~> 3.0)
+  webmock (~> 3.10)
   webpacker (~> 3.0)
   webpush
 

@@ -110,7 +110,7 @@ group :test do
   gem 'rails-controller-testing', '~> 1.0'
   gem 'rspec-sidekiq', '~> 3.0'
   gem 'simplecov', '~> 0.14', require: false
-  gem 'webmock', '~> 3.0'
+  gem 'webmock', '~> 3.10'
   gem 'parallel_tests', '~> 2.17'
 end
 
