@@ -72,7 +72,7 @@ module Mastodon
         loop do
           objects = begin
             begin
-              bucket.objects(start_after: last_key, prefix: prefix).limit(1000).map { |x| x }
+              bucket.objects(start_after: last_key, prefix: ENV.fetch('MEDIA_NAMESPACE')).limit(1000).map { |x| x }
             rescue => e
               progress.log(pastel.red("Error fetching list of files: #{e}"))
               progress.log("If you want to continue from this point, add --start-after=#{last_key} to your command") if last_key
@@ -88,7 +88,7 @@ module Mastodon
           objects.each do |object|
             path_segments = object.key.split('/')
             path_segments.delete('cache')
-
+            path_segments.delete(ENV.fetch('MEDIA_NAMESPACE'))
             unless [7, 10].include?(path_segments.size)
               progress.log(pastel.yellow("Unrecognized file found: #{object.key}"))
               next
@@ -310,7 +310,7 @@ module Mastodon
       objects.map do |object|
         segments = object.key.split('/')
         segments.delete('cache')
-
+        segments.delete(ENV.fetch('MEDIA_NAMESPACE'))
         next unless [7, 10].include?(segments.size)
 
         model_name = segments.first.classify
