@@ -1,4 +1,10 @@
 default: styles/application.scss
 black: styles/black.scss
+black-mono: styles/black-mono.scss
+black-neon: styles/black-neon.scss
+black-metro: styles/black-metro.scss
+black-division: styles/black-division.scss
 contrast: styles/contrast.scss
 mastodon-light: styles/mastodon-light.scss
+mastodon-light-white: styles/mastodon-light-white.scss
+mastodon-light-no-radius: styles/mastodon-light-no-radius.scss
