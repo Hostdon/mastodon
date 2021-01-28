@@ -303,7 +303,7 @@
   "navigation_bar.preferences": "ユーザー設定",
   "navigation_bar.public_timeline": "連合タイムライン",
   "navigation_bar.security": "セキュリティ",
-  "notification.favourite": "{name}さんがあなたのトゥートをお気に入りに登録しました",
+  "notification.favourite": "{name}さんがあなたのトゥートにおひねりを投げました",
   "notification.follow": "{name}さんにフォローされました",
   "notification.follow_request": "{name} さんがあなたにフォローリクエストしました",
   "notification.mention": "{name}さんがあなたに返信しました",
