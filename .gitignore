@@ -47,10 +47,8 @@ public/packs-test
 /redis
 /elasticsearch
 
-# ignore Helm lockfile, dependency charts, and local values file
-/chart/Chart.lock
+# ignore Helm dependency charts
 /chart/charts/*.tgz
-/chart/values.yaml
 
 # Ignore Apple files
 .DS_Store
