@@ -29,7 +29,7 @@ end
 
 Paperclip::Attachment.default_options.merge!(
   use_timestamp: false,
-  path: ':prefix_url:class/:attachment/:id_partition/:style/:filename',
+  path: ENV['MEDIA_NAMESPACE'] + '/:prefix_url:class/:attachment/:id_partition/:style/:filename',
   storage: :fog
 )
 
