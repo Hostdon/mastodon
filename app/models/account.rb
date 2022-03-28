@@ -469,7 +469,7 @@ class Account < ApplicationRecord
     def from_text(text)
       return [] if text.blank?
 
-      text.scan(MENTION_RE).map { |match| match.first.split('@', 2) }.uniq.map do |(username, domain)|
+      text.scan(MENTION_RE).map { |match| match.first.split('@', 2) }.uniq.filter_map do |(username, domain)|
         domain = begin
           if TagManager.instance.local_domain?(domain)
             nil
@@ -478,7 +478,7 @@ class Account < ApplicationRecord
           end
         end
         EntityCache.instance.mention(username, domain)
-      end.compact
+      end
     end
 
     private
@@ -532,31 +532,6 @@ class Account < ApplicationRecord
           LIMIT :limit OFFSET :offset
         SQL
       end
-    end
-
-    def from_text(text)
-      return [] if text.blank?
-
-      text.scan(MENTION_RE).map { |match| match.first.split('@', 2) }.uniq.filter_map do |(username, domain)|
-        domain = begin
-          if TagManager.instance.local_domain?(domain)
-            nil
-          else
-            TagManager.instance.normalize_domain(domain)
-          end
-        end
-        EntityCache.instance.mention(username, domain)
-      end
-    end
-
-    private
-
-    def generate_query_for_search(terms)
-      terms      = Arel.sql(connection.quote(terms.gsub(/['?\\:]/, ' ')))
-      textsearch = "(setweight(to_tsvector('simple', accounts.display_name), 'A') || setweight(to_tsvector('simple', accounts.username), 'B') || setweight(to_tsvector('simple', coalesce(accounts.domain, '')), 'C'))"
-      query      = "to_tsquery('simple', ''' ' || #{terms} || ' ''' || ':*')"
-
-      [textsearch, query]
     end
   end
 
