@@ -21,7 +21,7 @@ jobs:
         with:
           images: tootsuite/mastodon
           flavor: |
-            latest=false
+            latest=auto
           tags: |
             type=edge,branch=main
             type=semver,pattern={{ raw }}
