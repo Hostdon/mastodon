@@ -88,7 +88,6 @@ class ResolveAccountService < BaseService
       @domain   = confirmed_domain
       return
     end
-  end
 
     # Account doesn't match, so it may have been redirected
     @webfinger         = webfinger!("acct:#{confirmed_username}@#{confirmed_domain}")
