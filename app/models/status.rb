@@ -158,6 +158,10 @@ class Status < ApplicationRecord
     attributes['local'] || uri.nil?
   end
 
+  def in_reply_to_local_account?
+    reply? && thread&.account&.local?
+  end
+
   def reblog?
     !reblog_of_id.nil?
   end
@@ -331,7 +335,7 @@ class Status < ApplicationRecord
     def from_text(text)
       return [] if text.blank?
 
-      text.scan(FetchLinkCardService::URL_PATTERN).map(&:first).uniq.map do |url|
+      text.scan(FetchLinkCardService::URL_PATTERN).map(&:first).uniq.filter_map do |url|
         status = begin
           if TagManager.instance.local_url?(url)
             ActivityPub::TagManager.instance.uri_to_resource(url, Status)
@@ -340,7 +344,7 @@ class Status < ApplicationRecord
           end
         end
         status&.distributable? ? status : nil
-      end.compact
+      end
     end
   end
 
