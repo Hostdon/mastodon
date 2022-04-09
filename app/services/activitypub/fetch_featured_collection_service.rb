@@ -23,12 +23,8 @@ class ActivityPub::FetchFeaturedCollectionService < BaseService
 
   def process_items(items)
     status_ids = items.map { |item| value_or_id(item) }
-                      .reject { |uri| ActivityPub::TagManager.instance.local_uri?(uri) }
-                      .map { |uri| ActivityPub::FetchRemoteStatusService.new.call(uri) }
-                      .compact
-                      .select { |status| status.account_id == @account.id }
-                      .map(&:id)
-
+                      .filter_map { |uri| ActivityPub::FetchRemoteStatusService.new.call(uri, on_behalf_of: local_follower) unless ActivityPub::TagManager.instance.local_uri?(uri) }
+                      .filter_map { |status| status.id if status.account_id == @account.id }
     to_remove = []
     to_add    = status_ids
 
@@ -49,5 +45,9 @@ class ActivityPub::FetchFeaturedCollectionService < BaseService
 
   def supported_context?
     super(@json)
+  end
+
+  def local_follower
+    @local_follower ||= @account.followers.local.without_suspended.first
   end
 end

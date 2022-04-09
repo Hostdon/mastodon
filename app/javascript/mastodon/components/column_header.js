@@ -34,6 +34,7 @@ class ColumnHeader extends React.PureComponent {
     onMove: PropTypes.func,
     onClick: PropTypes.func,
     appendContent: PropTypes.node,
+    collapseIssues: PropTypes.bool,
   };
 
   state = {
@@ -83,7 +84,7 @@ class ColumnHeader extends React.PureComponent {
   }
 
   render () {
-    const { title, icon, active, children, pinned, multiColumn, extraButton, showBackButton, intl: { formatMessage }, placeholder, appendContent } = this.props;
+    const { title, icon, active, children, pinned, multiColumn, extraButton, showBackButton, intl: { formatMessage }, placeholder, appendContent, collapseIssues } = this.props;
     const { collapsed, animating } = this.state;
 
     const wrapperClassName = classNames('column-header__wrapper', {
@@ -118,8 +119,8 @@ class ColumnHeader extends React.PureComponent {
 
       moveButtons = (
         <div key='move-buttons' className='column-header__setting-arrows'>
-          <button title={formatMessage(messages.moveLeft)} aria-label={formatMessage(messages.moveLeft)} className='text-btn column-header__setting-btn' onClick={this.handleMoveLeft}><Icon id='chevron-left' /></button>
-          <button title={formatMessage(messages.moveRight)} aria-label={formatMessage(messages.moveRight)} className='text-btn column-header__setting-btn' onClick={this.handleMoveRight}><Icon id='chevron-right' /></button>
+          <button title={formatMessage(messages.moveLeft)} aria-label={formatMessage(messages.moveLeft)} className='icon-button column-header__setting-btn' onClick={this.handleMoveLeft}><Icon id='chevron-left' /></button>
+          <button title={formatMessage(messages.moveRight)} aria-label={formatMessage(messages.moveRight)} className='icon-button column-header__setting-btn' onClick={this.handleMoveRight}><Icon id='chevron-right' /></button>
         </div>
       );
     } else if (multiColumn && this.props.onPin) {
@@ -140,12 +141,25 @@ class ColumnHeader extends React.PureComponent {
     ];
 
     if (multiColumn) {
-      collapsedContent.push(moveButtons);
       collapsedContent.push(pinButton);
+      collapsedContent.push(moveButtons);
     }
 
     if (children || (multiColumn && this.props.onPin)) {
-      collapseButton = <button className={collapsibleButtonClassName} title={formatMessage(collapsed ? messages.show : messages.hide)} aria-label={formatMessage(collapsed ? messages.show : messages.hide)} aria-pressed={collapsed ? 'false' : 'true'} onClick={this.handleToggleClick}><Icon id='sliders' /></button>;
+      collapseButton = (
+        <button
+          className={collapsibleButtonClassName}
+          title={formatMessage(collapsed ? messages.show : messages.hide)}
+          aria-label={formatMessage(collapsed ? messages.show : messages.hide)}
+          aria-pressed={collapsed ? 'false' : 'true'}
+          onClick={this.handleToggleClick}
+        >
+          <i className='icon-with-badge'>
+            <Icon id='sliders' />
+            {collapseIssues && <i className='icon-with-badge__issue-badge' />}
+          </i>
+        </button>
+      );
     }
 
     const hasTitle = icon && title;

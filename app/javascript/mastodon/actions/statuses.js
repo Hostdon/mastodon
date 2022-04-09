@@ -1,10 +1,8 @@
 import api from '../api';
-import openDB from '../storage/db';
-import { evictStatus } from '../storage/modifier';
 
 import { deleteFromTimelines } from './timelines';
-import { importFetchedStatus, importFetchedStatuses, importAccount, importStatus, importFetchedAccount } from './importer';
-import { ensureComposeIsVisible } from './compose';
+import { importFetchedStatus, importFetchedStatuses, importFetchedAccount } from './importer';
+import { ensureComposeIsVisible, setComposeToStatus } from './compose';
 
 export const STATUS_FETCH_REQUEST = 'STATUS_FETCH_REQUEST';
 export const STATUS_FETCH_SUCCESS = 'STATUS_FETCH_SUCCESS';
@@ -32,6 +30,10 @@ export const STATUS_COLLAPSE = 'STATUS_COLLAPSE';
 
 export const REDRAFT = 'REDRAFT';
 
+export const STATUS_FETCH_SOURCE_REQUEST = 'STATUS_FETCH_SOURCE_REQUEST';
+export const STATUS_FETCH_SOURCE_SUCCESS = 'STATUS_FETCH_SOURCE_SUCCESS';
+export const STATUS_FETCH_SOURCE_FAIL    = 'STATUS_FETCH_SOURCE_FAIL';
+
 export function fetchStatusRequest(id, skipLoading) {
   return {
     type: STATUS_FETCH_REQUEST,
@@ -39,48 +41,6 @@ export function fetchStatusRequest(id, skipLoading) {
     skipLoading,
   };
 };
-
-function getFromDB(dispatch, getState, accountIndex, index, id) {
-  return new Promise((resolve, reject) => {
-    const request = index.get(id);
-
-    request.onerror = reject;
-
-    request.onsuccess = () => {
-      const promises = [];
-
-      if (!request.result) {
-        reject();
-        return;
-      }
-
-      dispatch(importStatus(request.result));
-
-      if (getState().getIn(['accounts', request.result.account], null) === null) {
-        promises.push(new Promise((accountResolve, accountReject) => {
-          const accountRequest = accountIndex.get(request.result.account);
-
-          accountRequest.onerror = accountReject;
-          accountRequest.onsuccess = () => {
-            if (!request.result) {
-              accountReject();
-              return;
-            }
-
-            dispatch(importAccount(accountRequest.result));
-            accountResolve();
-          };
-        }));
-      }
-
-      if (request.result.reblog && getState().getIn(['statuses', request.result.reblog], null) === null) {
-        promises.push(getFromDB(dispatch, getState, accountIndex, index, request.result.reblog));
-      }
-
-      resolve(Promise.all(promises));
-    };
-  });
-}
 
 export function fetchStatus(id) {
   return (dispatch, getState) => {
@@ -94,23 +54,10 @@ export function fetchStatus(id) {
 
     dispatch(fetchStatusRequest(id, skipLoading));
 
-    openDB().then(db => {
-      const transaction = db.transaction(['accounts', 'statuses'], 'read');
-      const accountIndex = transaction.objectStore('accounts').index('id');
-      const index = transaction.objectStore('statuses').index('id');
-
-      return getFromDB(dispatch, getState, accountIndex, index, id).then(() => {
-        db.close();
-      }, error => {
-        db.close();
-        throw error;
-      });
-    }).then(() => {
-      dispatch(fetchStatusSuccess(skipLoading));
-    }, () => api(getState).get(`/api/v1/statuses/${id}`).then(response => {
+    api(getState).get(`/api/v1/statuses/${id}`).then(response => {
       dispatch(importFetchedStatus(response.data));
       dispatch(fetchStatusSuccess(skipLoading));
-    })).catch(error => {
+    }).catch(error => {
       dispatch(fetchStatusFail(id, error, skipLoading));
     });
   };
@@ -141,6 +88,37 @@ export function redraft(status, raw_text) {
   };
 };
 
+export const editStatus = (id, routerHistory) => (dispatch, getState) => {
+  let status = getState().getIn(['statuses', id]);
+
+  if (status.get('poll')) {
+    status = status.set('poll', getState().getIn(['polls', status.get('poll')]));
+  }
+
+  dispatch(fetchStatusSourceRequest());
+
+  api(getState).get(`/api/v1/statuses/${id}/source`).then(response => {
+    dispatch(fetchStatusSourceSuccess());
+    ensureComposeIsVisible(getState, routerHistory);
+    dispatch(setComposeToStatus(status, response.data.text, response.data.spoiler_text));
+  }).catch(error => {
+    dispatch(fetchStatusSourceFail(error));
+  });
+};
+
+export const fetchStatusSourceRequest = () => ({
+  type: STATUS_FETCH_SOURCE_REQUEST,
+});
+
+export const fetchStatusSourceSuccess = () => ({
+  type: STATUS_FETCH_SOURCE_SUCCESS,
+});
+
+export const fetchStatusSourceFail = error => ({
+  type: STATUS_FETCH_SOURCE_FAIL,
+  error,
+});
+
 export function deleteStatus(id, routerHistory, withRedraft = false) {
   return (dispatch, getState) => {
     let status = getState().getIn(['statuses', id]);
@@ -152,7 +130,6 @@ export function deleteStatus(id, routerHistory, withRedraft = false) {
     dispatch(deleteStatusRequest(id));
 
     api(getState).delete(`/api/v1/statuses/${id}`).then(response => {
-      evictStatus(id);
       dispatch(deleteStatusSuccess(id));
       dispatch(deleteFromTimelines(id));
       dispatch(importFetchedAccount(response.data.account));
@@ -188,6 +165,9 @@ export function deleteStatusFail(id, error) {
     error: error,
   };
 };
+
+export const updateStatus = status => dispatch =>
+  dispatch(importFetchedStatus(status));
 
 export function fetchContext(id) {
   return (dispatch, getState) => {

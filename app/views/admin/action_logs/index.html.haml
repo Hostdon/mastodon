@@ -2,7 +2,7 @@
   = t('admin.action_logs.title')
 
 - content_for :header_tags do
-  = javascript_pack_tag 'admin', integrity: true, async: true, crossorigin: 'anonymous'
+  = javascript_pack_tag 'admin', async: true, crossorigin: 'anonymous'
 
 = form_tag admin_action_logs_url, method: 'GET', class: 'simple_form' do
   = hidden_field_tag :target_account_id, params[:target_account_id] if params[:target_account_id].present?
@@ -22,7 +22,7 @@
   %div.muted-hint.center-text
     = t 'admin.action_logs.empty'
 - else
-  .announcements-list
-    = render @action_logs
+  .report-notes
+    = render partial: 'action_log', collection: @action_logs
 
 = paginate @action_logs

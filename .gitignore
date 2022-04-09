@@ -43,9 +43,13 @@ config/deploy/*
 .idea/
 
 # Ignore postgres + redis + elasticsearch volume optionally created by docker-compose
-postgres
-redis
-elasticsearch
+/postgres
+/postgres14
+/redis
+/elasticsearch
+
+# ignore Helm dependency charts
+/chart/charts/*.tgz
 
 # Ignore Apple files
 .DS_Store

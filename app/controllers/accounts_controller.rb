@@ -28,9 +28,8 @@ class AccountsController < ApplicationController
           return
         end
 
-        @pinned_statuses = cache_collection(@account.pinned_statuses, Status) if show_pinned_statuses?
-        @statuses        = filtered_status_page
-        @statuses        = cache_collection(@statuses, Status)
+        @pinned_statuses = cached_filtered_status_pins if show_pinned_statuses?
+        @statuses        = cached_filtered_status_page
         @rss_url         = rss_url
 
         unless @statuses.empty?
@@ -65,6 +64,10 @@ class AccountsController < ApplicationController
     [replies_requested?, media_requested?, tag_requested?, params[:max_id].present?, params[:min_id].present?].none?
   end
 
+  def filtered_pinned_statuses
+    @account.pinned_statuses.where(visibility: [:public, :unlisted])
+  end
+
   def filtered_statuses
     default_statuses.tap do |statuses|
       statuses.merge!(hashtag_scope)    if tag_requested?
@@ -78,11 +81,7 @@ class AccountsController < ApplicationController
   end
 
   def only_media_scope
-    Status.where(id: account_media_status_ids)
-  end
-
-  def account_media_status_ids
-    @account.media_attachments.attached.reorder(nil).select(:status_id).group(:status_id)
+    Status.joins(:media_attachments).merge(@account.media_attachments.reorder(nil)).group(:id)
   end
 
   def no_replies_scope
@@ -101,6 +100,10 @@ class AccountsController < ApplicationController
 
   def username_param
     params[:username]
+  end
+
+  def skip_temporary_suspension_response?
+    request.format == :json
   end
 
   def rss_url
@@ -132,19 +135,31 @@ class AccountsController < ApplicationController
   end
 
   def media_requested?
-    request.path.split('.').first.ends_with?('/media') && !tag_requested?
+    request.path.split('.').first.end_with?('/media') && !tag_requested?
   end
 
   def replies_requested?
-    request.path.split('.').first.ends_with?('/with_replies') && !tag_requested?
+    request.path.split('.').first.end_with?('/with_replies') && !tag_requested?
   end
 
   def tag_requested?
-    request.path.split('.').first.ends_with?(Addressable::URI.parse("/tagged/#{params[:tag]}").normalize)
+    request.path.split('.').first.end_with?(Addressable::URI.parse("/tagged/#{params[:tag]}").normalize)
   end
 
-  def filtered_status_page
-    filtered_statuses.paginate_by_id(PAGE_SIZE, params_slice(:max_id, :min_id, :since_id))
+  def cached_filtered_status_pins
+    cache_collection(
+      filtered_pinned_statuses,
+      Status
+    )
+  end
+
+  def cached_filtered_status_page
+    cache_collection_paginated_by_id(
+      filtered_statuses,
+      Status,
+      PAGE_SIZE,
+      params_slice(:max_id, :min_id, :since_id)
+    )
   end
 
   def params_slice(*keys)

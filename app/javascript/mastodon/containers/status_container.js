@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import Status from '../components/status';
-import { makeGetStatus } from '../selectors';
+import { makeGetStatus, makeGetPictureInPicture } from '../selectors';
 import {
   replyCompose,
   mentionCompose,
@@ -24,6 +24,7 @@ import {
   hideStatus,
   revealStatus,
   toggleStatusCollapse,
+  editStatus,
 } from '../actions/statuses';
 import {
   unmuteAccount,
@@ -35,8 +36,10 @@ import {
 } from '../actions/domain_blocks';
 import { initMuteModal } from '../actions/mutes';
 import { initBlockModal } from '../actions/blocks';
+import { initBoostModal } from '../actions/boosts';
 import { initReport } from '../actions/reports';
 import { openModal } from '../actions/modal';
+import { deployPictureInPicture } from '../actions/picture_in_picture';
 import { defineMessages, injectIntl, FormattedMessage } from 'react-intl';
 import { boostModal, deleteModal } from '../initial_state';
 import { showAlertForError } from '../actions/alerts';
@@ -53,9 +56,11 @@ const messages = defineMessages({
 
 const makeMapStateToProps = () => {
   const getStatus = makeGetStatus();
+  const getPictureInPicture = makeGetPictureInPicture();
 
   const mapStateToProps = (state, props) => ({
     status: getStatus(state, props),
+    pictureInPicture: getPictureInPicture(state, props),
   });
 
   return mapStateToProps;
@@ -79,11 +84,11 @@ const mapDispatchToProps = (dispatch, { intl }) => ({
     });
   },
 
-  onModalReblog (status) {
+  onModalReblog (status, privacy) {
     if (status.get('reblogged')) {
       dispatch(unreblog(status));
     } else {
-      dispatch(reblog(status));
+      dispatch(reblog(status, privacy));
     }
   },
 
@@ -91,7 +96,7 @@ const mapDispatchToProps = (dispatch, { intl }) => ({
     if ((e && e.shiftKey) || !boostModal) {
       this.onModalReblog(status);
     } else {
-      dispatch(openModal('BOOST', { status, onReblog: this.onModalReblog }));
+      dispatch(initBoostModal({ status, onReblog: this.onModalReblog }));
     }
   },
 
@@ -138,6 +143,10 @@ const mapDispatchToProps = (dispatch, { intl }) => ({
     }
   },
 
+  onEdit (status, history) {
+    dispatch(editStatus(status.get('id'), history));
+  },
+
   onDirect (account, router) {
     dispatch(directCompose(account, router));
   },
@@ -146,12 +155,12 @@ const mapDispatchToProps = (dispatch, { intl }) => ({
     dispatch(mentionCompose(account, router));
   },
 
-  onOpenMedia (media, index) {
-    dispatch(openModal('MEDIA', { media, index }));
+  onOpenMedia (statusId, media, index) {
+    dispatch(openModal('MEDIA', { statusId, media, index }));
   },
 
-  onOpenVideo (media, options) {
-    dispatch(openModal('VIDEO', { media, options }));
+  onOpenVideo (statusId, media, options) {
+    dispatch(openModal('VIDEO', { statusId, media, options }));
   },
 
   onBlock (status) {
@@ -205,6 +214,10 @@ const mapDispatchToProps = (dispatch, { intl }) => ({
 
   onUnblockDomain (domain) {
     dispatch(unblockDomain(domain));
+  },
+
+  deployPictureInPicture (status, type, mediaProps) {
+    dispatch(deployPictureInPicture(status.get('id'), status.getIn(['account', 'id']), type, mediaProps));
   },
 
 });

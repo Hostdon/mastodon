@@ -15,6 +15,8 @@ import scheduleIdleTask from '../../ui/util/schedule_idle_task';
 import classNames from 'classnames';
 import Icon from 'mastodon/components/icon';
 import AnimatedNumber from 'mastodon/components/animated_number';
+import PictureInPicturePlaceholder from 'mastodon/components/picture_in_picture_placeholder';
+import EditedTimestamp from 'mastodon/components/edited_timestamp';
 
 const messages = defineMessages({
   public_short: { id: 'privacy.public.short', defaultMessage: 'Public' },
@@ -40,6 +42,10 @@ class DetailedStatus extends ImmutablePureComponent {
     domain: PropTypes.string.isRequired,
     compact: PropTypes.bool,
     showMedia: PropTypes.bool,
+    pictureInPicture: ImmutablePropTypes.contains({
+      inUse: PropTypes.bool,
+      available: PropTypes.bool,
+    }),
     onToggleMediaVisibility: PropTypes.func,
   };
 
@@ -50,14 +56,14 @@ class DetailedStatus extends ImmutablePureComponent {
   handleAccountClick = (e) => {
     if (e.button === 0 && !(e.ctrlKey || e.metaKey) && this.context.router) {
       e.preventDefault();
-      this.context.router.history.push(`/accounts/${this.props.status.getIn(['account', 'id'])}`);
+      this.context.router.history.push(`/@${this.props.status.getIn(['account', 'acct'])}`);
     }
 
     e.stopPropagation();
   }
 
-  handleOpenVideo = (media, options) => {
-    this.props.onOpenVideo(media, options);
+  handleOpenVideo = (options) => {
+    this.props.onOpenVideo(this.props.status.getIn(['media_attachments', 0]), options);
   }
 
   handleExpandedToggle = () => {
@@ -100,7 +106,7 @@ class DetailedStatus extends ImmutablePureComponent {
   render () {
     const status = (this.props.status && this.props.status.get('reblog')) ? this.props.status.get('reblog') : this.props.status;
     const outerStyle = { boxSizing: 'border-box' };
-    const { intl, compact } = this.props;
+    const { intl, compact, pictureInPicture } = this.props;
 
     if (!status) {
       return null;
@@ -111,12 +117,15 @@ class DetailedStatus extends ImmutablePureComponent {
     let reblogLink = '';
     let reblogIcon = 'retweet';
     let favouriteLink = '';
+    let edited = '';
 
     if (this.props.measureHeight) {
       outerStyle.height = `${this.state.height}px`;
     }
 
-    if (status.get('media_attachments').size > 0) {
+    if (pictureInPicture.get('inUse')) {
+      media = <PictureInPicturePlaceholder />;
+    } else if (status.get('media_attachments').size > 0) {
       if (status.getIn(['media_attachments', 0, 'type']) === 'audio') {
         const attachment = status.getIn(['media_attachments', 0]);
 
@@ -138,6 +147,7 @@ class DetailedStatus extends ImmutablePureComponent {
         media = (
           <Video
             preview={attachment.get('preview_url')}
+            frameRate={attachment.getIn(['meta', 'original', 'frame_rate'])}
             blurhash={attachment.get('blurhash')}
             src={attachment.get('url')}
             alt={attachment.get('description')}
@@ -187,7 +197,7 @@ class DetailedStatus extends ImmutablePureComponent {
       reblogLink = (
         <React.Fragment>
           <React.Fragment> · </React.Fragment>
-          <Link to={`/statuses/${status.get('id')}/reblogs`} className='detailed-status__link'>
+          <Link to={`/@${status.getIn(['account', 'acct'])}/${status.get('id')}/reblogs`} className='detailed-status__link'>
             <Icon id={reblogIcon} />
             <span className='detailed-status__reblogs'>
               <AnimatedNumber value={status.get('reblogs_count')} />
@@ -211,7 +221,7 @@ class DetailedStatus extends ImmutablePureComponent {
 
     if (this.context.router) {
       favouriteLink = (
-        <Link to={`/statuses/${status.get('id')}/favourites`} className='detailed-status__link'>
+        <Link to={`/@${status.getIn(['account', 'acct'])}/${status.get('id')}/favourites`} className='detailed-status__link'>
           <Icon id='star' />
           <span className='detailed-status__favorites'>
             <AnimatedNumber value={status.get('favourites_count')} />
@@ -226,6 +236,15 @@ class DetailedStatus extends ImmutablePureComponent {
             <AnimatedNumber value={status.get('favourites_count')} />
           </span>
         </a>
+      );
+    }
+
+    if (status.get('edited_at')) {
+      edited = (
+        <React.Fragment>
+          <React.Fragment> · </React.Fragment>
+          <EditedTimestamp statusId={status.get('id')} timestamp={status.get('edited_at')} />
+        </React.Fragment>
       );
     }
 
@@ -244,7 +263,7 @@ class DetailedStatus extends ImmutablePureComponent {
           <div className='detailed-status__meta'>
             <a className='detailed-status__datetime' href={status.get('url')} target='_blank' rel='noopener noreferrer'>
               <FormattedDate value={new Date(status.get('created_at'))} hour12={false} year='numeric' month='short' day='2-digit' hour='2-digit' minute='2-digit' />
-            </a>{visibilityLink}{applicationLink}{reblogLink} · {favouriteLink}
+            </a>{edited}{visibilityLink}{applicationLink}{reblogLink} · {favouriteLink}
           </div>
         </div>
       </div>

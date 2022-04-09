@@ -8,6 +8,7 @@ class Admin::AccountAction
   TYPES = %w(
     none
     disable
+    sensitive
     silence
     suspend
   ).freeze
@@ -21,6 +22,16 @@ class Admin::AccountAction
 
   attr_reader :warning, :send_email_notification, :include_statuses
 
+  alias send_email_notification? send_email_notification
+  alias include_statuses? include_statuses
+
+  def initialize(attributes = {})
+    @send_email_notification = true
+    @include_statuses        = true
+
+    super
+  end
+
   def send_email_notification=(value)
     @send_email_notification = ActiveModel::Type::Boolean.new.cast(value)
   end
@@ -32,7 +43,7 @@ class Admin::AccountAction
   def save!
     ApplicationRecord.transaction do
       process_action!
-      process_warning!
+      process_strike!
     end
 
     process_email!
@@ -64,6 +75,8 @@ class Admin::AccountAction
     case type
     when 'disable'
       handle_disable!
+    when 'sensitive'
+      handle_sensitive!
     when 'silence'
       handle_silence!
     when 'suspend'
@@ -71,20 +84,14 @@ class Admin::AccountAction
     end
   end
 
-  def process_warning!
-    return unless warnable?
-
-    authorize(target_account, :warn?)
-
-    @warning = AccountWarning.create!(target_account: target_account,
-                                      account: current_account,
-                                      action: type,
-                                      text: text_for_warning)
-
-    # A log entry is only interesting if the warning contains
-    # custom text from someone. Otherwise it's just noise.
-
-    log_action(:create, warning) if warning.text.present?
+  def process_strike!
+    @warning = target_account.strikes.create!(
+      account: current_account,
+      report: report,
+      action: type,
+      text: text_for_warning,
+      status_ids: status_ids
+    )
   end
 
   def process_reports!
@@ -109,6 +116,12 @@ class Admin::AccountAction
     target_account.user&.disable!
   end
 
+  def handle_sensitive!
+    authorize(target_account, :sensitive?)
+    log_action(:sensitive, target_account)
+    target_account.sensitize!
+  end
+
   def handle_silence!
     authorize(target_account, :silence?)
     log_action(:silence, target_account)
@@ -118,7 +131,7 @@ class Admin::AccountAction
   def handle_suspend!
     authorize(target_account, :suspend?)
     log_action(:suspend, target_account)
-    target_account.suspend!
+    target_account.suspend!(origin: :local)
   end
 
   def text_for_warning
@@ -134,15 +147,15 @@ class Admin::AccountAction
   end
 
   def process_email!
-    UserMailer.warning(target_account.user, warning, status_ids).deliver_now! if warnable?
+    UserMailer.warning(target_account.user, warning).deliver_later! if warnable?
   end
 
   def warnable?
-    send_email_notification && target_account.local?
+    send_email_notification? && target_account.local?
   end
 
   def status_ids
-    report.status_ids if report && include_statuses
+    report.status_ids if with_report? && include_statuses?
   end
 
   def reports

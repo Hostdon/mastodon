@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import Icon from 'mastodon/components/icon';
+import AnimatedNumber from 'mastodon/components/animated_number';
 
 export default class IconButton extends React.PureComponent {
 
@@ -24,6 +25,9 @@ export default class IconButton extends React.PureComponent {
     animate: PropTypes.bool,
     overlay: PropTypes.bool,
     tabIndex: PropTypes.string,
+    counter: PropTypes.number,
+    obfuscateCount: PropTypes.bool,
+    href: PropTypes.string,
   };
 
   static defaultProps = {
@@ -97,6 +101,9 @@ export default class IconButton extends React.PureComponent {
       pressed,
       tabIndex,
       title,
+      counter,
+      obfuscateCount,
+      href,
     } = this.props;
 
     const {
@@ -111,7 +118,26 @@ export default class IconButton extends React.PureComponent {
       activate,
       deactivate,
       overlayed: overlay,
+      'icon-button--with-counter': typeof counter !== 'undefined',
     });
+
+    if (typeof counter !== 'undefined') {
+      style.width = 'auto';
+    }
+
+    let contents = (
+      <React.Fragment>
+        <Icon id={icon} fixedWidth aria-hidden='true' /> {typeof counter !== 'undefined' && <span className='icon-button__counter'><AnimatedNumber value={counter} obfuscate={obfuscateCount} /></span>}
+      </React.Fragment>
+    );
+
+    if (href) {
+      contents = (
+        <a href={href} target='_blank' rel='noopener noreferrer'>
+          {contents}
+        </a>
+      );
+    }
 
     return (
       <button
@@ -128,7 +154,7 @@ export default class IconButton extends React.PureComponent {
         tabIndex={tabIndex}
         disabled={disabled}
       >
-        <Icon id={icon} fixedWidth aria-hidden='true' />
+        {contents}
       </button>
     );
   }

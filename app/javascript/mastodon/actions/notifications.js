@@ -1,6 +1,6 @@
 import api, { getLinks } from '../api';
 import IntlMessageFormat from 'intl-messageformat';
-import { fetchRelationships } from './accounts';
+import { fetchFollowRequests, fetchRelationships } from './accounts';
 import {
   importFetchedAccount,
   importFetchedAccounts,
@@ -16,6 +16,7 @@ import { getFiltersRegex } from '../selectors';
 import { usePendingItems as preferPendingItems } from 'mastodon/initial_state';
 import compareId from 'mastodon/compare_id';
 import { searchTextFromRawStatus } from 'mastodon/actions/importer/normalizer';
+import { requestNotificationPermission } from '../utils/notifications';
 
 export const NOTIFICATIONS_UPDATE      = 'NOTIFICATIONS_UPDATE';
 export const NOTIFICATIONS_UPDATE_NOOP = 'NOTIFICATIONS_UPDATE_NOOP';
@@ -33,13 +34,18 @@ export const NOTIFICATIONS_LOAD_PENDING = 'NOTIFICATIONS_LOAD_PENDING';
 export const NOTIFICATIONS_MOUNT   = 'NOTIFICATIONS_MOUNT';
 export const NOTIFICATIONS_UNMOUNT = 'NOTIFICATIONS_UNMOUNT';
 
+export const NOTIFICATIONS_MARK_AS_READ = 'NOTIFICATIONS_MARK_AS_READ';
+
+export const NOTIFICATIONS_SET_BROWSER_SUPPORT    = 'NOTIFICATIONS_SET_BROWSER_SUPPORT';
+export const NOTIFICATIONS_SET_BROWSER_PERMISSION = 'NOTIFICATIONS_SET_BROWSER_PERMISSION';
+
 defineMessages({
   mention: { id: 'notification.mention', defaultMessage: '{name} mentioned you' },
   group: { id: 'notifications.group', defaultMessage: '{count} notifications' },
 });
 
 const fetchRelatedRelationships = (dispatch, notifications) => {
-  const accountIds = notifications.filter(item => item.type === 'follow').map(item => item.account.id);
+  const accountIds = notifications.filter(item => ['follow', 'follow_request', 'admin.sign_up'].indexOf(item.type) !== -1).map(item => item.account.id);
 
   if (accountIds.length > 0) {
     dispatch(fetchRelationships(accountIds));
@@ -59,7 +65,7 @@ export function updateNotifications(notification, intlMessages, intlLocale) {
 
     let filtered = false;
 
-    if (notification.type === 'mention') {
+    if (['mention', 'status'].includes(notification.type)) {
       const dropRegex   = filters[0];
       const regex       = filters[1];
       const searchIndex = searchTextFromRawStatus(notification.status);
@@ -69,6 +75,10 @@ export function updateNotifications(notification, intlMessages, intlLocale) {
       }
 
       filtered = regex && regex.test(searchIndex);
+    }
+
+    if (['follow_request'].includes(notification.type)) {
+      dispatch(fetchFollowRequests());
     }
 
     dispatch(submitMarkers());
@@ -113,7 +123,18 @@ export function updateNotifications(notification, intlMessages, intlLocale) {
 const excludeTypesFromSettings = state => state.getIn(['settings', 'notifications', 'shows']).filter(enabled => !enabled).keySeq().toJS();
 
 const excludeTypesFromFilter = filter => {
-  const allTypes = ImmutableList(['follow', 'follow_request', 'favourite', 'reblog', 'mention', 'poll']);
+  const allTypes = ImmutableList([
+    'follow',
+    'follow_request',
+    'favourite',
+    'reblog',
+    'mention',
+    'poll',
+    'status',
+    'update',
+    'admin.sign_up',
+  ]);
+
   return allTypes.filterNot(item => item === filter).toJS();
 };
 
@@ -232,3 +253,47 @@ export const mountNotifications = () => ({
 export const unmountNotifications = () => ({
   type: NOTIFICATIONS_UNMOUNT,
 });
+
+
+export const markNotificationsAsRead = () => ({
+  type: NOTIFICATIONS_MARK_AS_READ,
+});
+
+// Browser support
+export function setupBrowserNotifications() {
+  return dispatch => {
+    dispatch(setBrowserSupport('Notification' in window));
+    if ('Notification' in window) {
+      dispatch(setBrowserPermission(Notification.permission));
+    }
+
+    if ('Notification' in window && 'permissions' in navigator) {
+      navigator.permissions.query({ name: 'notifications' }).then((status) => {
+        status.onchange = () => dispatch(setBrowserPermission(Notification.permission));
+      }).catch(console.warn);
+    }
+  };
+}
+
+export function requestBrowserPermission(callback = noOp) {
+  return dispatch => {
+    requestNotificationPermission((permission) => {
+      dispatch(setBrowserPermission(permission));
+      callback(permission);
+    });
+  };
+};
+
+export function setBrowserSupport (value) {
+  return {
+    type: NOTIFICATIONS_SET_BROWSER_SUPPORT,
+    value,
+  };
+}
+
+export function setBrowserPermission (value) {
+  return {
+    type: NOTIFICATIONS_SET_BROWSER_PERMISSION,
+    value,
+  };
+}

@@ -18,68 +18,20 @@ class Api::V1::Accounts::StatusesController < Api::BaseController
   end
 
   def load_statuses
-    cached_account_statuses
+    @account.suspended? ? [] : cached_account_statuses
   end
 
   def cached_account_statuses
-    cache_collection account_statuses, Status
-  end
-
-  def account_statuses
-    statuses = truthy_param?(:pinned) ? pinned_scope : permitted_account_statuses
-
-    statuses.merge!(only_media_scope) if truthy_param?(:only_media)
-    statuses.merge!(no_replies_scope) if truthy_param?(:exclude_replies)
-    statuses.merge!(no_reblogs_scope) if truthy_param?(:exclude_reblogs)
-    statuses.merge!(hashtag_scope)    if params[:tagged].present?
-
-    statuses.paginate_by_id(limit_param(DEFAULT_STATUSES_LIMIT), params_slice(:max_id, :since_id, :min_id))
-  end
-
-  def permitted_account_statuses
-    @account.statuses.permitted_for(@account, current_account)
-  end
-
-  def only_media_scope
-    Status.where(id: account_media_status_ids)
-  end
-
-  def account_media_status_ids
-    # `SELECT DISTINCT id, updated_at` is too slow, so pluck ids at first, and then select id, updated_at with ids.
-    # Also, Avoid getting slow by not narrowing down by `statuses.account_id`.
-    # When narrowing down by `statuses.account_id`, `index_statuses_20180106` will be used
-    # and the table will be joined by `Merge Semi Join`, so the query will be slow.
-    @account.statuses.joins(:media_attachments).merge(@account.media_attachments).permitted_for(@account, current_account)
-            .paginate_by_max_id(limit_param(DEFAULT_STATUSES_LIMIT), params[:max_id], params[:since_id])
-            .reorder(id: :desc).distinct(:id).pluck(:id)
-  end
-
-  def pinned_scope
-    return Status.none if @account.blocking?(current_account)
-
-    @account.pinned_statuses
-  end
-
-  def no_replies_scope
-    Status.without_replies
-  end
-
-  def no_reblogs_scope
-    Status.without_reblogs
-  end
-
-  def hashtag_scope
-    tag = Tag.find_normalized(params[:tagged])
-
-    if tag
-      Status.tagged_with(tag.id)
-    else
-      Status.none
-    end
+    cache_collection_paginated_by_id(
+      AccountStatusesFilter.new(@account, current_account, params).results,
+      Status,
+      limit_param(DEFAULT_STATUSES_LIMIT),
+      params_slice(:max_id, :since_id, :min_id)
+    )
   end
 
   def pagination_params(core_params)
-    params.slice(:limit, :only_media, :exclude_replies).permit(:limit, :only_media, :exclude_replies).merge(core_params)
+    params.slice(:limit, *AccountStatusesFilter::KEYS).permit(:limit, *AccountStatusesFilter::KEYS).merge(core_params)
   end
 
   def insert_pagination_headers

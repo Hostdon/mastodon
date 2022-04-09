@@ -15,7 +15,7 @@ ro:
     browse_public_posts: Răsfoiește un flux live de postări publice pe Mastodon
     contact: Contact
     contact_missing: Nesetat
-    contact_unavailable: N/A
+    contact_unavailable: Indisponibil
     discover_users: Descoperă utilizatori
     documentation: Documentație
     federation_hint_html: Cu un cont pe %{instance} vei putea urmări oameni pe orice server de Mastodon sau mai departe.
@@ -26,6 +26,8 @@ ro:
       Acesta este folosit în scopuri de federație și nu ar trebui blocat decât dacă doriți să blocați întreaga instanță, în ce caz trebuie să utilizaţi un bloc de domeniu.
     learn_more: Află mai multe
     privacy_policy: Politica de confidenţialitate
+    rules: Regulile serverului
+    rules_html: 'Mai jos este un rezumat al regulilor pe care trebuie să le urmezi dacă vrei să ai un cont pe acest server de Mastodon:'
     see_whats_happening: Vezi ce se întâmplă
     server_stats: 'Statistici server:'
     source_code: Cod sursă
@@ -43,6 +45,7 @@ ro:
       rejecting_media: 'Fişierele media de pe aceste servere nu vor fi procesate sau stocate şi nici o miniatură nu va fi afişată, necesitând click manual la fişierul original:'
       rejecting_media_title: Fișiere media filtrate
       silenced: 'Postările de pe aceste servere vor fi ascunse în cronologii și conversații publice, și nici o notificare nu va fi generată de interacțiunile utilizatorilor lor decât dacă le urmărești:'
+      silenced_title: Servere limitate
       suspended: 'Nici o informație de pe aceste servere nu va fi procesată, stocată sau schimbată, ceea ce face imposibilă orice interacțiune sau comunicare cu utilizatorii de pe aceste servere:'
       suspended_title: Servere suspendate
     unavailable_content_html: Mastodon vă permite în general să vedeți conținutul din orice alt server și să interacționați cu utilizatorii din rețea. Acestea sunt excepţiile care au fost făcute pe acest server.
@@ -62,13 +65,13 @@ ro:
       one: Urmăritor
       other: De Urmăritori
     following: Urmăriți
+    instance_actor_flash: Acest cont este un actor virtual folosit pentru a reprezenta serverul în sine și nu un utilizator individual. Acesta este utilizat în scopuri federative şi nu trebuie suspendat.
     joined: Înscris %{date}
     last_active: ultima activitate
     link_verified_on: Proprietatea acestui link a fost verificată la %{date}
     media: Media
     moved_html: "%{name} s-a mutat la %{new_profile_link}:"
     network_hidden: Aceste informaţii nu sunt disponibile
-    never_active: Niciodată
     nothing_here: Nu există nimic aici!
     people_followed_by: Persoane pe care %{name} le urmărește
     people_who_follow: Persoane care urmăresc pe %{name}
@@ -80,12 +83,11 @@ ro:
       other: De Postări
     posts_tab_heading: Postări
     posts_with_replies: Postări și răspunsuri
-    reserved_username: Numele de utilizator este rezervat
     roles:
       admin: Admin
       bot: Robot
       group: Grup
-      moderator: Mod
+      moderator: Moderator
     unavailable: Profil indisponibil
     unfollow: Nu mai urmării
   admin:
@@ -95,14 +97,13 @@ ro:
     account_moderation_notes:
       create: Lasă o notă
       created_msg: Notă de moderare creată cu succes!
-      delete: Șterge
       destroyed_msg: Notă de moderare distrusă cu succes!
     accounts:
       add_email_domain_block: Domeniu de e-mail în lista neagră
       approve: Aprobă
-      approve_all: Aprobă toate
+      approved_msg: Cererea de înregistrare de către %{username} a fost aprobată cu succes
       are_you_sure: Ești sigur?
-      avatar: Avatar
+      avatar: Poză de profil
       by_domain: Domeniu
       change_email:
         changed_msg: E-mail de cont schimbat cu succes!
@@ -114,9 +115,13 @@ ro:
       confirm: Confirmă
       confirmed: Confirmat
       confirming: Confirmare
+      custom: Personalizat
+      delete: Ștergere datele
       deleted: Șters
       demote: Retrogradează
+      destroyed_msg: Datele utilizatorului %{username} sunt acum în așteptare pentru a fi șterse iminent
       disable: Dezactivează
+      disable_sign_in_token_auth: Dezactivează autentificarea prin token e-mail
       disable_two_factor_authentication: Dezactivează 2FA
       disabled: Dezactivat
       display_name: Nume afișat
@@ -125,11 +130,14 @@ ro:
       email: E-mail
       email_status: Stare e-mail
       enable: Activează
+      enable_sign_in_token_auth: Activează autentificarea prin token e-mail
       enabled: Activat
+      enabled_msg: Am dezghețat cu succes contul %{username}
       followers: Urmăritori
       follows: Urmăriri
       header: Antet
       inbox_url: URL mesaje primite
+      invite_request_text: Motive pentru alăturare
       invited_by: Invitat de
       ip: IP
       joined: Înscris
@@ -141,11 +149,12 @@ ro:
       login_status: Stare conectare
       media_attachments: Atașamente media
       memorialize: Transformă în memorie
+      memorialized: Comemorat
+      memorialized_msg: S-a transforma cu succes %{username} într-un cont comemorat
       moderation:
         active: Activ
         all: Toate
         pending: În așteptare
-        silenced: Ignorate
         suspended: Suspendate
         title: Moderare
       moderation_notes: Note de moderare
@@ -161,10 +170,13 @@ ro:
       public: Public
       push_subscription_expires: Abonamentul PuSH expiră
       redownload: Reîmprospătează profilul
+      redownloaded_msg: S-a reîmprospătat cu succes profilul %{username} de la origine
       reject: Respinge
-      reject_all: Respinge toate
+      rejected_msg: S-a respins cu succes cererea de înregistrare a utilizatorului %{username}
       remove_avatar: Elimină avatar
       remove_header: Elimină antet
+      removed_avatar_msg: S-a îndepărtat cu succes poza de profil a utilizatorului %{username}
+      removed_header_msg: S-a îndepărtat cu succes coperta utilizatorului %{username}
       resend_confirmation:
         already_confirmed: Acest utilizator este deja confirmat
         send: Retrimite e-mail de confirmare
@@ -181,6 +193,12 @@ ro:
       search: Caută
       search_same_email_domain: Alţi utilizatori cu acelaşi domeniu de e-mail
       search_same_ip: Alţi utilizatori cu acelaşi IP
+      security_measures:
+        only_password: Doar parola
+        password_and_2fa: Parolă și Conectarea în 2 pași
+        password_and_sign_in_token: Parola și token-ul e-mail
+      sensitive: Sensibil
+      sensitized: Marcat ca sensibil
       shared_inbox_url: URL inbox distribuit
       show:
         created_reports: Rapoarte realizate
@@ -188,20 +206,29 @@ ro:
       silence: Ignoră
       silenced: Ignorate
       statuses: Stări
+      strikes: Atenționări anterioare
       subscribe: Subscrie
       suspended: Suspendate
-      time_in_queue: Așteptare în coadă %{time}
+      suspension_irreversible: Datele acestui cont au fost șterse în mod ireversibil. Poți să renunți la suspnedarea contului pentru a-l face utilizabil, dar acesta nu va recupera nicio informație pe care a avut-o anterior.
+      suspension_reversible_hint_html: Contul a fost suspendat și datele vor fi șterse complet pe %{date}. Până atunci, contul poate fi restabilit fără efecte adverse. Dacă dorești să ştergi imediat toate datele contului, poți face acest lucru mai jos.
       title: Conturi
+      unblock_email: Deblochează adresa de e-mail
+      unblocked_email_msg: S-a deblocat cu succes adresa de email a utilizatorului %{username}
       unconfirmed_email: E-mail neconfirmat
+      undo_sensitized: Anulează ca sensibil
       undo_silenced: Anulează ignorarea
       undo_suspension: Anulați suspendarea
+      unsilenced_msg: S-a refăcut cu succes limita contului %{username}
       unsubscribe: Dezabonare
+      unsuspended_msg: S-a anulat cu succes suspendarea contului %{username}
       username: Nume
+      view_domain: Vezi sumarul pentru domeniul
       warn: Avertizează
       web: Web
       whitelisted: Excluse la blocare
     action_logs:
       action_types:
+        approve_user: Aprobă Utilizatorul
         assigned_to_self_report: Atribuie raportul
         change_email_user: Schimbă e-mailul pentru utilizator
         confirm_user: Confirmare Utilizator
@@ -211,22 +238,33 @@ ro:
         create_domain_allow: Creează permis domeniu
         create_domain_block: Crează blocare de domenii
         create_email_domain_block: Creați blocare de domeniu e-mail
+        create_ip_block: Creează regulă IP
+        create_unavailable_domain: Crează domeniu indisponibil
         demote_user: Retrogradare Utilizatorul
         destroy_announcement: Ștergere anunț
         destroy_custom_emoji: Ștergere Zâmbet Personalizat
         destroy_domain_allow: Ștergere Permitere Domeniu
         destroy_domain_block: Ștergere Blocare Domeniu
+        destroy_email_domain_block: Șterge Blocarea Domeniului de Email
+        destroy_instance: Curăță Domeniul
+        destroy_ip_block: Șterge regula IP
         destroy_status: Șterge starea
+        destroy_unavailable_domain: Șterge Domeniul Indisponibil
         disable_2fa_user: Dezactivează 2FA
         disable_custom_emoji: Dezactivează Emoji-urile Personalizate
+        disable_sign_in_token_auth_user: Dezactivează Autentificarea prin Token E-mail pentru Utilizator
         disable_user: Dezactivează Utilizator
         enable_custom_emoji: Activează Emoji Personalizat
+        enable_sign_in_token_auth_user: Activează Autentificarea prin Token e-mail pentru Utilizator
         enable_user: Activează Utilizator
+        memorialize_account: Comemoreză Contul
         promote_user: Promovează utilizator
+        reject_user: Respinge Utilizatorul
         remove_avatar_user: Elimină avatar
         reopen_report: Redeschide Raport
         reset_password_user: Resetează Parola
         resolve_report: Rezolvă Raport
+        sensitive_account: Cont Sensibil
         suspend_account: Suspendă Cont
         unassigned_report: Raport Neasignat
         unsuspend_account: Anulează Suspendarea Contului
@@ -246,13 +284,11 @@ ro:
     remove: Deconectare alias
   appearance:
     localization:
-      guide_link: https://crowdin.com/project/mastodon
       guide_link_text: Toată lumea poate contribui.
     sensitive_content: Conținut sensibil
     toot_layout: Aspect postare
   application_mailer:
     notification_preferences: Modifică preferințe e-mail
-    salutation: "%{name},"
     settings: 'Modifică preferințe e-mail: %{link}'
     view: 'Vizualizare:'
     view_profile: Vizualizați profilul
@@ -284,9 +320,6 @@ ro:
     migrate_account: Transfer către un alt cont
     migrate_account_html: Dacă dorești să redirecționezi acest cont către un altul, poți <a href="%{path}">configura asta aici</a>.
     or_log_in_with: Sau conectează-te cu
-    providers:
-      cas: CAS
-      saml: SAML
     register: Înregistrare
     registration_closed: "%{instance} nu acceptă membri noi"
     resend_confirmation: Retrimite instrucțiunile de confirmare
@@ -300,7 +333,6 @@ ro:
     status:
       account_status: Starea contului
       confirming: Se așteaptă finalizarea confirmării prin e-mail.
-      functional: Contul dvs. este complet operațional.
       pending: Cererea dvs. este în curs de revizuire de către personalul nostru. Este posibil să dureze ceva timp. Veți primi un e-mail dacă cererea dvs. este aprobată.
       redirecting_to: Contul dvs. este inactiv deoarece în prezent se redirecționează către %{acct}.
     trouble_logging_in: Probleme la conectare?
@@ -335,9 +367,7 @@ ro:
       less_than_x_seconds: Chiar acum
       over_x_years: "%{count}ani"
       x_days: "%{count}z"
-      x_minutes: "%{count}m"
       x_months: "%{count}l"
-      x_seconds: "%{count}s"
   deletes:
     challenge_not_passed: Informațiile introduse nu au fost corecte
     confirm_password: Introdu parola curentă pentru a-ți verifica identitatea
@@ -522,14 +552,7 @@ ro:
     activity: Ultima activitate
     browser: Navigator
     browsers:
-      alipay: Alipay
-      blackberry: Blackberry
-      chrome: Chrome
-      edge: Microsoft Edge
-      electron: Electron
-      firefox: Firefox
       generic: Navigator necunoscut
-      ie: Internet Explorer
   settings:
     account: Cont
     back: Înapoi la Mastodon
@@ -543,10 +566,6 @@ ro:
         few: "%{count} imagini"
         one: "%{count} imagine"
         other: "%{count} de imagini"
-      video:
-        few: "%{count} videoclipuri"
-        one: "%{count} video"
-        other: "%{count} de videoclipuri"
     boosted_from_html: Impuls de la %{acct_link}
     content_warning: 'Avertisment privind conținutul: %{warning}'
     disallowed_hashtags:
@@ -555,13 +574,11 @@ ro:
       other: 'conținea aceste hashtag-uri nepermise: %{tags}'
     errors:
       in_reply_not_found: Postarea la care încercați să răspundeți nu pare să existe.
-    language_detection: Detectează automat limba
     open_in_web: Deschide pe web
     over_character_limit: s-a depășit limita de caracter %{max}
     pin_errors:
       limit: Deja ai fixat numărul maxim de postări
       ownership: Postarea altcuiva nu poate fi fixată
-      private: Postarea non-publică nu poate fi fixată
       reblog: Un impuls nu poate fi fixat
     poll:
       total_people:
@@ -576,11 +593,9 @@ ro:
     show_more: Arată mai mult
     show_thread: Arată discuția
     sign_in_to_participate: Conectează-te pentru a participa la conversație
-    title: '%{name}: "%{quote}"'
     visibilities:
       private: Doar urmăritorii
       private_long: Arată doar urmăritorilor
-      public: Public
       public_long: Toată lumea poate vedea
       unlisted: Nelistat
       unlisted_long: Toată lumea poate vedea, dar nu este listată pe fluxurile publice
@@ -680,34 +695,20 @@ ro:
       default: "%d %m, %Y, %H:%M"
       month: "%m %Y"
   two_factor_authentication:
-    code_hint: Introduceți codul generat de aplicația dvs de autentificare pentru a confirma
-    description_html: Dacă activați <strong>autentificarea în doi pași</strong>, autentificarea va necesita ca tu să fii în posesia telefonului tău, ceea ce va genera token-uri pentru ca tu să intri.
     disable: Dezactivează
-    enable: Activează
     enabled: Autentificare în doi pași este activată
     enabled_success: Autentificarea în doi pași activată cu succes
     generate_recovery_codes: Generează coduri de recuperare
-    instructions_html: "<strong>Scanați acest cod QR în Google Authenticator sau o aplicație TOTP similiară de pe telefonul dvs.</strong>. De acum înainte, acea aplicație va genera token-uri pe care va trebui să îi introduceți atunci când vă conectați."
     lost_recovery_codes: Codurile de recuperare vă permit să redobândiți accesul la contul dvs. dacă vă pierdeți telefonul. Dacă ți-ai pierdut codurile de recuperare, le poți regenera aici. Codurile tale vechi de recuperare vor fi invalidate.
-    manual_instructions: 'Dacă nu puteți scana codul QR și trebuie să-l introduceți manual, aici este textul simplu pentru cheia secretă:'
     recovery_codes: Copie a codurilor de recuperare
     recovery_codes_regenerated: Coduri de recuperare regenerate cu succes
     recovery_instructions_html: Dacă îți pierzi vreodată accesul la telefon, poți folosi unul dintre codurile de recuperare de mai jos pentru a recâștiga accesul la contul tău. <strong>Păstrați codurile de recuperare în condiții de siguranță</strong>. De exemplu, le puteți tipări și stoca cu alte documente importante.
-    setup: Configurare
-    wrong_code: Codul introdus nu a fost valid! Orele serverului și timpul dispozitivului sunt corecte?
   user_mailer:
     backup_ready:
       explanation: Ai solicitat o copie de rezervă completă a contului tău. Acum este gata pentru descărcare!
       subject: Arhiva ta este gata pentru descărcare
       title: Preluare arhivă
     warning:
-      explanation:
-        disable: În timp ce contul tău este înghețat, datele contului tău rămân intacte, dar nu poți efectua nicio acțiune până când acesta este deblocat.
-        silence: În timp ce contul tău este limitat, doar persoanele care deja te urmăresc îți vor vedea postările pe acest server, și puteți fi exclus de la diverse liste publice. Cu toate acestea, este posibil ca alte persoane să vă urmărească manual.
-        suspend: Contul tău a fost suspendat și toate postările tale și fișierele media încărcate au fost șterse ireversibil de pe acest server, și servere unde ai avut urmăritori.
-      get_in_touch: Puteți răspunde la acest e-mail pentru a lua legătura cu personalul din %{instance}.
-      review_server_policies: Revizuiește politicile serverului
-      statuses: 'Mai precis, pentru:'
       subject:
         disable: Contul tău %{acct} a fost înghețat
         none: Avertizare pentru %{acct}
@@ -737,7 +738,6 @@ ro:
       title: Bine ai venit la bord, %{name}!
   users:
     follow_limit_reached: Nu poți urmări mai mult de %{limit} persoane
-    invalid_email: Adresa de e-mail nu este validă
     invalid_otp_token: Cod doi pași nevalid
     otp_lost_help_html: Dacă ai pierdut accesul la ambele, poți lua legătura cu %{email}
     seamless_external_login: Sunteți autentificat prin intermediul unui serviciu extern, astfel încât parola și setările de e-mail nu sunt disponibile.

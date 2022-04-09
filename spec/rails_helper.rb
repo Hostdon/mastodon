@@ -60,15 +60,15 @@ RSpec.configure do |config|
 
   config.after :each do
     Rails.cache.clear
-
-    keys = Redis.current.keys
-    Redis.current.del(keys) if keys.any?
+    Redis.current.del(Redis.current.keys)
   end
 end
 
 RSpec::Sidekiq.configure do |config|
   config.warn_when_jobs_not_processed_by_sidekiq = false
 end
+
+RSpec::Matchers.define_negated_matcher :not_change, :change
 
 def request_fixture(name)
   File.read(Rails.root.join('spec', 'fixtures', 'requests', name))

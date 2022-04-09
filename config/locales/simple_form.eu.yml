@@ -14,6 +14,12 @@ eu:
         send_email_notification: Erabiltzaileak bere kontuarekin gertatutakoaren azalpen bat jasoko du
         text_html: Aukerakoa. Toot sintaxia erabili dezakezu. <a href="%{path}">Abisu aurre-ezarpenak</a> gehitu ditzakezu denbora aurrezteko
         type_html: Erabaki zer egin <strong>%{acct}</strong> kontuarekin
+        types:
+          disable: Erabiltzaileari bere kontua erabiltzea eragotzi, baina ez ezabatu edo ezkutatu bere edukiak.
+          none: Erabili hau erabiltzaileari abisu bat bidaltzeko, beste ekintzarik abiarazi gabe.
+          sensitive: Behartu erabiltzaile honen multimedia eranskin guztiak hunkigarri gisa markatzea.
+          silence: Eragotzi erabiltzaileak ikusgaitasun publikoarekin argitaratzea, ezkutatu bere bidalketa eta jakinarazpenak jarraitzen ez duten pertsonei.
+          suspend: Eragotzi kontu honek inolako interakziorik izatea eta ezabatu bere edukiak. Atzera bota daiteke 30 egun igaro aurretik.
         warning_preset_id: Aukerakoa. Zure testua gehitu dezakezu aurre-ezarpenaren ostean
       announcement:
         all_day: Markatutakoan soilik denbora barrutiko datak erakutsiko dira
@@ -21,6 +27,8 @@ eu:
         scheduled_at: Laga hutsik iragarpena berehala argitaratzeko
         starts_at: Aukerakoa. Zure iragarpena denbora-tarte batera lotuta dagoenerako
         text: Tootetako sintaxia erabili dezakezu. Kontuan izan iragarpenak erabiltzailearen pantailan hartuko duen neurria
+      appeal:
+        text: Abisu bati errekurtsoa behin bakarrik jarri diezaiokezu
       defaults:
         autofollow: Gonbidapena erabiliz izena ematen dutenek automatikoki jarraituko dizute
         avatar: PNG, GIF edo JPG. Gehienez %{size}. %{dimensions}px neurrira eskalatuko da
@@ -29,7 +37,7 @@ eu:
         current_password: Segurtasunagatik sartu uneko kontuaren pasahitza
         current_username: Berresteko sartu uneko kontuaren erabiltzaile-izena
         digest: Jarduerarik gabeko epe luze bat eta gero mezu pertsonalen bat jaso baduzu, besterik ez
-        discoverable: Profilen direktorioa zure kontua jende gehiagok irakurtzeko modu bat da
+        discoverable: Baimendu zure kontua ezezagunek aurkitu ahal izatea gomendio, joera eta beste ezaugarrien bidez
         email: Baieztapen e-mail bat bidaliko zaizu
         fields: 4 elementu bistaratu ditzakezu taula batean zure profilean
         header: PNG, GIF edo JPG. Gehienez %{size}. %{dimensions}px eskalara txikituko da
@@ -55,7 +63,7 @@ eu:
       domain_allow:
         domain: Domeinu honek zerbitzari honetatik datuak hartu ahal izango ditu eta bertatik jasotako informazioa prozesatu eta gordeko da
       email_domain_block:
-        domain: Hau e-mail helbidean agertzen den domeinua izan daiteke, honen MX erregistroa, edo MX erregistroaren IP helbidea. Hauek erabiltzaileak izena ematean egiaztatuko dira eta atzera botako da.
+        domain: Hau eposta helbidean agertzen den domeinu-izena edo MX erregistroak erabiltzen duena izan daiteke. Izen-ematean egiaztatuko dira.
         with_dns_records: Emandako domeinuaren DNS erregistroak ebazteko saiakera bat egingo da eta emaitzak ere zerrenda beltzean sartuko dira
       featured_tag:
         name: 'Hauetakoren bat erabili zenezake:'
@@ -65,8 +73,19 @@ eu:
         data: Beste Mastodon zerbitzari batetik esportatutako CSV fitxategia
       invite_request:
         text: Honek zure eskaera berrikustean lagunduko digu
+      ip_block:
+        comment: Hautazkoa. Gogoratu zergatik gehitu duzun arau hau.
+        expires_in: IP helbideak baliabide mugatua dira, batzuetan partekatuak dira eta maiz aldatzen dira jabez. Horregatik, ez da gomendatzen IPak mugagabe blokeatzea.
+        ip: Sartu IPv4 edo IPv6 helbide bat. Tarte osoak blokeatu ditzakezu CIDR sintaxia erabiliz. Kontuz zure burua blokeatu gabe!
+        severities:
+          no_access: Blokeatu baliabide guztietarako sarbidea
+          sign_up_requires_approval: Izen emate berriek zure onarpena beharko dute
+        severity: Aukeratu zer gertatuko den IP honetatik datozen eskaerekin
+      rule:
+        text: Deskribatu zerbitzari honetako erabiltzaileentzako arau edo betekizun bat. Saiatu labur eta sinple idazten
       sessions:
         otp: 'Sartu zure telefonoko aplikazioak sortutako bi faktoreetako kodea, edo erabili zure berreskuratze kodeetako bat:'
+        webauthn: USB gako bat bada, ziurtatu sartu duzula, eta behar izanez gero ukitu ezazu.
       tag:
         name: Letrak maiuskula/minuskulara aldatu ditzakezu besterik ez, adibidez irakurterrazago egiteko
       user:
@@ -91,6 +110,7 @@ eu:
         types:
           disable: Desaktibatu
           none: Ez egin ezer
+          sensitive: Hunkigarria
           silence: Isiltarazi
           suspend: Kanporatu eta behin betiko ezabatu kontuko datuak
         warning_preset_id: Erabili aurre-ezarritako abisu bat
@@ -100,6 +120,8 @@ eu:
         scheduled_at: Programatu argitaratzea
         starts_at: Ekitaldiaren hasiera
         text: Iragarpena
+      appeal:
+        text: Azaldu zergatik bota behar litzatekeen atzera erabaki hau
       defaults:
         autofollow: Gonbidatu zure kontua jarraitzera
         avatar: Abatarra
@@ -116,6 +138,7 @@ eu:
         expires_in: Iraungitzea
         fields: Profilaren metadatuak
         header: Goiburua
+        honeypot: "%{label} (ez bete)"
         inbox_url: Errelearen sarrera ontziaren URLa
         irreversible: Baztertu ezkutatu ordez
         locale: Interfazearen hizkuntza
@@ -135,6 +158,7 @@ eu:
         setting_default_privacy: Mezuen pribatutasuna
         setting_default_sensitive: Beti markatu edukiak hunkigarri gisa
         setting_delete_modal: Erakutsi baieztapen elkarrizketa-koadroa toot bat ezabatu aurretik
+        setting_disable_swiping: Desgaitu hatza pasatzeko mugimenduak
         setting_display_media: Multimedia bistaratzea
         setting_display_media_default: Lehenetsia
         setting_display_media_hide_all: Ezkutatu guztia
@@ -151,6 +175,7 @@ eu:
         setting_use_blurhash: Erakutsi gradiente koloretsuak ezkutatutako multimediaren ordez
         setting_use_pending_items: Modu geldoa
         severity: Larritasuna
+        sign_in_token_attempt: Segurtasun kodea
         type: Inportazio mota
         username: Erabiltzaile-izena
         username_or_email: Erabiltzaile-izena edo e-mail helbidea
@@ -167,7 +192,15 @@ eu:
         comment: Iruzkina
       invite_request:
         text: Zergatik elkartu nahi duzu?
+      ip_block:
+        comment: Iruzkina
+        ip: IP-a
+        severities:
+          no_access: Blokeatu sarbidea
+          sign_up_requires_approval: Mugatu izen emateak
+        severity: Araua
       notification_emails:
+        appeal: Norbaitek moderatzailearen erabakia eskatu du
         digest: Bidali laburpenak e-mail bidez
         favourite: Bidali e-mail bat norbaitek zure mezua gogoko duenean
         follow: Bidali e-mail bat norbaitek jarraitzen zaituenean
@@ -175,8 +208,10 @@ eu:
         mention: Bidali e-mail bat norbaitek zu aipatzean
         pending_account: Bidali e-mail bat kontu bat berrikusi behar denean
         reblog: Bidali e-mail bat norbaitek zure mezuari bultzada ematen badio
-        report: Bidali e-maila txosten berri bat aurkezten denean
-        trending_tag: Bidali e-mail bat errebisatu gabeko traola bat joeran dagoenean
+        report: Salaketa berria bidali da
+        trending_tag: Joera berriak berrikuspena behar du
+      rule:
+        text: Araua
       tag:
         listable: Baimendu traola hau bilaketetan agertzea eta profilen direktorioan
         name: Traola
@@ -187,4 +222,7 @@ eu:
     required:
       mark: "*"
       text: beharrezkoa
+    title:
+      sessions:
+        webauthn: Erabili zure segurtasun gakoetako bat saioa hasteko
     'yes': Bai

@@ -27,10 +27,10 @@ class UserSettingsDecorator
     user.settings['display_media']       = display_media_preference if change?('setting_display_media')
     user.settings['expand_spoilers']     = expand_spoilers_preference if change?('setting_expand_spoilers')
     user.settings['reduce_motion']       = reduce_motion_preference if change?('setting_reduce_motion')
+    user.settings['disable_swiping']     = disable_swiping_preference if change?('setting_disable_swiping')
     user.settings['system_font_ui']      = system_font_ui_preference if change?('setting_system_font_ui')
     user.settings['noindex']             = noindex_preference if change?('setting_noindex')
     user.settings['theme']               = theme_preference if change?('setting_theme')
-    user.settings['hide_network']        = hide_network_preference if change?('setting_hide_network')
     user.settings['aggregate_reblogs']   = aggregate_reblogs_preference if change?('setting_aggregate_reblogs')
     user.settings['show_application']    = show_application_preference if change?('setting_show_application')
     user.settings['advanced_layout']     = advanced_layout_preference if change?('setting_advanced_layout')
@@ -88,12 +88,12 @@ class UserSettingsDecorator
     boolean_cast_setting 'setting_reduce_motion'
   end
 
-  def noindex_preference
-    boolean_cast_setting 'setting_noindex'
+  def disable_swiping_preference
+    boolean_cast_setting 'setting_disable_swiping'
   end
 
-  def hide_network_preference
-    boolean_cast_setting 'setting_hide_network'
+  def noindex_preference
+    boolean_cast_setting 'setting_noindex'
   end
 
   def show_application_preference

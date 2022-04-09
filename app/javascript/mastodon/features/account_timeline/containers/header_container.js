@@ -21,7 +21,6 @@ import { openModal } from '../../../actions/modal';
 import { blockDomain, unblockDomain } from '../../../actions/domain_blocks';
 import { defineMessages, injectIntl, FormattedMessage } from 'react-intl';
 import { unfollowModal } from '../../../initial_state';
-import { List as ImmutableList } from 'immutable';
 
 const messages = defineMessages({
   unfollowConfirm: { id: 'confirmations.unfollow.confirm', defaultMessage: 'Unfollow' },
@@ -34,7 +33,6 @@ const makeMapStateToProps = () => {
   const mapStateToProps = (state, { accountId }) => ({
     account: getAccount(state, accountId),
     domain: state.getIn(['meta', 'domain']),
-    identity_proofs: state.getIn(['identity_proofs', accountId], ImmutableList()),
   });
 
   return mapStateToProps;
@@ -76,9 +74,9 @@ const mapDispatchToProps = (dispatch, { intl }) => ({
 
   onReblogToggle (account) {
     if (account.getIn(['relationship', 'showing_reblogs'])) {
-      dispatch(followAccount(account.get('id'), false));
+      dispatch(followAccount(account.get('id'), { reblogs: false }));
     } else {
-      dispatch(followAccount(account.get('id'), true));
+      dispatch(followAccount(account.get('id'), { reblogs: true }));
     }
   },
 
@@ -87,6 +85,14 @@ const mapDispatchToProps = (dispatch, { intl }) => ({
       dispatch(unpinAccount(account.get('id')));
     } else {
       dispatch(pinAccount(account.get('id')));
+    }
+  },
+
+  onNotifyToggle (account) {
+    if (account.getIn(['relationship', 'notifying'])) {
+      dispatch(followAccount(account.get('id'), { notify: false }));
+    } else {
+      dispatch(followAccount(account.get('id'), { notify: true }));
     }
   },
 

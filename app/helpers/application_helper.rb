@@ -7,6 +7,24 @@ module ApplicationHelper
     follow
   ).freeze
 
+  RTL_LOCALES = %i(
+    ar
+    ckb
+    fa
+    he
+  ).freeze
+
+  def friendly_number_to_human(number, **options)
+    # By default, the number of precision digits used by number_to_human
+    # is looked up from the locales definition, and rails-i18n comes with
+    # values that don't seem to make much sense for many languages, so
+    # override these values with a default of 3 digits of precision.
+    options[:precision] = 3
+    options[:strip_insignificant_zeros] = true
+
+    number_to_human(number, **options)
+  end
+
   def active_nav_class(*paths)
     paths.any? { |path| current_page?(path) } ? 'active' : ''
   end
@@ -32,11 +50,37 @@ module ApplicationHelper
   end
 
   def available_sign_up_path
-    if closed_registrations?
+    if closed_registrations? || omniauth_only?
       'https://joinmastodon.org/#getting-started'
     else
       new_user_registration_path
     end
+  end
+
+  def omniauth_only?
+    ENV['OMNIAUTH_ONLY'] == 'true'
+  end
+
+  def link_to_login(name = nil, html_options = nil, &block)
+    target = new_user_session_path
+
+    html_options = name if block_given?
+
+    if omniauth_only? && Devise.mappings[:user].omniauthable? && User.omniauth_providers.size == 1
+      target = omniauth_authorize_path(:user, User.omniauth_providers[0])
+      html_options ||= {}
+      html_options[:method] = :post
+    end
+
+    if block_given?
+      link_to(target, html_options, &block)
+    else
+      link_to(name, target, html_options)
+    end
+  end
+
+  def provider_sign_in_link(provider)
+    link_to I18n.t("auth.providers.#{provider}", default: provider.to_s.chomp('_oauth2').capitalize), omniauth_authorize_path(:user, provider), class: "button button-#{provider}", method: :post
   end
 
   def open_deletion?
@@ -44,7 +88,7 @@ module ApplicationHelper
   end
 
   def locale_direction
-    if [:ar, :fa, :he].include?(I18n.locale)
+    if RTL_LOCALES.include?(I18n.locale)
       'rtl'
     else
       'ltr'
@@ -89,6 +133,16 @@ module ApplicationHelper
     end
   end
 
+  def interrelationships_icon(relationships, account_id)
+    if relationships.following[account_id] && relationships.followed_by[account_id]
+      fa_icon('exchange', title: I18n.t('relationships.mutual'), class: 'fa-fw active passive')
+    elsif relationships.following[account_id]
+      fa_icon(locale_direction == 'ltr' ? 'arrow-right' : 'arrow-left', title: I18n.t('relationships.following'), class: 'fa-fw active')
+    elsif relationships.followed_by[account_id]
+      fa_icon(locale_direction == 'ltr' ? 'arrow-left' : 'arrow-right', title: I18n.t('relationships.followers'), class: 'fa-fw passive')
+    end
+  end
+
   def custom_emoji_tag(custom_emoji, animate = true)
     if animate
       image_tag(custom_emoji.image.url, class: 'emojione', alt: ":#{custom_emoji.shortcode}:")
@@ -107,6 +161,10 @@ module ApplicationHelper
     else
       content_tag(:div, data: { component: name.to_s.camelcase, props: Oj.dump(props) }, &block)
     end
+  end
+
+  def react_admin_component(name, props = {})
+    content_tag(:div, nil, data: { 'admin-component': name.to_s.camelcase, props: Oj.dump({ locale: I18n.locale }.merge(props)) })
   end
 
   def body_classes
@@ -162,6 +220,27 @@ module ApplicationHelper
     end
 
     json = ActiveModelSerializers::SerializableResource.new(InitialStatePresenter.new(state_params), serializer: InitialStateSerializer).to_json
+    # rubocop:disable Rails/OutputSafety
     content_tag(:script, json_escape(json).html_safe, id: 'initial-state', type: 'application/json')
+    # rubocop:enable Rails/OutputSafety
+  end
+
+  def grouped_scopes(scopes)
+    scope_parser      = ScopeParser.new
+    scope_transformer = ScopeTransformer.new
+
+    scopes.each_with_object({}) do |str, h|
+      scope = scope_transformer.apply(scope_parser.parse(str))
+
+      if h[scope.key]
+        h[scope.key].merge!(scope)
+      else
+        h[scope.key] = scope
+      end
+    end.values
+  end
+
+  def prerender_custom_emojis(html, custom_emojis)
+    EmojiFormatter.new(html, custom_emojis, animate: prefers_autoplay?).to_s
   end
 end

@@ -31,7 +31,7 @@ class ActivityPub::RepliesController < ActivityPub::BaseController
   end
 
   def set_replies
-    @replies = only_other_accounts? ? Status.where.not(account_id: @account.id) : @account.statuses
+    @replies = only_other_accounts? ? Status.where.not(account_id: @account.id).joins(:account).merge(Account.without_suspended) : @account.statuses
     @replies = @replies.where(in_reply_to_id: @status.id, visibility: [:public, :unlisted])
     @replies = @replies.paginate_by_min_id(DESCENDANTS_LIMIT, params[:min_id])
   end
@@ -63,15 +63,29 @@ class ActivityPub::RepliesController < ActivityPub::BaseController
   end
 
   def next_page
-    only_other_accounts = !(@replies&.last&.account_id == @account.id && @replies.size == DESCENDANTS_LIMIT)
+    if only_other_accounts?
+      # Only consider remote accounts
+      return nil if @replies.size < DESCENDANTS_LIMIT
 
-    account_status_replies_url(
-      @account,
-      @status,
-      page: true,
-      min_id: only_other_accounts && !only_other_accounts? ? nil : @replies&.last&.id,
-      only_other_accounts: only_other_accounts
-    )
+      account_status_replies_url(
+        @account,
+        @status,
+        page: true,
+        min_id: @replies&.last&.id,
+        only_other_accounts: true
+      )
+    else
+      # For now, we're serving only self-replies, but next page might be other accounts
+      next_only_other_accounts = @replies&.last&.account_id != @account.id || @replies.size < DESCENDANTS_LIMIT
+
+      account_status_replies_url(
+        @account,
+        @status,
+        page: true,
+        min_id: next_only_other_accounts ? nil : @replies&.last&.id,
+        only_other_accounts: next_only_other_accounts
+      )
+    end
   end
 
   def page_params

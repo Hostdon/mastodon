@@ -15,13 +15,13 @@ class FollowingAccountsController < ApplicationController
       format.html do
         expires_in 0, public: true unless user_signed_in?
 
-        next if @account.user_hides_network?
+        next if @account.hide_collections?
 
         follows
       end
 
       format.json do
-        raise Mastodon::NotPermittedError if page_requested? && @account.user_hides_network?
+        raise Mastodon::NotPermittedError if page_requested? && @account.hide_collections?
 
         expires_in(page_requested? ? 0 : 3.minutes, public: public_fetch_mode?)
 
@@ -52,6 +52,14 @@ class FollowingAccountsController < ApplicationController
     account_following_index_url(@account, page: page) unless page.nil?
   end
 
+  def next_page_url
+    page_url(follows.next_page) if follows.respond_to?(:next_page)
+  end
+
+  def prev_page_url
+    page_url(follows.prev_page) if follows.respond_to?(:prev_page)
+  end
+
   def collection_presenter
     if page_requested?
       ActivityPub::CollectionPresenter.new(
@@ -60,8 +68,8 @@ class FollowingAccountsController < ApplicationController
         size: @account.following_count,
         items: follows.map { |f| ActivityPub::TagManager.instance.uri_for(f.target_account) },
         part_of: account_following_index_url(@account),
-        next: page_url(follows.next_page),
-        prev: page_url(follows.prev_page)
+        next: next_page_url,
+        prev: prev_page_url
       )
     else
       ActivityPub::CollectionPresenter.new(
@@ -74,10 +82,10 @@ class FollowingAccountsController < ApplicationController
   end
 
   def restrict_fields_to
-    if page_requested? || !@account.user_hides_network?
+    if page_requested? || !@account.hide_collections?
       # Return all fields
     else
-      %i(id type totalItems)
+      %i(id type total_items)
     end
   end
 end

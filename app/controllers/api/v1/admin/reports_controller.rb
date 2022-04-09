@@ -1,13 +1,15 @@
 # frozen_string_literal: true
 
 class Api::V1::Admin::ReportsController < Api::BaseController
+  protect_from_forgery with: :exception
+
   include Authorization
   include AccountableConcern
 
   LIMIT = 100
 
-  before_action -> { doorkeeper_authorize! :'admin:read', :'admin:read:reports' }, only: [:index, :show]
-  before_action -> { doorkeeper_authorize! :'admin:write', :'admin:write:reports' }, except: [:index, :show]
+  before_action -> { authorize_if_got_token! :'admin:read', :'admin:read:reports' }, only: [:index, :show]
+  before_action -> { authorize_if_got_token! :'admin:write', :'admin:write:reports' }, except: [:index, :show]
   before_action :require_staff!
   before_action :set_reports, only: :index
   before_action :set_report, except: :index
@@ -29,6 +31,12 @@ class Api::V1::Admin::ReportsController < Api::BaseController
 
   def show
     authorize @report, :show?
+    render json: @report, serializer: REST::Admin::ReportSerializer
+  end
+
+  def update
+    authorize @report, :update?
+    @report.update!(report_params)
     render json: @report, serializer: REST::Admin::ReportSerializer
   end
 
@@ -63,7 +71,7 @@ class Api::V1::Admin::ReportsController < Api::BaseController
   private
 
   def set_reports
-    @reports = filtered_reports.order(id: :desc).with_accounts.paginate_by_id(limit_param(LIMIT), params_slice(:max_id, :since_id, :min_id))
+    @reports = filtered_reports.order(id: :desc).with_accounts.to_a_paginated_by_id(limit_param(LIMIT), params_slice(:max_id, :since_id, :min_id))
   end
 
   def set_report
@@ -72,6 +80,10 @@ class Api::V1::Admin::ReportsController < Api::BaseController
 
   def filtered_reports
     ReportFilter.new(filter_params).results
+  end
+
+  def report_params
+    params.permit(:category, rule_ids: [])
   end
 
   def filter_params

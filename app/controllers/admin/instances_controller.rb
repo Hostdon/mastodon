@@ -2,63 +2,70 @@
 
 module Admin
   class InstancesController < BaseController
-    before_action :set_domain_block, only: :show
-    before_action :set_domain_allow, only: :show
-    before_action :set_instance, only: :show
+    before_action :set_instances, only: :index
+    before_action :set_instance, except: :index
 
     def index
       authorize :instance, :index?
-
-      @instances = ordered_instances
+      preload_delivery_failures!
     end
 
     def show
       authorize :instance, :show?
+      @time_period = (6.days.ago.to_date...Time.now.utc.to_date)
+    end
 
-      @following_count = Follow.where(account: Account.where(domain: params[:id])).count
-      @followers_count = Follow.where(target_account: Account.where(domain: params[:id])).count
-      @reports_count   = Report.where(target_account: Account.where(domain: params[:id])).count
-      @blocks_count    = Block.where(target_account: Account.where(domain: params[:id])).count
-      @available       = DeliveryFailureTracker.available?(params[:id])
-      @media_storage   = MediaAttachment.where(account: Account.where(domain: params[:id])).sum(:file_file_size)
-      @private_comment = @domain_block&.private_comment
-      @public_comment  = @domain_block&.public_comment
+    def destroy
+      authorize :instance, :destroy?
+      Admin::DomainPurgeWorker.perform_async(@instance.domain)
+      log_action :destroy, @instance
+      redirect_to admin_instances_path, notice: I18n.t('admin.instances.destroyed_msg', domain: @instance.domain)
+    end
+
+    def clear_delivery_errors
+      authorize :delivery, :clear_delivery_errors?
+      @instance.delivery_failure_tracker.clear_failures!
+      redirect_to admin_instance_path(@instance.domain)
+    end
+
+    def restart_delivery
+      authorize :delivery, :restart_delivery?
+
+      if @instance.unavailable?
+        @instance.delivery_failure_tracker.track_success!
+        log_action :destroy, @instance.unavailable_domain
+      end
+
+      redirect_to admin_instance_path(@instance.domain)
+    end
+
+    def stop_delivery
+      authorize :delivery, :stop_delivery?
+      unavailable_domain = UnavailableDomain.create!(domain: @instance.domain)
+      log_action :create, unavailable_domain
+      redirect_to admin_instance_path(@instance.domain)
     end
 
     private
 
-    def set_domain_block
-      @domain_block = DomainBlock.rule_for(params[:id])
-    end
-
-    def set_domain_allow
-      @domain_allow = DomainAllow.rule_for(params[:id])
-    end
-
     def set_instance
-      resource   = Account.by_domain_accounts.find_by(domain: params[:id])
-      resource ||= @domain_block
-      resource ||= @domain_allow
+      @instance = Instance.find(params[:id])
+    end
 
-      if resource
-        @instance = Instance.new(resource)
-      else
-        not_found
+    def set_instances
+      @instances = filtered_instances.page(params[:page])
+    end
+
+    def preload_delivery_failures!
+      warning_domains_map = DeliveryFailureTracker.warning_domains_map
+
+      @instances.each do |instance|
+        instance.failure_days = warning_domains_map[instance.domain]
       end
     end
 
     def filtered_instances
       InstanceFilter.new(whitelist_mode? ? { allowed: true } : filter_params).results
-    end
-
-    def paginated_instances
-      filtered_instances.page(params[:page])
-    end
-
-    helper_method :paginated_instances
-
-    def ordered_instances
-      paginated_instances.map { |resource| Instance.new(resource) }
     end
 
     def filter_params

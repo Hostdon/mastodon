@@ -21,7 +21,7 @@ module Admin::ActionLogsHelper
       record.shortcode
     when 'Report'
       link_to "##{record.id}", admin_report_path(record)
-    when 'DomainBlock', 'DomainAllow', 'EmailDomainBlock'
+    when 'DomainBlock', 'DomainAllow', 'EmailDomainBlock', 'UnavailableDomain'
       link_to record.domain, "https://#{record.domain}"
     when 'Status'
       link_to record.account.acct, ActivityPub::TagManager.instance.url_for(record)
@@ -29,14 +29,22 @@ module Admin::ActionLogsHelper
       link_to record.target_account.acct, admin_account_path(record.target_account_id)
     when 'Announcement'
       link_to truncate(record.text), edit_admin_announcement_path(record.id)
+    when 'IpBlock'
+      "#{record.ip}/#{record.ip.prefix} (#{I18n.t("simple_form.labels.ip_block.severities.#{record.severity}")})"
+    when 'Instance'
+      record.domain
+    when 'Appeal'
+      link_to record.account.acct, disputes_strike_path(record.strike)
     end
   end
 
   def log_target_from_history(type, attributes)
     case type
+    when 'User'
+      attributes['username']
     when 'CustomEmoji'
       attributes['shortcode']
-    when 'DomainBlock', 'DomainAllow', 'EmailDomainBlock'
+    when 'DomainBlock', 'DomainAllow', 'EmailDomainBlock', 'UnavailableDomain'
       link_to attributes['domain'], "https://#{attributes['domain']}"
     when 'Status'
       tmp_status = Status.new(attributes.except('reblogs_count', 'favourites_count'))
@@ -48,6 +56,10 @@ module Admin::ActionLogsHelper
       end
     when 'Announcement'
       truncate(attributes['text'].is_a?(Array) ? attributes['text'].last : attributes['text'])
+    when 'IpBlock'
+      "#{attributes['ip']}/#{attributes['ip'].prefix} (#{I18n.t("simple_form.labels.ip_block.severities.#{attributes['severity']}")})"
+    when 'Instance'
+      attributes['domain']
     end
   end
 end

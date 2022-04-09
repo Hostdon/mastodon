@@ -1,9 +1,6 @@
 # frozen_string_literal: true
 
 class Settings::ProfilesController < Settings::BaseController
-  layout 'admin'
-
-  before_action :authenticate_user!
   before_action :set_account
 
   def show
@@ -23,7 +20,7 @@ class Settings::ProfilesController < Settings::BaseController
   private
 
   def account_params
-    params.require(:account).permit(:display_name, :note, :avatar, :header, :locked, :bot, :discoverable, fields_attributes: [:name, :value])
+    params.require(:account).permit(:display_name, :note, :avatar, :header, :locked, :bot, :discoverable, :hide_collections, fields_attributes: [:name, :value])
   end
 
   def set_account

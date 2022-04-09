@@ -47,6 +47,7 @@ module Mastodon
 
     option :start_after
     option :prefix
+    option :fix_permissions, type: :boolean, default: false
     option :dry_run, type: :boolean, default: false
     desc 'remove-orphans', 'Scan storage and check for files that do not belong to existing media attachments'
     long_desc <<~LONG_DESC
@@ -66,6 +67,7 @@ module Mastodon
       when :s3
         paperclip_instance = MediaAttachment.new.file
         s3_interface       = paperclip_instance.s3_interface
+        s3_permissions     = Paperclip::Attachment.default_options[:s3_permissions]
         bucket             = s3_interface.bucket(Paperclip::Attachment.default_options[:s3_credentials][:bucket])
         last_key           = options[:start_after]
 
@@ -86,6 +88,8 @@ module Mastodon
           record_map = preload_records_from_mixed_objects(objects)
 
           objects.each do |object|
+            object.acl.put(acl: s3_permissions) if options[:fix_permissions] && !options[:dry_run]
+
             path_segments = object.key.split('/')
             path_segments.delete('cache')
             path_segments.delete(ENV.fetch('MEDIA_NAMESPACE'))
@@ -226,6 +230,7 @@ module Mastodon
 
       processed, aggregate = parallelize_with_progress(scope) do |media_attachment|
         next if media_attachment.remote_url.blank? || (!options[:force] && media_attachment.file_file_name.present?)
+        next if DomainBlock.reject_media?(media_attachment.account.domain)
 
         unless options[:dry_run]
           media_attachment.reset_file!
@@ -322,7 +327,7 @@ module Mastodon
       end
 
       preload_map.each_with_object({}) do |(model_name, record_ids), model_map|
-        model_map[model_name] = model_name.constantize.where(id: record_ids).each_with_object({}) { |record, record_map| record_map[record.id] = record }
+        model_map[model_name] = model_name.constantize.where(id: record_ids).index_by(&:id)
       end
     end
   end

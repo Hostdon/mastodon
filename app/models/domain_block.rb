@@ -12,10 +12,12 @@
 #  reject_reports  :boolean          default(FALSE), not null
 #  private_comment :text
 #  public_comment  :text
+#  obfuscate       :boolean          default(FALSE), not null
 #
 
 class DomainBlock < ApplicationRecord
   include DomainNormalizable
+  include DomainMaterializable
 
   enum severity: [:silence, :suspend, :noop]
 
@@ -27,6 +29,14 @@ class DomainBlock < ApplicationRecord
   scope :matches_domain, ->(value) { where(arel_table[:domain].matches("%#{value}%")) }
   scope :with_user_facing_limitations, -> { where(severity: [:silence, :suspend]).or(where(reject_media: true)) }
   scope :by_severity, -> { order(Arel.sql('(CASE severity WHEN 0 THEN 1 WHEN 1 THEN 2 WHEN 2 THEN 0 END), reject_media, domain')) }
+
+  def policies
+    if suspend?
+      [:suspend]
+    else
+      [severity.to_sym, reject_media? ? :reject_media : nil, reject_reports? ? :reject_reports : nil].reject { |policy| policy == :noop || policy.nil? }
+    end
+  end
 
   class << self
     def suspend?(domain)
@@ -71,5 +81,24 @@ class DomainBlock < ApplicationRecord
   def affected_accounts_count
     scope = suspend? ? accounts.where(suspended_at: created_at) : accounts.where(silenced_at: created_at)
     scope.count
+  end
+
+  def public_domain
+    return domain unless obfuscate?
+
+    length        = domain.size
+    visible_ratio = length / 4
+
+    domain.chars.map.with_index do |chr, i|
+      if i > visible_ratio && i < length - visible_ratio && chr != '.'
+        '*'
+      else
+        chr
+      end
+    end.join
+  end
+
+  def domain_digest
+    Digest::SHA256.hexdigest(domain)
   end
 end

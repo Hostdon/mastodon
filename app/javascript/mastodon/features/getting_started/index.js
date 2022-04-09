@@ -7,10 +7,10 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import ImmutablePureComponent from 'react-immutable-pure-component';
-import { me, profile_directory, showTrends } from '../../initial_state';
+import { me, showTrends } from '../../initial_state';
 import { fetchFollowRequests } from 'mastodon/actions/accounts';
 import { List as ImmutableList } from 'immutable';
-import NavigationBar from '../compose/components/navigation_bar';
+import NavigationContainer from '../compose/containers/navigation_container';
 import Icon from 'mastodon/components/icon';
 import LinkFooter from 'mastodon/features/ui/components/link_footer';
 import TrendsContainer from './containers/trends_container';
@@ -21,6 +21,7 @@ const messages = defineMessages({
   public_timeline: { id: 'navigation_bar.public_timeline', defaultMessage: 'Federated timeline' },
   settings_subheading: { id: 'column_subheading.settings', defaultMessage: 'Settings' },
   community_timeline: { id: 'navigation_bar.community_timeline', defaultMessage: 'Local timeline' },
+  explore: { id: 'navigation_bar.explore', defaultMessage: 'Explore' },
   direct: { id: 'navigation_bar.direct', defaultMessage: 'Direct messages' },
   bookmarks: { id: 'navigation_bar.bookmarks', defaultMessage: 'Bookmarks' },
   preferences: { id: 'navigation_bar.preferences', defaultMessage: 'Preferences' },
@@ -35,11 +36,11 @@ const messages = defineMessages({
   personal: { id: 'navigation_bar.personal', defaultMessage: 'Personal' },
   security: { id: 'navigation_bar.security', defaultMessage: 'Security' },
   menu: { id: 'getting_started.heading', defaultMessage: 'Getting started' },
-  profile_directory: { id: 'getting_started.directory', defaultMessage: 'Profile directory' },
 });
 
 const mapStateToProps = state => ({
   myAccount: state.getIn(['accounts', me]),
+  columns: state.getIn(['settings', 'columns']),
   unreadFollowRequests: state.getIn(['user_lists', 'follow_requests', 'items'], ImmutableList()).size,
 });
 
@@ -81,7 +82,7 @@ class GettingStarted extends ImmutablePureComponent {
     const { fetchFollowRequests, multiColumn } = this.props;
 
     if (!multiColumn && window.innerWidth >= NAVIGATION_PANEL_BREAKPOINT) {
-      this.context.router.history.replace('/timelines/home');
+      this.context.router.history.replace('/home');
       return;
     }
 
@@ -89,60 +90,63 @@ class GettingStarted extends ImmutablePureComponent {
   }
 
   render () {
-    const { intl, myAccount, multiColumn, unreadFollowRequests } = this.props;
+    const { intl, myAccount, columns, multiColumn, unreadFollowRequests } = this.props;
 
     const navItems = [];
-    let i = 1;
     let height = (multiColumn) ? 0 : 60;
 
     if (multiColumn) {
       navItems.push(
-        <ColumnSubheading key={i++} text={intl.formatMessage(messages.discover)} />,
-        <ColumnLink key={i++} icon='users' text={intl.formatMessage(messages.community_timeline)} to='/timelines/public/local' />,
-        <ColumnLink key={i++} icon='globe' text={intl.formatMessage(messages.public_timeline)} to='/timelines/public' />,
+        <ColumnSubheading key='header-discover' text={intl.formatMessage(messages.discover)} />,
+      );
+      height += 34;
+    }
+
+    navItems.push(
+      <ColumnLink key='explore' icon='hashtag' text={intl.formatMessage(messages.explore)} to='/explore' />,
+    );
+    height += 48;
+
+    if (multiColumn) {
+      navItems.push(
+        <ColumnLink key='community_timeline' icon='users' text={intl.formatMessage(messages.community_timeline)} to='/public/local' />,
+        <ColumnLink key='public_timeline' icon='globe' text={intl.formatMessage(messages.public_timeline)} to='/public' />,
       );
 
-      height += 34 + 48*2;
-
-      if (profile_directory) {
-        navItems.push(
-          <ColumnLink key={i++} icon='address-book' text={intl.formatMessage(messages.profile_directory)} to='/directory' />,
-        );
-
-        height += 48;
-      }
+      height += 48*2;
 
       navItems.push(
-        <ColumnSubheading key={i++} text={intl.formatMessage(messages.personal)} />,
+        <ColumnSubheading key='header-personal' text={intl.formatMessage(messages.personal)} />,
       );
 
       height += 34;
-    } else if (profile_directory) {
-      navItems.push(
-        <ColumnLink key={i++} icon='address-book' text={intl.formatMessage(messages.profile_directory)} to='/directory' />,
-      );
+    }
 
+    if (multiColumn && !columns.find(item => item.get('id') === 'HOME')) {
+      navItems.push(
+        <ColumnLink key='home' icon='home' text={intl.formatMessage(messages.home_timeline)} to='/home' />,
+      );
       height += 48;
     }
 
     navItems.push(
-      <ColumnLink key={i++} icon='envelope' text={intl.formatMessage(messages.direct)} to='/timelines/direct' />,
-      <ColumnLink key={i++} icon='bookmark' text={intl.formatMessage(messages.bookmarks)} to='/bookmarks' />,
-      <ColumnLink key={i++} icon='star' text={intl.formatMessage(messages.favourites)} to='/favourites' />,
-      <ColumnLink key={i++} icon='list-ul' text={intl.formatMessage(messages.lists)} to='/lists' />,
+      <ColumnLink key='direct' icon='envelope' text={intl.formatMessage(messages.direct)} to='/conversations' />,
+      <ColumnLink key='bookmark' icon='bookmark' text={intl.formatMessage(messages.bookmarks)} to='/bookmarks' />,
+      <ColumnLink key='favourites' icon='star' text={intl.formatMessage(messages.favourites)} to='/favourites' />,
+      <ColumnLink key='lists' icon='list-ul' text={intl.formatMessage(messages.lists)} to='/lists' />,
     );
 
     height += 48*4;
 
     if (myAccount.get('locked') || unreadFollowRequests > 0) {
-      navItems.push(<ColumnLink key={i++} icon='user-plus' text={intl.formatMessage(messages.follow_requests)} badge={badgeDisplay(unreadFollowRequests, 40)} to='/follow_requests' />);
+      navItems.push(<ColumnLink key='follow_requests' icon='user-plus' text={intl.formatMessage(messages.follow_requests)} badge={badgeDisplay(unreadFollowRequests, 40)} to='/follow_requests' />);
       height += 48;
     }
 
     if (!multiColumn) {
       navItems.push(
-        <ColumnSubheading key={i++} text={intl.formatMessage(messages.settings_subheading)} />,
-        <ColumnLink key={i++} icon='gears' text={intl.formatMessage(messages.preferences)} href='/settings/preferences' />,
+        <ColumnSubheading key='header-settings' text={intl.formatMessage(messages.settings_subheading)} />,
+        <ColumnLink key='preferences' icon='gears' text={intl.formatMessage(messages.preferences)} href='/settings/preferences' />,
       );
 
       height += 34 + 48;
@@ -161,7 +165,7 @@ class GettingStarted extends ImmutablePureComponent {
 
         <div className='getting-started'>
           <div className='getting-started__wrapper' style={{ height }}>
-            {!multiColumn && <NavigationBar account={myAccount} />}
+            {!multiColumn && <NavigationContainer />}
             {navItems}
           </div>
 
