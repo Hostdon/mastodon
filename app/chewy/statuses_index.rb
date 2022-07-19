@@ -3,7 +3,7 @@
 class StatusesIndex < Chewy::Index
   include FormattingHelper
 
-  settings index: { refresh_interval: '15m' }, analysis: {
+  settings index: { refresh_interval: '30s' }, analysis: {
     tokenizer: {
       kuromoji_user_dict: {
         type: 'kuromoji_tokenizer',
@@ -23,6 +23,8 @@ class StatusesIndex < Chewy::Index
     },
   }
 
+  # We do not use delete_if option here because it would call a method that we
+  # expect to be called with crutches without crutches, causing n+1 queries
   index_scope ::Status.unscoped.kept.without_reblogs.includes(:media_attachments, :preloadable_poll)
 
   crutch :mentions do |collection|
