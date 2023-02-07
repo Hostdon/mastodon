@@ -11,7 +11,8 @@ class REST::InstanceSerializer < ActiveModel::Serializer
 
   attributes :domain, :title, :version, :source_url, :description,
              :usage, :thumbnail, :languages, :configuration,
-             :registrations
+             :registrations,
+             :feature_quote
 
   has_one :contact, serializer: ContactSerializer
   has_many :rules, serializer: REST::RuleSerializer
@@ -87,6 +88,10 @@ class REST::InstanceSerializer < ActiveModel::Serializer
     }
   end
 
+  def feature_quote
+    true
+  end
+
   private
 
   def registrations_enabled?
@@ -96,8 +101,6 @@ class REST::InstanceSerializer < ActiveModel::Serializer
   def registrations_message
     if Setting.closed_registrations_message.present?
       markdown.render(Setting.closed_registrations_message)
-    else
-      nil
     end
   end
 

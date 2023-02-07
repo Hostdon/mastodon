@@ -21,6 +21,7 @@ class TextFormatter
   # @option options [Boolean] :with_domains
   # @option options [Boolean] :with_rel_me
   # @option options [Array<Account>] :preloaded_accounts
+  # @option options [String] :quote_uri
   def initialize(text, options = {})
     @text    = text
     @options = DEFAULT_OPTIONS.merge(options)
@@ -44,11 +45,17 @@ class TextFormatter
     end
 
     html = simple_format(html, {}, sanitize: false).delete("\n") if multiline?
+    html = quotify(html, quote_uri) if quote_uri?
 
     html.html_safe # rubocop:disable Rails/OutputSafety
   end
 
   private
+
+  def quotify(html, quote_uri)
+    link = link_to_url(quote_uri)
+    html.sub(/(<[^>]+>)\z/, "<span class=\"quote-inline\"><br/>QT: #{link}</span>\\1")
+  end
 
   def rewrite
     entities.sort_by! do |entity|
@@ -151,6 +158,12 @@ class TextFormatter
   def preloaded_accounts
     options[:preloaded_accounts]
   end
+
+  def quote_uri
+    options[:quote_uri]
+  end
+
+  alias quote_uri? quote_uri
 
   def preloaded_accounts?
     preloaded_accounts.present?
