@@ -91,7 +91,7 @@ class DetailedStatus extends ImmutablePureComponent {
     }
 
     e.stopPropagation();
-  }
+  };
 
   handleQuoteAccountClick = (e) => {
     if (e.button === 0 && !(e.ctrlKey || e.metaKey) && this.context.router) {
@@ -104,7 +104,7 @@ class DetailedStatus extends ImmutablePureComponent {
 
   handleOpenVideo = (options) => {
     this.props.onOpenVideo(this.props.status.getIn(['media_attachments', 0]), options);
-  }
+  };
 
   handleOpenVideoQuote = (options) => {
     this.props.onOpenVideoQuote(this.props.status.getIn(['quote', 'media_attachments', 0]), options);
@@ -112,7 +112,7 @@ class DetailedStatus extends ImmutablePureComponent {
 
   handleExpandedToggle = () => {
     this.props.onToggleHidden(this.props.status);
-  }
+  };
 
   _measureHeight (heightJustChanged) {
     if (this.props.measureHeight && this.node) {
@@ -127,7 +127,7 @@ class DetailedStatus extends ImmutablePureComponent {
   setRef = c => {
     this.node = c;
     this._measureHeight();
-  }
+  };
 
   componentDidUpdate (prevProps, prevState) {
     this._measureHeight(prevState.height !== this.state.height);
@@ -145,12 +145,12 @@ class DetailedStatus extends ImmutablePureComponent {
     }
 
     window.open(href, 'mastodon-intent', 'width=445,height=600,resizable=no,menubar=no,status=no,scrollbars=yes');
-  }
+  };
 
   handleTranslate = () => {
     const { onTranslate, status } = this.props;
     onTranslate(status);
-  }
+  };
 
   handleExpandedQuoteToggle = () => {
     this.props.onToggleHidden(this.props.status.get('quote'));

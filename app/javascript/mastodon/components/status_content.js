@@ -131,7 +131,7 @@ class StatusContent extends React.PureComponent {
       let emoji = emojis[i];
       emoji.src = emoji.getAttribute('data-original');
     }
-  }
+  };
 
   handleMouseLeave = ({ currentTarget }) => {
     if (autoPlayGif) {
@@ -144,7 +144,7 @@ class StatusContent extends React.PureComponent {
       let emoji = emojis[i];
       emoji.src = emoji.getAttribute('data-static');
     }
-  }
+  };
 
   componentDidMount () {
     this._updateStatusLinks();
@@ -159,7 +159,7 @@ class StatusContent extends React.PureComponent {
       e.preventDefault();
       this.context.router.history.push(`/@${mention.get('acct')}`);
     }
-  }
+  };
 
   onHashtagClick = (hashtag, e) => {
     hashtag = hashtag.replace(/^#/, '');
@@ -168,11 +168,11 @@ class StatusContent extends React.PureComponent {
       e.preventDefault();
       this.context.router.history.push(`/tags/${hashtag}`);
     }
-  }
+  };
 
   handleMouseDown = (e) => {
     this.startXY = [e.clientX, e.clientY];
-  }
+  };
 
   handleMouseUp = (e) => {
     if (!this.startXY) {
@@ -195,7 +195,7 @@ class StatusContent extends React.PureComponent {
     }
 
     this.startXY = null;
-  }
+  };
 
   handleSpoilerClick = (e) => {
     e.preventDefault();
@@ -206,15 +206,15 @@ class StatusContent extends React.PureComponent {
     } else {
       this.setState({ hidden: !this.state.hidden });
     }
-  }
+  };
 
   handleTranslate = () => {
     this.props.onTranslate();
-  }
+  };
 
   setRef = (c) => {
     this.node = c;
-  }
+  };
 
   render () {
     const { status, quote, intl } = this.props;

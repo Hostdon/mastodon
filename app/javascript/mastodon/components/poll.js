@@ -98,7 +98,7 @@ class Poll extends ImmutablePureComponent {
       tmp[value] = true;
       this.setState({ selected: tmp });
     }
-  }
+  };
 
   handleOptionChange = ({ target: { value } }) => {
     this._toggleOption(value);
@@ -110,7 +110,7 @@ class Poll extends ImmutablePureComponent {
       e.stopPropagation();
       e.preventDefault();
     }
-  }
+  };
 
   handleVote = () => {
     if (this.props.disabled) {

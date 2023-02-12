@@ -28,14 +28,14 @@ export function fetchFavouritedStatuses() {
       dispatch(fetchFavouritedStatusesFail(error));
     });
   };
-};
+}
 
 export function fetchFavouritedStatusesRequest() {
   return {
     type: FAVOURITED_STATUSES_FETCH_REQUEST,
     skipLoading: true,
   };
-};
+}
 
 export function fetchFavouritedStatusesSuccess(statuses, next) {
   return {
@@ -44,7 +44,7 @@ export function fetchFavouritedStatusesSuccess(statuses, next) {
     next,
     skipLoading: true,
   };
-};
+}
 
 export function fetchFavouritedStatusesFail(error) {
   return {
@@ -52,7 +52,7 @@ export function fetchFavouritedStatusesFail(error) {
     error,
     skipLoading: true,
   };
-};
+}
 
 export function expandFavouritedStatuses() {
   return (dispatch, getState) => {
@@ -73,13 +73,13 @@ export function expandFavouritedStatuses() {
       dispatch(expandFavouritedStatusesFail(error));
     });
   };
-};
+}
 
 export function expandFavouritedStatusesRequest() {
   return {
     type: FAVOURITED_STATUSES_EXPAND_REQUEST,
   };
-};
+}
 
 export function expandFavouritedStatusesSuccess(statuses, next) {
   return {
@@ -87,11 +87,11 @@ export function expandFavouritedStatusesSuccess(statuses, next) {
     statuses,
     next,
   };
-};
+}
 
 export function expandFavouritedStatusesFail(error) {
   return {
     type: FAVOURITED_STATUSES_EXPAND_FAIL,
     error,
   };
-};
+}

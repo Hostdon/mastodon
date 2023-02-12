@@ -226,6 +226,10 @@ class Status extends ImmutablePureComponent {
       this.props.dispatch(fetchStatus(nextProps.params.statusId));
     }
 
+    if (nextProps.params.statusId && nextProps.ancestorsIds.size > this.props.ancestorsIds.size) {
+      this._scrolledIntoView = false;
+    }
+
     if (nextProps.status && nextProps.status.get('id') !== this.state.loadedStatusId) {
       this.setState({ showMedia: defaultMediaVisibility(nextProps.status), loadedStatusId: nextProps.status.get('id'),
         showQuoteMedia: defaultMediaVisibility(nextProps.status.get('quote', null)) });
@@ -234,7 +238,7 @@ class Status extends ImmutablePureComponent {
 
   handleToggleMediaVisibility = () => {
     this.setState({ showMedia: !this.state.showMedia });
-  }
+  };
 
   handleToggleQuoteMediaVisibility = () => {
     this.setState({ showQuoteMedia: !this.state.showQuoteMedia });
@@ -257,7 +261,7 @@ class Status extends ImmutablePureComponent {
         url: status.get('url'),
       }));
     }
-  }
+  };
 
   handlePin = (status) => {
     if (status.get('pinned')) {
@@ -265,7 +269,7 @@ class Status extends ImmutablePureComponent {
     } else {
       this.props.dispatch(pin(status));
     }
-  }
+  };
 
   handleReplyClick = (status) => {
     const { askReplyConfirmation, dispatch, intl } = this.props;
@@ -288,11 +292,11 @@ class Status extends ImmutablePureComponent {
         url: status.get('url'),
       }));
     }
-  }
+  };
 
   handleModalReblog = (status, privacy) => {
     this.props.dispatch(reblog(status, privacy));
-  }
+  };
 
   handleReblogClick = (status, e) => {
     const { dispatch } = this.props;
@@ -315,7 +319,7 @@ class Status extends ImmutablePureComponent {
         url: status.get('url'),
       }));
     }
-  }
+  };
 
   handleBookmarkClick = (status) => {
     if (status.get('bookmarked')) {
@@ -323,7 +327,7 @@ class Status extends ImmutablePureComponent {
     } else {
       this.props.dispatch(bookmark(status));
     }
-  }
+  };
 
   handleQuoteClick = (status) => {
     let { askReplyConfirmation, dispatch, intl } = this.props;
@@ -350,27 +354,27 @@ class Status extends ImmutablePureComponent {
         onConfirm: () => dispatch(deleteStatus(status.get('id'), history, withRedraft)),
       }));
     }
-  }
+  };
 
   handleEditClick = (status, history) => {
     this.props.dispatch(editStatus(status.get('id'), history));
-  }
+  };
 
   handleDirectClick = (account, router) => {
     this.props.dispatch(directCompose(account, router));
-  }
+  };
 
   handleMentionClick = (account, router) => {
     this.props.dispatch(mentionCompose(account, router));
-  }
+  };
 
   handleOpenMedia = (media, index) => {
     this.props.dispatch(openModal('MEDIA', { statusId: this.props.status.get('id'), media, index }));
-  }
+  };
 
   handleOpenVideo = (media, options) => {
     this.props.dispatch(openModal('VIDEO', { statusId: this.props.status.get('id'), media, options }));
-  }
+  };
 
   handleOpenMediaQuote = (media, index) => {
     this.props.dispatch(openModal('MEDIA', { statusId: this.props.status.getIn(['quote', 'id']), media, index }));
@@ -392,11 +396,11 @@ class Status extends ImmutablePureComponent {
         this.handleOpenMedia(status.get('media_attachments'), 0);
       }
     }
-  }
+  };
 
   handleMuteClick = (account) => {
     this.props.dispatch(initMuteModal(account));
-  }
+  };
 
   handleConversationMuteClick = (status) => {
     if (status.get('muted')) {
@@ -404,7 +408,7 @@ class Status extends ImmutablePureComponent {
     } else {
       this.props.dispatch(muteStatus(status.get('id')));
     }
-  }
+  };
 
   handleToggleHidden = (status) => {
     if (status.get('hidden')) {
@@ -412,7 +416,7 @@ class Status extends ImmutablePureComponent {
     } else {
       this.props.dispatch(hideStatus(status.get('id')));
     }
-  }
+  };
 
   handleToggleAll = () => {
     const { status, ancestorsIds, descendantsIds } = this.props;
@@ -423,7 +427,7 @@ class Status extends ImmutablePureComponent {
     } else {
       this.props.dispatch(hideStatus(statusIds));
     }
-  }
+  };
 
   handleTranslate = status => {
     const { dispatch } = this.props;
@@ -433,29 +437,29 @@ class Status extends ImmutablePureComponent {
     } else {
       dispatch(translateStatus(status.get('id')));
     }
-  }
+  };
 
   handleBlockClick = (status) => {
     const { dispatch } = this.props;
     const account = status.get('account');
     dispatch(initBlockModal(account));
-  }
+  };
 
   handleReport = (status) => {
     this.props.dispatch(initReport(status.get('account'), status));
-  }
+  };
 
   handleEmbed = (status) => {
     this.props.dispatch(openModal('EMBED', { url: status.get('url') }));
-  }
+  };
 
   handleUnmuteClick = account => {
     this.props.dispatch(unmuteAccount(account.get('id')));
-  }
+  };
 
   handleUnblockClick = account => {
     this.props.dispatch(unblockAccount(account.get('id')));
-  }
+  };
 
   handleBlockDomainClick = domain => {
     this.props.dispatch(openModal('CONFIRM', {
@@ -463,50 +467,50 @@ class Status extends ImmutablePureComponent {
       confirm: this.props.intl.formatMessage(messages.blockDomainConfirm),
       onConfirm: () => this.props.dispatch(blockDomain(domain)),
     }));
-  }
+  };
 
   handleUnblockDomainClick = domain => {
     this.props.dispatch(unblockDomain(domain));
-  }
+  };
 
 
   handleHotkeyMoveUp = () => {
     this.handleMoveUp(this.props.status.get('id'));
-  }
+  };
 
   handleHotkeyMoveDown = () => {
     this.handleMoveDown(this.props.status.get('id'));
-  }
+  };
 
   handleHotkeyReply = e => {
     e.preventDefault();
     this.handleReplyClick(this.props.status);
-  }
+  };
 
   handleHotkeyFavourite = () => {
     this.handleFavouriteClick(this.props.status);
-  }
+  };
 
   handleHotkeyBoost = () => {
     this.handleReblogClick(this.props.status);
-  }
+  };
 
   handleHotkeyMention = e => {
     e.preventDefault();
     this.handleMentionClick(this.props.status.get('account'));
-  }
+  };
 
   handleHotkeyOpenProfile = () => {
     this.context.router.history.push(`/@${this.props.status.getIn(['account', 'acct'])}`);
-  }
+  };
 
   handleHotkeyToggleHidden = () => {
     this.handleToggleHidden(this.props.status);
-  }
+  };
 
   handleHotkeyToggleSensitive = () => {
     this.handleToggleMediaVisibility();
-  }
+  };
 
   handleMoveUp = id => {
     const { status, ancestorsIds, descendantsIds } = this.props;
@@ -523,7 +527,7 @@ class Status extends ImmutablePureComponent {
         this._selectChild(index - 1, true);
       }
     }
-  }
+  };
 
   handleMoveDown = id => {
     const { status, ancestorsIds, descendantsIds } = this.props;
@@ -540,7 +544,7 @@ class Status extends ImmutablePureComponent {
         this._selectChild(index + 1, false);
       }
     }
-  }
+  };
 
   _selectChild (index, align_top) {
     const container = this.node;
@@ -570,7 +574,7 @@ class Status extends ImmutablePureComponent {
 
   setRef = c => {
     this.node = c;
-  }
+  };
 
   componentDidUpdate () {
     if (this._scrolledIntoView) {
@@ -595,7 +599,7 @@ class Status extends ImmutablePureComponent {
 
   onFullScreenChange = () => {
     this.setState({ fullscreen: isFullscreen() });
-  }
+  };
 
   render () {
     let ancestors, descendants;
