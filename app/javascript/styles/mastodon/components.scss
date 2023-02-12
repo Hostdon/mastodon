@@ -1145,11 +1145,6 @@ body > [data-popper-placement] {
   color: $ui-base-lighter-color;
 }
 
-.status__prepend-icon-wrapper {
-  left: -26px;
-  position: absolute;
-}
-
 .focusable {
   &:focus {
     outline: 0;
