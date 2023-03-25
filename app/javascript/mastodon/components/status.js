@@ -18,6 +18,7 @@ import classNames from 'classnames';
 import Icon from 'mastodon/components/icon';
 import { displayMedia } from '../initial_state';
 import PictureInPicturePlaceholder from 'mastodon/components/picture_in_picture_placeholder';
+import StatusReactionBar from '../containers/status_reaction_bar_container';
 
 // We use the component (and not the container) since we do not want
 // to use the progress bar to show download progress
@@ -89,6 +90,7 @@ class Status extends ImmutablePureComponent {
 
   static contextTypes = {
     router: PropTypes.object,
+    identity: PropTypes.object,
   };
 
   static propTypes = {
@@ -98,6 +100,7 @@ class Status extends ImmutablePureComponent {
     onClick: PropTypes.func,
     onReply: PropTypes.func,
     onFavourite: PropTypes.func,
+    onReaction: PropTypes.func,
     onReblog: PropTypes.func,
     onDelete: PropTypes.func,
     onDirect: PropTypes.func,
@@ -378,6 +381,7 @@ class Status extends ImmutablePureComponent {
     let media = null;
     let statusAvatar, prepend, rebloggedByText;
 
+    const { signedIn } = this.context.identity;
     const { intl, hidden, featured, unread, showThread, scrollKey, pictureInPicture, contextType, quote_muted } = this.props;
 
     let { status, account, ...other } = this.props;
@@ -733,6 +737,7 @@ class Status extends ImmutablePureComponent {
             {quote}
             {media}
 
+            <StatusReactionBar status={status} signedIn={signedIn} />
             <StatusActionBar scrollKey={scrollKey} status={status} account={account} onFilter={matchedFilters ? this.handleFilterClick : null} {...other} />
           </div>
         </div>

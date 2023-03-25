@@ -9,6 +9,7 @@ import ImmutablePureComponent from 'react-immutable-pure-component';
 import { me, showQuoteButton } from '../initial_state';
 import classNames from 'classnames';
 import { PERMISSION_MANAGE_USERS, PERMISSION_MANAGE_FEDERATION } from 'mastodon/permissions';
+import ReactionDropdownMenuContainer from '../containers/reaction_dropdown_menu_container';
 
 const messages = defineMessages({
   delete: { id: 'status.delete', defaultMessage: 'Delete' },
@@ -29,6 +30,7 @@ const messages = defineMessages({
   cannot_reblog: { id: 'status.cannot_reblog', defaultMessage: 'This post cannot be boosted' },
   quote: { id: 'status.quote', defaultMessage: 'Quote' },
   favourite: { id: 'status.favourite', defaultMessage: 'Favourite' },
+  reaction: { id: 'status.reaction', defaultMessage: 'Reaction' },
   bookmark: { id: 'status.bookmark', defaultMessage: 'Bookmark' },
   removeBookmark: { id: 'status.remove_bookmark', defaultMessage: 'Remove bookmark' },
   open: { id: 'status.open', defaultMessage: 'Expand this status' },
@@ -69,6 +71,7 @@ class StatusActionBar extends ImmutablePureComponent {
     relationship: ImmutablePropTypes.map,
     onReply: PropTypes.func,
     onFavourite: PropTypes.func,
+    onReaction: PropTypes.func,
     onReblog: PropTypes.func,
     onQuote: PropTypes.func,
     onDelete: PropTypes.func,
@@ -375,6 +378,18 @@ class StatusActionBar extends ImmutablePureComponent {
         {shareButton}
 
         {filterButton}
+
+        <div className='status__action-bar__dropdown'>
+          <ReactionDropdownMenuContainer
+            disabled={anonymousAccess}
+            status={status}
+            onReaction={this.props.onReaction}
+            icon='smile-o'
+            size={18}
+            direction='right'
+            title={intl.formatMessage(messages.reaction)}
+          />
+        </div>
 
         <div className='status__action-bar__dropdown'>
           <DropdownMenuContainer
