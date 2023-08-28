@@ -110,9 +110,7 @@ class ActivityPub::Activity::Create < ActivityPub::Activity
 
   def process_status_params
     @status_parser = ActivityPub::Parser::StatusParser.new(@json, followers_collection: @account.followers_url)
-
-      poll: process_poll,
-      quote: quote,
+    
     @params = {
       uri: @status_parser.uri,
       url: @status_parser.url || @status_parser.uri,
