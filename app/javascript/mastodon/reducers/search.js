@@ -1,3 +1,11 @@
+import { Map as ImmutableMap, List as ImmutableList, OrderedSet as ImmutableOrderedSet, fromJS } from 'immutable';
+
+import {
+  COMPOSE_MENTION,
+  COMPOSE_REPLY,
+  COMPOSE_DIRECT,
+  COMPOSE_QUOTE
+} from '../actions/compose';
 import {
   SEARCH_CHANGE,
   SEARCH_CLEAR,
@@ -6,14 +14,9 @@ import {
   SEARCH_FETCH_SUCCESS,
   SEARCH_SHOW,
   SEARCH_EXPAND_SUCCESS,
+  SEARCH_RESULT_CLICK,
+  SEARCH_RESULT_FORGET,
 } from '../actions/search';
-import {
-  COMPOSE_MENTION,
-  COMPOSE_REPLY,
-  COMPOSE_DIRECT,
-  COMPOSE_QUOTE,
-} from '../actions/compose';
-import { Map as ImmutableMap, List as ImmutableList, fromJS } from 'immutable';
 
 const initialState = ImmutableMap({
   value: '',
@@ -22,6 +25,7 @@ const initialState = ImmutableMap({
   results: ImmutableMap(),
   isLoading: false,
   searchTerm: '',
+  recent: ImmutableOrderedSet(),
 });
 
 export default function search(state = initialState, action) {
@@ -63,6 +67,10 @@ export default function search(state = initialState, action) {
   case SEARCH_EXPAND_SUCCESS:
     const results = action.searchType === 'hashtags' ? fromJS(action.results.hashtags) : action.results[action.searchType].map(item => item.id);
     return state.updateIn(['results', action.searchType], list => list.concat(results));
+  case SEARCH_RESULT_CLICK:
+    return state.update('recent', set => set.add(fromJS(action.result)));
+  case SEARCH_RESULT_FORGET:
+    return state.update('recent', set => set.filterNot(result => result.get('q') === action.q));
   default:
     return state;
   }

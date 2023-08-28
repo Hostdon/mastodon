@@ -85,7 +85,7 @@ export function importFetchedStatuses(statuses) {
       }
 
       if (status.poll && status.poll.id) {
-        pushUnique(polls, normalizePoll(status.poll));
+        pushUnique(polls, normalizePoll(status.poll, getState().getIn(['polls', status.poll.id])));
       }
     }
 
@@ -99,7 +99,7 @@ export function importFetchedStatuses(statuses) {
 }
 
 export function importFetchedPoll(poll) {
-  return dispatch => {
-    dispatch(importPolls([normalizePoll(poll)]));
+  return (dispatch, getState) => {
+    dispatch(importPolls([normalizePoll(poll, getState().getIn(['polls', poll.id]))]));
   };
 }

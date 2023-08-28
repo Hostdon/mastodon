@@ -1,5 +1,6 @@
 import { fetchRelationships } from './accounts';
 import api, { getLinks } from '../api';
+
 import { importFetchedStatuses } from './importer';
 import { uniq } from '../utils/uniq';
 

@@ -122,6 +122,7 @@ ar:
         admin/accounts: إدارة الحسابات
         admin/all: جميع المهام الإدارية
         admin/reports: إدارة التقارير
+        all: وصول كامل إلى حساب ماستدون الخاص بك
         blocks: تم حجبها
         bookmarks: الفواصل المرجعية
         conversations: المحادثات
@@ -169,7 +170,6 @@ ar:
       read:accounts: معاينة معلومات الحساب
       read:blocks: رؤية الحسابات التي قمت بحجبها
       read:bookmarks: اطّلع على فواصلك المرجعية
-      read:favourites: رؤية مفضلاتك
       read:filters: رؤية عوامل التصفية الخاصة بك
       read:follows: رؤية متابِعيك
       read:lists: رؤية قوائمك
@@ -183,7 +183,6 @@ ar:
       write:blocks: حجب الحسابات و النطاقات
       write:bookmarks: الإحتفاظ بالمنشورات في الفواصل المرجعية
       write:conversations: كتم وحذف المحادثات
-      write:favourites: الإعجاب بمنشورات
       write:filters: إنشاء عوامل تصفية
       write:follows: متابَعة الأشخاص
       write:lists: إنشاء القوائم

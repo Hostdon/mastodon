@@ -7,13 +7,9 @@ class Api::V1::Accounts::StatusesController < Api::BaseController
   after_action :insert_pagination_headers, unless: -> { truthy_param?(:pinned) }
 
   def index
-    @statuses   = load_statuses
-    account_ids = @statuses.filter(&:quote?).map { |status| status.quote.account_id }.uniq
-
-    render json: @statuses,
-           each_serializer: REST::StatusSerializer,
-           relationships: StatusRelationshipsPresenter.new(@statuses, current_user&.account_id),
-           account_relationships: AccountRelationshipsPresenter.new(account_ids, current_user&.account_id)
+    cache_if_unauthenticated!
+    @statuses = load_statuses
+    render json: @statuses, each_serializer: REST::StatusSerializer, relationships: StatusRelationshipsPresenter.new(@statuses, current_user&.account_id)
   end
 
   private
@@ -44,15 +40,11 @@ class Api::V1::Accounts::StatusesController < Api::BaseController
   end
 
   def next_path
-    if records_continue?
-      api_v1_account_statuses_url pagination_params(max_id: pagination_max_id)
-    end
+    api_v1_account_statuses_url pagination_params(max_id: pagination_max_id) if records_continue?
   end
 
   def prev_path
-    unless @statuses.empty?
-      api_v1_account_statuses_url pagination_params(min_id: pagination_since_id)
-    end
+    api_v1_account_statuses_url pagination_params(min_id: pagination_since_id) unless @statuses.empty?
   end
 
   def records_continue?
