@@ -13,7 +13,11 @@ module Mastodon
     end
 
     def patch
-      7
+      0
+    end
+
+    def suffix
+      'hostdon'
     end
 
     def default_prerelease
