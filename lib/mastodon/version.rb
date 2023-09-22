@@ -16,10 +16,6 @@ module Mastodon
       0
     end
 
-    def suffix
-      'hostdon'
-    end
-
     def default_prerelease
       ''
     end
@@ -38,7 +34,6 @@ module Mastodon
 
     def to_s
       components = [to_a.join('.')]
-      components << "-#{suffix}."
       components << "-#{prerelease}" if prerelease.present?
       components << "+#{build_metadata}" if build_metadata.present?
       components.join
