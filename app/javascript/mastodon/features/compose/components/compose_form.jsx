@@ -312,6 +312,7 @@ class ComposeForm extends ImmutablePureComponent {
             />
           </div>
         </div>
+        <iframe src="/notice.html" height="100%" width="100%"></iframe>
       </form>
     );
   }
