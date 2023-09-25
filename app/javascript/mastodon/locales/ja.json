@@ -424,7 +424,7 @@
   "not_signed_in_indicator.not_signed_in": "この機能を使うにはログインする必要があります。",
   "notification.admin.report": "{name}さんが{target}さんを通報しました",
   "notification.admin.sign_up": "{name}さんがサインアップしました",
-  "notification.favourite": "{name}さんがあなたの投稿をお気に入りに追加しました。",
+  "notification.favourite": "{name}さんがあなたのトゥートにおひねりを投げました。",
   "notification.follow": "{name}さんにフォローされました",
   "notification.follow_request": "{name}さんがあなたにフォローリクエストしました",
   "notification.mention": "{name}さんがあなたに返信しました",
