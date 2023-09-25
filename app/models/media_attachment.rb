@@ -277,7 +277,7 @@ class MediaAttachment < ApplicationRecord
 
   after_commit :enqueue_processing, on: :create
   after_commit :reset_parent_cache, on: :update
-
+  after_post_process { set_file_extension(file) }
   after_post_process :set_meta
 
   class << self
@@ -308,6 +308,8 @@ class MediaAttachment < ApplicationRecord
     def file_processors(instance)
       if instance.file_content_type == 'image/gif'
         [:gif_transcoder, :blurhash_transcoder]
+      elsif instance.file_content_type == 'image/png'
+        [:png_converter, :lazy_thumbnail, :blurhash_transcoder, :type_corrector]
       elsif VIDEO_MIME_TYPES.include?(instance.file_content_type)
         [:transcoder, :blurhash_transcoder, :type_corrector]
       elsif AUDIO_MIME_TYPES.include?(instance.file_content_type)
