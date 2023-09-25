@@ -26,6 +26,7 @@ import ComposeFormContainer from './containers/compose_form_container';
 import NavigationContainer from './containers/navigation_container';
 import SearchContainer from './containers/search_container';
 import SearchResultsContainer from './containers/search_results_container';
+import Banners from './components/banners'; // CUSTOMIZE
 
 const messages = defineMessages({
   start: { id: 'getting_started.heading', defaultMessage: 'Getting started' },
@@ -147,7 +148,7 @@ class Compose extends PureComponent {
       <Column onFocus={this.onFocus}>
         <NavigationContainer onClose={this.onBlur} />
         <ComposeFormContainer />
-
+        <Banners /> {/* CUSTOMIZE */}
         <Helmet>
           <meta name='robots' content='noindex' />
         </Helmet>
