@@ -93,7 +93,6 @@ const messages = defineMessages({
   direct_short: { id: 'privacy.direct.short', defaultMessage: 'Mentioned people only' },
   edited: { id: 'status.edited', defaultMessage: 'Edited {date}' },
 });
-@connect(mapStateToProps)
 class Status extends ImmutablePureComponent {
 
   static contextTypes = {
