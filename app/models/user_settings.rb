@@ -8,6 +8,7 @@ class UserSettings
   include UserSettings::Glue
 
   setting :always_send_emails, default: false
+  setting :show_quote_button, default: true
   setting :aggregate_reblogs, default: true
   setting :theme, default: -> { ::Setting.theme }
   setting :noindex, default: -> { ::Setting.noindex }

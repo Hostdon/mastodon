@@ -55,10 +55,14 @@ const addAutoPlay = html => {
 
 export default class Card extends PureComponent {
 
+  static contextTypes = {
+    router: PropTypes.object,
+  };
   static propTypes = {
     card: ImmutablePropTypes.map,
     onOpenMedia: PropTypes.func.isRequired,
     sensitive: PropTypes.bool,
+    quote: PropTypes.bool,
   };
 
   state = {
@@ -118,7 +122,7 @@ export default class Card extends PureComponent {
   }
 
   render () {
-    const { card } = this.props;
+    const { card, quote } = this.props;
     const { embedded, revealed } = this.state;
 
     if (card === null) {
