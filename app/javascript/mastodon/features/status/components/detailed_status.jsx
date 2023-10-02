@@ -55,8 +55,6 @@ const mapStateToProps = (state, props) => {
   };
 };
 
-export default @connect(mapStateToProps)
-@injectIntl
 class DetailedStatus extends ImmutablePureComponent {
 
   static contextTypes = {
@@ -481,4 +479,4 @@ class DetailedStatus extends ImmutablePureComponent {
 
 }
 
-export default injectIntl(DetailedStatus);
+export default injectIntl(connect(mapStateToProps)(DetailedStatus));
