@@ -215,7 +215,7 @@ class Status extends ImmutablePureComponent {
       e.stopPropagation();
     }
 
-    this._openProfile(proper, qoute);
+    this._openProfile(proper, quote);
   };
 
   handleExpandedToggle = () => {
