@@ -58,6 +58,9 @@ class Poll extends ImmutablePureComponent {
 
   static getDerivedStateFromProps (props, state) {
     const { poll } = props;
+    if (!poll) {
+      return null;
+    }
     const expires_at = poll.get('expires_at');
     const expired = poll.get('expired') || expires_at !== null && (new Date(expires_at)).getTime() < Date.now();
     return (expired === state.expired) ? null : { expired };
@@ -78,7 +81,7 @@ class Poll extends ImmutablePureComponent {
   _setupTimer () {
     const { poll } = this.props;
     clearTimeout(this._timer);
-    if (!this.state.expired) {
+    if (!this.state.expired && !!poll) {
       const delay = (new Date(poll.get('expires_at'))).getTime() - Date.now();
       this._timer = setTimeout(() => {
         this.setState({ expired: true });

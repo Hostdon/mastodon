@@ -82,6 +82,7 @@ class StatusContent extends PureComponent {
     collapsible: PropTypes.bool,
     onCollapsedToggle: PropTypes.func,
     languages: ImmutablePropTypes.map,
+    quote: PropTypes.bool,
     intl: PropTypes.object,
   };
 
@@ -235,13 +236,14 @@ class StatusContent extends PureComponent {
   };
 
   render () {
-    const { status, intl, statusContent } = this.props;
+    const { status, intl, statusContent, quote } = this.props;
 
     const hidden = this.props.onExpandedToggle ? !this.props.expanded : this.state.hidden;
     const renderReadMore = this.props.onClick && status.get('collapsed');
     const contentLocale = intl.locale.replace(/[_-].*/, '');
     const targetLanguages = this.props.languages?.get(status.get('language') || 'und');
     const renderTranslate = this.props.onTranslate && this.context.identity.signedIn && ['public', 'unlisted'].includes(status.get('visibility')) && status.get('search_index').trim().length > 0 && targetLanguages?.includes(contentLocale);
+    const renderShowPoll = !!status.get('poll');
 
     const content = { __html: statusContent ?? getStatusContent(status) };
     const spoilerContent = { __html: status.getIn(['translation', 'spoilerHtml']) || status.get('spoilerHtml') };
@@ -262,7 +264,13 @@ class StatusContent extends PureComponent {
       <TranslateButton onClick={this.handleTranslate} translation={status.get('translation')} />
     );
 
-    const poll = !!status.get('poll') && (
+    const pollButton = (
+      <button className='status__content__read-more-button' onClick={this.props.onClick} key='show-poll'>
+        <FormattedMessage id='status.show_poll' defaultMessage='Show poll' /><Icon id='angle-right' fixedWidth />
+      </button>
+    );
+
+    const pollContainer = (
       <PollContainer pollId={status.get('poll')} lang={language} />
     );
 
@@ -293,7 +301,7 @@ class StatusContent extends PureComponent {
 
           <div tabIndex={!hidden ? 0 : null} className={`status__content__text ${!hidden ? 'status__content__text--visible' : ''} translate`} lang={language} dangerouslySetInnerHTML={content} />
 
-          {!hidden && poll}
+          {!hidden && renderShowPoll && quote ? pollButton : pollContainer}
           {translateButton}
         </div>
       );
@@ -303,7 +311,7 @@ class StatusContent extends PureComponent {
           <div className={classNames} ref={this.setRef} tabIndex={0} onMouseDown={this.handleMouseDown} onMouseUp={this.handleMouseUp} key='status-content' onMouseEnter={this.handleMouseEnter} onMouseLeave={this.handleMouseLeave}>
             <div className='status__content__text status__content__text--visible translate' lang={language} dangerouslySetInnerHTML={content} />
 
-            {poll}
+            {renderShowPoll && quote ? pollButton : pollContainer}
             {translateButton}
           </div>
 
@@ -315,7 +323,7 @@ class StatusContent extends PureComponent {
         <div className={classNames} ref={this.setRef} tabIndex={0} onMouseEnter={this.handleMouseEnter} onMouseLeave={this.handleMouseLeave}>
           <div className='status__content__text status__content__text--visible translate' lang={language} dangerouslySetInnerHTML={content} />
 
-          {poll}
+          {renderShowPoll && quote ? pollButton : pollContainer}
           {translateButton}
         </div>
       );
