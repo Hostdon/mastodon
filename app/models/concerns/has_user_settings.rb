@@ -99,6 +99,10 @@ module HasUserSettings
     settings['always_send_emails']
   end
 
+  def setting_show_quote_button
+    settings['show_quote_button']
+  end
+
   def setting_default_privacy
     settings['default_privacy'] || (account.locked? ? 'private' : 'public')
   end
