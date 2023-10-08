@@ -13,7 +13,7 @@ module Mastodon
     end
 
     def patch
-      6
+      0
     end
 
     def default_prerelease
@@ -44,7 +44,7 @@ module Mastodon
     end
 
     def repository
-      ENV.fetch('GITHUB_REPOSITORY', 'mastodon/mastodon')
+      ENV.fetch('GITHUB_REPOSITORY', 'hostdon/mastodon')
     end
 
     def source_base_url
