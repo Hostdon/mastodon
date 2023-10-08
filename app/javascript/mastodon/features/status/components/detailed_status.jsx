@@ -440,6 +440,7 @@ class DetailedStatus extends ImmutablePureComponent {
     }
 
     const {statusContentProps, hashtagBar} = getHashtagBarForStatus(status);
+    const expanded = !status.get('hidden') || status.get('spoiler_text').length === 0;
 
     return (
       <div style={outerStyle}>
@@ -465,7 +466,7 @@ class DetailedStatus extends ImmutablePureComponent {
           {quote}
           {media}
 
-          {hashtagBar}
+          {expanded && hashtagBar}
 
           <div className='detailed-status__meta'>
             <a className='detailed-status__datetime' href={`/@${status.getIn(['account', 'acct'])}/${status.get('id')}`} target='_blank' rel='noopener noreferrer'>
