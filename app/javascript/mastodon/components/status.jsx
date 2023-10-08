@@ -506,287 +506,285 @@ class Status extends ImmutablePureComponent {
       );
     }
 
-    if (status.get('media_attachments').size > 0) {
-      if (pictureInPicture.get('inUse')) {
-        media = <PictureInPicturePlaceholder width={this.props.cachedMediaWidth} />;
-      } else if (this.props.muted) {
-        const language = status.getIn(['translation', 'language']) || status.get('language');
+    if (pictureInPicture.get('inUse')) {
+      media = <PictureInPicturePlaceholder aspectRatio={this.getAttachmentAspectRatio()} />;
+    } else if (status.get('media_attachments').size > 0) {
+      const language = status.getIn(['translation', 'language']) || status.get('language');
 
-        if (status.getIn(['media_attachments', 0, 'type']) === 'audio') {
-          const attachment = status.getIn(['media_attachments', 0]);
-          const description = attachment.getIn(['translation', 'description']) || attachment.get('description');
+      if (status.getIn(['media_attachments', 0, 'type']) === 'audio') {
+        const attachment = status.getIn(['media_attachments', 0]);
+        const description = attachment.getIn(['translation', 'description']) || attachment.get('description');
 
-          media = (
+        media = (
+          <Bundle fetchComponent={Audio} loading={this.renderLoadingAudioPlayer} >
+            {Component => (
+              <Component
+                src={attachment.get('url')}
+                alt={description}
+                lang={language}
+                poster={attachment.get('preview_url') || status.getIn(['account', 'avatar_static'])}
+                backgroundColor={attachment.getIn(['meta', 'colors', 'background'])}
+                foregroundColor={attachment.getIn(['meta', 'colors', 'foreground'])}
+                accentColor={attachment.getIn(['meta', 'colors', 'accent'])}
+                duration={attachment.getIn(['meta', 'original', 'duration'], 0)}
+                width={this.props.cachedMediaWidth}
+                height={110}
+                cacheWidth={this.props.cacheMediaWidth}
+                deployPictureInPicture={pictureInPicture.get('available') ? this.handleDeployPictureInPicture : undefined}
+                sensitive={status.get('sensitive')}
+                blurhash={attachment.get('blurhash')}
+                visible={this.state.showMedia}
+                onToggleVisibility={this.handleToggleMediaVisibility}
+              />
+            )}
+          </Bundle>
+        );
+      } else if (status.getIn(['media_attachments', 0, 'type']) === 'video') {
+        const attachment = status.getIn(['media_attachments', 0]);
+        const description = attachment.getIn(['translation', 'description']) || attachment.get('description');
+
+        media = (
+          <Bundle fetchComponent={Video} loading={this.renderLoadingVideoPlayer} >
+            {Component => (
+              <Component
+                preview={attachment.get('preview_url')}
+                frameRate={attachment.getIn(['meta', 'original', 'frame_rate'])}
+                aspectRatio={`${attachment.getIn(['meta', 'original', 'width'])} / ${attachment.getIn(['meta', 'original', 'height'])}`}
+                blurhash={attachment.get('blurhash')}
+                src={attachment.get('url')}
+                alt={description}
+                lang={language}
+                sensitive={status.get('sensitive')}
+                onOpenVideo={this.handleOpenVideo}
+                deployPictureInPicture={pictureInPicture.get('available') ? this.handleDeployPictureInPicture : undefined}
+                visible={this.state.showMedia}
+                onToggleVisibility={this.handleToggleMediaVisibility}
+              />
+            )}
+          </Bundle>
+        );
+      } else {
+        media = (
+          <Bundle fetchComponent={MediaGallery} loading={this.renderLoadingMediaGallery}>
+            {Component => (
+              <Component
+                media={status.get('media_attachments')}
+                lang={language}
+                sensitive={status.get('sensitive')}
+                height={110}
+                onOpenMedia={this.handleOpenMedia}
+                cacheWidth={this.props.cacheMediaWidth}
+                defaultWidth={this.props.cachedMediaWidth}
+                visible={this.state.showMedia}
+                onToggleVisibility={this.handleToggleMediaVisibility}
+              />
+            )}
+          </Bundle>
+        );
+      }
+    } else if (status.get('spoiler_text').length === 0 && status.get('card')) {
+      media = (
+        <Card
+          onOpenMedia={this.handleOpenMedia}
+          card={status.get('card')}
+          compact
+          sensitive={status.get('sensitive')}
+        />
+      );
+    }
+
+    if (account === undefined || account === null) {
+      statusAvatar = <Avatar account={status.get('account')} size={46} />;
+    } else {
+      statusAvatar = <AvatarOverlay account={status.get('account')} friend={account} />;
+    }
+
+    const visibilityIconInfo = {
+      'public': { icon: 'globe', text: intl.formatMessage(messages.public_short) },
+      'unlisted': { icon: 'unlock', text: intl.formatMessage(messages.unlisted_short) },
+      'private': { icon: 'lock', text: intl.formatMessage(messages.private_short) },
+      'direct': { icon: 'at', text: intl.formatMessage(messages.direct_short) },
+    };
+
+    const visibilityIcon = visibilityIconInfo[status.get('visibility')];
+
+    let quote = null;
+    if (status.get('quote', null) !== null && typeof status.get('quote') === 'object') {
+      let quote_status = status.get('quote');
+
+      let quote_media = null;
+      if (quote_status.get('media_attachments').size > 0) {
+        if (pictureInPicture.get('inUse')) {
+          quote_media = <PictureInPicturePlaceholder width={this.props.cachedMediaWidth} />;
+        } else if (this.props.muted) {
+          quote_media = (
+            <AttachmentList
+              compact
+              media={quote_status.get('media_attachments')}
+            />
+          );
+        } else if (quote_status.getIn(['media_attachments', 0, 'type']) === 'audio') {
+          const attachment = quote_status.getIn(['media_attachments', 0]);
+
+          quote_media = (
             <Bundle fetchComponent={Audio} loading={this.renderLoadingAudioPlayer} >
               {Component => (
                 <Component
                   src={attachment.get('url')}
-                  alt={description}
-                  lang={language}
-                  poster={attachment.get('preview_url') || status.getIn(['account', 'avatar_static'])}
+                  alt={attachment.get('description')}
+                  poster={attachment.get('preview_url') || quote_status.getIn(['account', 'avatar_static'])}
                   backgroundColor={attachment.getIn(['meta', 'colors', 'background'])}
                   foregroundColor={attachment.getIn(['meta', 'colors', 'foreground'])}
                   accentColor={attachment.getIn(['meta', 'colors', 'accent'])}
                   duration={attachment.getIn(['meta', 'original', 'duration'], 0)}
                   width={this.props.cachedMediaWidth}
-                  height={110}
+                  height={70}
                   cacheWidth={this.props.cacheMediaWidth}
                   deployPictureInPicture={pictureInPicture.get('available') ? this.handleDeployPictureInPicture : undefined}
-                  sensitive={status.get('sensitive')}
-                  blurhash={attachment.get('blurhash')}
-                  visible={this.state.showMedia}
-                  onToggleVisibility={this.handleToggleMediaVisibility}
+                  quote
                 />
               )}
             </Bundle>
           );
-        } else if (status.getIn(['media_attachments', 0, 'type']) === 'video') {
-          const attachment = status.getIn(['media_attachments', 0]);
-          const description = attachment.getIn(['translation', 'description']) || attachment.get('description');
+        } else if (quote_status.getIn(['media_attachments', 0, 'type']) === 'video') {
+          const attachment = quote_status.getIn(['media_attachments', 0]);
 
-          media = (
+          quote_media = (
             <Bundle fetchComponent={Video} loading={this.renderLoadingVideoPlayer} >
               {Component => (
                 <Component
                   preview={attachment.get('preview_url')}
                   frameRate={attachment.getIn(['meta', 'original', 'frame_rate'])}
-                  aspectRatio={`${attachment.getIn(['meta', 'original', 'width'])} / ${attachment.getIn(['meta', 'original', 'height'])}`}
                   blurhash={attachment.get('blurhash')}
                   src={attachment.get('url')}
-                  alt={description}
-                  lang={language}
-                  sensitive={status.get('sensitive')}
-                  onOpenVideo={this.handleOpenVideo}
+                  alt={attachment.get('description')}
+                  width={this.props.cachedMediaWidth}
+                  height={110}
+                  inline
+                  sensitive={quote_status.get('sensitive')}
+                  onOpenVideo={this.handleOpenVideoQuote}
+                  cacheWidth={this.props.cacheMediaWidth}
                   deployPictureInPicture={pictureInPicture.get('available') ? this.handleDeployPictureInPicture : undefined}
-                  visible={this.state.showMedia}
-                  onToggleVisibility={this.handleToggleMediaVisibility}
+                  visible={this.state.showQuoteMedia}
+                  onToggleVisibility={this.handleToggleQuoteMediaVisibility}
+                  quote
                 />
               )}
             </Bundle>
           );
         } else {
-          media = (
+          quote_media = (
             <Bundle fetchComponent={MediaGallery} loading={this.renderLoadingMediaGallery}>
               {Component => (
                 <Component
-                  media={status.get('media_attachments')}
-                  lang={language}
-                  sensitive={status.get('sensitive')}
+                  media={quote_status.get('media_attachments')}
+                  sensitive={quote_status.get('sensitive')}
                   height={110}
-                  onOpenMedia={this.handleOpenMedia}
+                  onOpenMedia={this.handleOpenMediaQuote}
                   cacheWidth={this.props.cacheMediaWidth}
                   defaultWidth={this.props.cachedMediaWidth}
-                  visible={this.state.showMedia}
-                  onToggleVisibility={this.handleToggleMediaVisibility}
+                  visible={this.state.showQuoteMedia}
+                  onToggleVisibility={this.handleToggleQuoteMediaVisibility}
+                  quote
                 />
               )}
             </Bundle>
           );
         }
-      } else if (status.get('spoiler_text').length === 0 && status.get('card')) {
-        media = (
-          <Card
-            onOpenMedia={this.handleOpenMedia}
-            card={status.get('card')}
-            compact
-            sensitive={status.get('sensitive')}
-          />
-        );
       }
 
-      if (account === undefined || account === null) {
-        statusAvatar = <Avatar account={status.get('account')} size={46} />;
-      } else {
-        statusAvatar = <AvatarOverlay account={status.get('account')} friend={account} />;
-      }
-
-      const visibilityIconInfo = {
-        'public': { icon: 'globe', text: intl.formatMessage(messages.public_short) },
-        'unlisted': { icon: 'unlock', text: intl.formatMessage(messages.unlisted_short) },
-        'private': { icon: 'lock', text: intl.formatMessage(messages.private_short) },
-        'direct': { icon: 'at', text: intl.formatMessage(messages.direct_short) },
-      };
-
-      const visibilityIcon = visibilityIconInfo[status.get('visibility')];
-
-      let quote = null;
-      if (status.get('quote', null) !== null && typeof status.get('quote') === 'object') {
-        let quote_status = status.get('quote');
-
-        let quote_media = null;
-        if (quote_status.get('media_attachments').size > 0) {
-          if (pictureInPicture.get('inUse')) {
-            quote_media = <PictureInPicturePlaceholder width={this.props.cachedMediaWidth} />;
-          } else if (this.props.muted) {
-            quote_media = (
-              <AttachmentList
-                compact
-                media={quote_status.get('media_attachments')}
-              />
-            );
-          } else if (quote_status.getIn(['media_attachments', 0, 'type']) === 'audio') {
-            const attachment = quote_status.getIn(['media_attachments', 0]);
-
-            quote_media = (
-              <Bundle fetchComponent={Audio} loading={this.renderLoadingAudioPlayer} >
-                {Component => (
-                  <Component
-                    src={attachment.get('url')}
-                    alt={attachment.get('description')}
-                    poster={attachment.get('preview_url') || quote_status.getIn(['account', 'avatar_static'])}
-                    backgroundColor={attachment.getIn(['meta', 'colors', 'background'])}
-                    foregroundColor={attachment.getIn(['meta', 'colors', 'foreground'])}
-                    accentColor={attachment.getIn(['meta', 'colors', 'accent'])}
-                    duration={attachment.getIn(['meta', 'original', 'duration'], 0)}
-                    width={this.props.cachedMediaWidth}
-                    height={70}
-                    cacheWidth={this.props.cacheMediaWidth}
-                    deployPictureInPicture={pictureInPicture.get('available') ? this.handleDeployPictureInPicture : undefined}
-                    quote
-                  />
-                )}
-              </Bundle>
-            );
-          } else if (quote_status.getIn(['media_attachments', 0, 'type']) === 'video') {
-            const attachment = quote_status.getIn(['media_attachments', 0]);
-
-            quote_media = (
-              <Bundle fetchComponent={Video} loading={this.renderLoadingVideoPlayer} >
-                {Component => (
-                  <Component
-                    preview={attachment.get('preview_url')}
-                    frameRate={attachment.getIn(['meta', 'original', 'frame_rate'])}
-                    blurhash={attachment.get('blurhash')}
-                    src={attachment.get('url')}
-                    alt={attachment.get('description')}
-                    width={this.props.cachedMediaWidth}
-                    height={110}
-                    inline
-                    sensitive={quote_status.get('sensitive')}
-                    onOpenVideo={this.handleOpenVideoQuote}
-                    cacheWidth={this.props.cacheMediaWidth}
-                    deployPictureInPicture={pictureInPicture.get('available') ? this.handleDeployPictureInPicture : undefined}
-                    visible={this.state.showQuoteMedia}
-                    onToggleVisibility={this.handleToggleQuoteMediaVisibility}
-                    quote
-                  />
-                )}
-              </Bundle>
-            );
-          } else {
-            quote_media = (
-              <Bundle fetchComponent={MediaGallery} loading={this.renderLoadingMediaGallery}>
-                {Component => (
-                  <Component
-                    media={quote_status.get('media_attachments')}
-                    sensitive={quote_status.get('sensitive')}
-                    height={110}
-                    onOpenMedia={this.handleOpenMediaQuote}
-                    cacheWidth={this.props.cacheMediaWidth}
-                    defaultWidth={this.props.cachedMediaWidth}
-                    visible={this.state.showQuoteMedia}
-                    onToggleVisibility={this.handleToggleQuoteMediaVisibility}
-                    quote
-                  />
-                )}
-              </Bundle>
-            );
-          }
-        }
-
-        if (quote_muted) {
-          quote = (
-            <div className={classNames('quote-status', `status-${quote_status.get('visibility')}`, { 'status-reply': !!quote_status.get('in_reply_to_id'), muted: this.props.muted })} data-id={quote_status.get('id')}>
-              <div className={classNames('status__content muted-quote', { 'status__content--with-action': this.context.router })}>
-                <FormattedMessage id='status.muted_quote' defaultMessage='Muted quote' />
-              </div>
-            </div>
-          );
-        } else if (quote_status.get('visibility') === 'unlisted' && !!contextType && ['public', 'community', 'hashtag'].includes(contextType.split(':', 2)[0])) {
-          quote = (
-            <div className={classNames('quote-status', `status-${quote_status.get('visibility')}`, { 'status-reply': !!quote_status.get('in_reply_to_id'), muted: this.props.muted })} data-id={quote_status.get('id')}>
-              <div className={classNames('status__content unlisted-quote', { 'status__content--with-action': this.context.router })}>
-                <button onClick={this.handleQuoteClick}>
-                  <FormattedMessage id='status.unlisted_quote' defaultMessage='Unlisted quote' />
-                </button>
-              </div>
-            </div>
-          );
-        } else {
-          quote = (
-            <div className={classNames('quote-status', `status-${quote_status.get('visibility')}`, { 'status-reply': !!quote_status.get('in_reply_to_id'), muted: this.props.muted })} data-id={quote_status.get('id')}>
-              <div className='status__info'>
-                <a onClick={this.handleQuoteAccountClick} target='_blank' href={quote_status.getIn(['account', 'url'])} title={quote_status.getIn(['account', 'acct'])} className='status__display-name'>
-                  <div className='status__avatar'><Avatar account={quote_status.get('account')} size={18} /></div>
-                  <DisplayName account={quote_status.get('account')} />
-                </a>
-              </div>
-
-              <StatusContent status={quote_status} onClick={this.handleQuoteClick} expanded={!quote_status.get('hidden')} onExpandedToggle={this.handleExpandedQuoteToggle} quote />
-
-              {quote_media}
-            </div>
-          );
-        }
-      } else if (quote_muted) {
+      if (quote_muted) {
         quote = (
-          <div className={classNames('quote-status', { muted: this.props.muted })}>
+          <div className={classNames('quote-status', `status-${quote_status.get('visibility')}`, { 'status-reply': !!quote_status.get('in_reply_to_id'), muted: this.props.muted })} data-id={quote_status.get('id')}>
             <div className={classNames('status__content muted-quote', { 'status__content--with-action': this.context.router })}>
               <FormattedMessage id='status.muted_quote' defaultMessage='Muted quote' />
             </div>
           </div>
         );
-      }
-
-      const { statusContentProps, hashtagBar } = getHashtagBarForStatus(status);
-
-      return (
-        <HotKeys handlers={handlers}>
-          <div className={classNames('status__wrapper', `status__wrapper-${status.get('visibility')}`, { 'status__wrapper-reply': !!status.get('in_reply_to_id'), unread, focusable: !this.props.muted })} tabIndex={this.props.muted ? null : 0} data-featured={featured ? 'true' : null} aria-label={textForScreenReader(intl, status, rebloggedByText)} ref={this.handleRef}>
-            {prepend}
-
-            <div className={classNames('status', `status-${status.get('visibility')}`, { 'status-reply': !!status.get('in_reply_to_id'), 'status--in-thread': !!rootId, 'status--first-in-thread': previousId && (!connectUp || connectToRoot), muted: this.props.muted })} data-id={status.get('id')}>
-              {(connectReply || connectUp || connectToRoot) && <div className={classNames('status__line', { 'status__line--full': connectReply, 'status__line--first': !status.get('in_reply_to_id') && !connectToRoot })} />}
-
-              {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
-              <div onClick={this.handleClick} className='status__info'>
-                <a href={`/@${status.getIn(['account', 'acct'])}/${status.get('id')}`} className='status__relative-time' target='_blank' rel='noopener noreferrer'>
-                  <span className='status__visibility-icon'><Icon id={visibilityIcon.icon} title={visibilityIcon.text} /></span>
-                  <RelativeTimestamp timestamp={status.get('created_at')} />{status.get('edited_at') && <abbr title={intl.formatMessage(messages.edited, { date: intl.formatDate(status.get('edited_at'), { hour12: false, year: 'numeric', month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit' }) })}> *</abbr>}
-                </a>
-
-                <a onClick={this.handleAccountClick} href={`/@${status.getIn(['account', 'acct'])}`} title={status.getIn(['account', 'acct'])} className='status__display-name' target='_blank' rel='noopener noreferrer'>
-                  <div className='status__avatar'>
-                    {statusAvatar}
-                  </div>
-
-                  <DisplayName account={status.get('account')} />
-                </a>
-              </div>
-
-              <StatusContent
-                status={status}
-                onClick={this.handleClick}
-                expanded={!status.get('hidden')}
-                onExpandedToggle={this.handleExpandedToggle}
-                onTranslate={this.handleTranslate}
-                collapsible
-                onCollapsedToggle={this.handleCollapsedToggle}
-                {...statusContentProps}
-              />
-
-              {media}
-              {quote}
-
-              {hashtagBar}
-
-              <StatusActionBar scrollKey={scrollKey} status={status} account={account} onFilter={matchedFilters ? this.handleFilterClick : null} {...other} />
+      } else if (quote_status.get('visibility') === 'unlisted' && !!contextType && ['public', 'community', 'hashtag'].includes(contextType.split(':', 2)[0])) {
+        quote = (
+          <div className={classNames('quote-status', `status-${quote_status.get('visibility')}`, { 'status-reply': !!quote_status.get('in_reply_to_id'), muted: this.props.muted })} data-id={quote_status.get('id')}>
+            <div className={classNames('status__content unlisted-quote', { 'status__content--with-action': this.context.router })}>
+              <button onClick={this.handleQuoteClick}>
+                <FormattedMessage id='status.unlisted_quote' defaultMessage='Unlisted quote' />
+              </button>
             </div>
           </div>
-        </HotKeys>
+        );
+      } else {
+        quote = (
+          <div className={classNames('quote-status', `status-${quote_status.get('visibility')}`, { 'status-reply': !!quote_status.get('in_reply_to_id'), muted: this.props.muted })} data-id={quote_status.get('id')}>
+            <div className='status__info'>
+              <a onClick={this.handleQuoteAccountClick} target='_blank' href={quote_status.getIn(['account', 'url'])} title={quote_status.getIn(['account', 'acct'])} className='status__display-name'>
+                <div className='status__avatar'><Avatar account={quote_status.get('account')} size={18} /></div>
+                <DisplayName account={quote_status.get('account')} />
+              </a>
+            </div>
+
+            <StatusContent status={quote_status} onClick={this.handleQuoteClick} expanded={!quote_status.get('hidden')} onExpandedToggle={this.handleExpandedQuoteToggle} quote />
+
+            {quote_media}
+          </div>
+        );
+      }
+    } else if (quote_muted) {
+      quote = (
+        <div className={classNames('quote-status', { muted: this.props.muted })}>
+          <div className={classNames('status__content muted-quote', { 'status__content--with-action': this.context.router })}>
+            <FormattedMessage id='status.muted_quote' defaultMessage='Muted quote' />
+          </div>
+        </div>
       );
     }
 
+    const { statusContentProps, hashtagBar } = getHashtagBarForStatus(status);
+
+    return (
+      <HotKeys handlers={handlers}>
+        <div className={classNames('status__wrapper', `status__wrapper-${status.get('visibility')}`, { 'status__wrapper-reply': !!status.get('in_reply_to_id'), unread, focusable: !this.props.muted })} tabIndex={this.props.muted ? null : 0} data-featured={featured ? 'true' : null} aria-label={textForScreenReader(intl, status, rebloggedByText)} ref={this.handleRef}>
+          {prepend}
+
+          <div className={classNames('status', `status-${status.get('visibility')}`, { 'status-reply': !!status.get('in_reply_to_id'), 'status--in-thread': !!rootId, 'status--first-in-thread': previousId && (!connectUp || connectToRoot), muted: this.props.muted })} data-id={status.get('id')}>
+            {(connectReply || connectUp || connectToRoot) && <div className={classNames('status__line', { 'status__line--full': connectReply, 'status__line--first': !status.get('in_reply_to_id') && !connectToRoot })} />}
+
+            {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
+            <div onClick={this.handleClick} className='status__info'>
+              <a href={`/@${status.getIn(['account', 'acct'])}/${status.get('id')}`} className='status__relative-time' target='_blank' rel='noopener noreferrer'>
+                <span className='status__visibility-icon'><Icon id={visibilityIcon.icon} title={visibilityIcon.text} /></span>
+                <RelativeTimestamp timestamp={status.get('created_at')} />{status.get('edited_at') && <abbr title={intl.formatMessage(messages.edited, { date: intl.formatDate(status.get('edited_at'), { hour12: false, year: 'numeric', month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit' }) })}> *</abbr>}
+              </a>
+
+              <a onClick={this.handleAccountClick} href={`/@${status.getIn(['account', 'acct'])}`} title={status.getIn(['account', 'acct'])} className='status__display-name' target='_blank' rel='noopener noreferrer'>
+                <div className='status__avatar'>
+                  {statusAvatar}
+                </div>
+
+                <DisplayName account={status.get('account')} />
+              </a>
+            </div>
+
+            <StatusContent
+              status={status}
+              onClick={this.handleClick}
+              expanded={!status.get('hidden')}
+              onExpandedToggle={this.handleExpandedToggle}
+              onTranslate={this.handleTranslate}
+              collapsible
+              onCollapsedToggle={this.handleCollapsedToggle}
+              {...statusContentProps}
+            />
+
+            {media}
+            {quote}
+
+            {hashtagBar}
+
+            <StatusActionBar scrollKey={scrollKey} status={status} account={account} onFilter={matchedFilters ? this.handleFilterClick : null} {...other} />
+          </div>
+        </div>
+      </HotKeys>
+    );
   }
+
 }
 export default injectIntl(connect(mapStateToProps)(Status));
