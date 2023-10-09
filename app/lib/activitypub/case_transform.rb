@@ -6,6 +6,14 @@ module ActivityPub::CaseTransform
       @camel_lower_cache ||= {}
     end
 
+    NON_CONVERSIONS = %w(
+      _misskey_content
+      _misskey_quote
+      _misskey_reaction
+      _misskey_votes
+      _misskey_talk
+    ).freeze
+
     def camel_lower(value)
       case value
       when Array then value.map { |item| camel_lower(item) }

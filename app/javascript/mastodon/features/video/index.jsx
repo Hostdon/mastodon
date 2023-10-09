@@ -126,6 +126,7 @@ class Video extends PureComponent {
     muted: PropTypes.bool,
     componentIndex: PropTypes.number,
     autoFocus: PropTypes.bool,
+    quote: PropTypes.bool,
   };
 
   static defaultProps = {
@@ -502,7 +503,7 @@ class Video extends PureComponent {
   }
 
   render () {
-    const { preview, src, aspectRatio, onOpenVideo, onCloseVideo, intl, alt, lang, detailed, sensitive, editable, blurhash, autoFocus } = this.props;
+    const { preview, src, aspectRatio, onOpenVideo, onCloseVideo, intl, alt, lang, detailed, sensitive, editable, blurhash, autoFocus, quote } = this.props;
     const { currentTime, duration, volume, buffer, dragging, paused, fullscreen, hovered, revealed } = this.state;
     const progress = Math.min((currentTime / duration) * 100, 100);
     const muted = this.state.muted || volume === 0;

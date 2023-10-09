@@ -153,6 +153,14 @@ const mapDispatchToProps = (dispatch, { intl }) => ({
     }));
   },
 
+  onOpenMediaQuote (media, index) {
+    dispatch(openModal('MEDIA', { media, index }));
+  },
+
+  onOpenVideoQuote (media, options) {
+    dispatch(openModal('VIDEO', { media, options }));
+  },
+
   onBlock (status) {
     const account = status.get('account');
     dispatch(initBlockModal(account));
@@ -181,7 +189,6 @@ const mapDispatchToProps = (dispatch, { intl }) => ({
       dispatch(hideStatus(status.get('id')));
     }
   },
-
 });
 
 export default injectIntl(connect(makeMapStateToProps, mapDispatchToProps)(DetailedStatus));
