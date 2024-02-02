@@ -23,13 +23,22 @@ class AccountsIndex < Chewy::Index
 
     analyzer: {
       natural: {
-        tokenizer: 'standard',
+        tokenizer: 'kuromoji',
+        type: 'custom',
+        char_filter: %w(
+          icu_normalizer
+          html_strip
+          kuromoji_iteration_mark
+        ),
         filter: %w(
+          english_possessive_stemmer
           lowercase
           asciifolding
+          kuromoji_stemmer
+          kuromoji_number
+          kuromoji_baseform
+          icu_normalizer
           cjk_width
-          elision
-          english_possessive_stemmer
           english_stop
           english_stemmer
         ),
@@ -51,6 +60,10 @@ class AccountsIndex < Chewy::Index
         type: 'edge_ngram',
         min_gram: 1,
         max_gram: 15,
+      },
+      kuromoji: {
+        type: 'kuromoji_tokenizer',
+        mode: 'search',
       },
     },
   }
