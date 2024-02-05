@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class PublicStatusesIndex < Chewy::Index
+  include DatetimeClampingConcern
+
   settings index: index_preset(refresh_interval: '30s', number_of_shards: 5), analysis: {
     filter: {
       english_stop: {
@@ -18,7 +20,12 @@ class PublicStatusesIndex < Chewy::Index
         language: 'possessive_english',
       },
     },
-
+    tokenizer: {
+      kuromoji: {
+        type: 'kuromoji_tokenizer',
+        mode: 'search',
+      },
+    },
     analyzer: {
       verbatim: {
         tokenizer: 'uax_url_email',
@@ -26,13 +33,22 @@ class PublicStatusesIndex < Chewy::Index
       },
 
       content: {
-        tokenizer: 'standard',
+        tokenizer: 'kuromoji',
+        type: 'custom',
+        char_filter: %w(
+          icu_normalizer
+          html_strip
+          kuromoji_iteration_mark
+        ),
         filter: %w(
+          english_possessive_stemmer
           lowercase
           asciifolding
+          kuromoji_stemmer
+          kuromoji_number
+          kuromoji_baseform
+          icu_normalizer
           cjk_width
-          elision
-          english_possessive_stemmer
           english_stop
           english_stemmer
         ),
@@ -62,6 +78,6 @@ class PublicStatusesIndex < Chewy::Index
     field(:tags, type: 'text', analyzer: 'hashtag', value: ->(status) { status.tags.map(&:display_name) })
     field(:language, type: 'keyword')
     field(:properties, type: 'keyword', value: ->(status) { status.searchable_properties })
-    field(:created_at, type: 'date')
+    field(:created_at, type: 'date', value: ->(status) { clamp_date(status.created_at) })
   end
 end
