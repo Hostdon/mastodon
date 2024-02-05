@@ -1,14 +1,12 @@
 // CUSTOMIZE
 import React from 'react';
 import Immutable from 'immutable';
-import Link from 'react-router-dom/Link';
 import PropTypes from 'prop-types';
 import { injectIntl } from 'react-intl';
 import ichikuraBanner from '../../../../images/ichikura_banner.png';
 import ichicradioBanner from '../../../../images/ichicradio_banner.png';
 
-@injectIntl
-export default class Banners extends React.PureComponent {
+class Banners extends React.PureComponent {
 
   static propTypes = {
     intl: PropTypes.object.isRequired,
@@ -53,3 +51,5 @@ export default class Banners extends React.PureComponent {
   }
 
 };
+
+export default injectIntl(Banners);
