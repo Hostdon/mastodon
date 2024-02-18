@@ -86,7 +86,15 @@ class ActivityPub::Activity::Create < ActivityPub::Activity
     ApplicationRecord.transaction do
       @status = Status.create!(@params)
       attach_tags(@status)
+
+      # Delete status on zero follower user and nearly created account with include some replies
+      if like_a_spam?
+        @status = nil
+        raise ActiveRecord::Rollback
+      end
     end
+
+    return if @status.nil?
 
     resolve_thread(@status)
     fetch_replies(@status)
@@ -447,5 +455,14 @@ class ActivityPub::Activity::Create < ActivityPub::Activity
     status_from_uri(quote.uri) if quote
   rescue
     nil
+  end
+
+  def like_a_spam?
+    (
+      !@status.account.local? &&
+      @status.account.followers_count.zero? &&
+      @status.account.created_at > 1.day.ago &&
+      @mentions.count >= 2
+    )
   end
 end
