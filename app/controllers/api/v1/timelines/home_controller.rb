@@ -8,14 +8,15 @@ class Api::V1::Timelines::HomeController < Api::BaseController
   def show
     with_read_replica do
       @statuses   = load_statuses
-      @account_ids = @statuses.filter(&:quote?).map { |status| status.quote.account_id }.uniq
+      account_ids = @statuses.filter(&:quote?).map { |status| status.quote.account_id }.uniq
+      @accounts = Account.where(id: account_ids)
       @relationships = StatusRelationshipsPresenter.new(@statuses, current_user&.account_id)
     end
 
     render json: @statuses,
            each_serializer: REST::StatusSerializer,
            relationships: @relationships,
-           account_relationships: AccountRelationshipsPresenter.new(@account_ids, current_user&.account_id),
+           account_relationships: AccountRelationshipsPresenter.new(@accounts, current_user&.account_id),
            status: account_home_feed.regenerating? ? 206 : 200
   end
 

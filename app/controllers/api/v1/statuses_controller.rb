@@ -50,10 +50,11 @@ class Api::V1::StatusesController < Api::BaseController
     @context    = Context.new(ancestors: loaded_ancestors, descendants: loaded_descendants)
     statuses    = [@status] + @context.ancestors + @context.descendants
     account_ids = statuses.filter(&:quote?).map { |status| status.quote.account_id }.uniq
-
+    accounts = Account.where(id: account_ids)
+    
     render json: @context, serializer: REST::ContextSerializer,
            relationships: StatusRelationshipsPresenter.new(statuses, current_user&.account_id),
-           account_relationships: AccountRelationshipsPresenter.new(account_ids, current_user&.account_id)
+           account_relationships: AccountRelationshipsPresenter.new(accounts, current_user&.account_id)
   end
 
   def create
