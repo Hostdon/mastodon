@@ -237,6 +237,18 @@ module AccountInteractions
     status.proper.favourites.where(account: self).exists?
   end
 
+  def reacted?(status)
+    status.proper.reactions.where(account: self).exists?
+  end
+
+  def reacted_with?(status, name)
+    status.proper.reactions.where(account: self, name: name).exists?
+  end
+
+  def custom_emoji_reacted?(status, custom_emoji)
+    status.proper.reactions.where(account: self, custom_emoji: custom_emoji).exists?
+  end
+
   def bookmarked?(status)
     status.proper.bookmarks.where(account: self).exists?
   end

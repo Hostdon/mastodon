@@ -13,6 +13,7 @@ const messages = defineMessages({
   preferences: { id: 'navigation_bar.preferences', defaultMessage: 'Preferences' },
   follow_requests: { id: 'navigation_bar.follow_requests', defaultMessage: 'Follow requests' },
   favourites: { id: 'navigation_bar.favourites', defaultMessage: 'Favorites' },
+  reactions: { id: 'navigation_bar.reactions', defaultMessage: 'Reactions' },
   lists: { id: 'navigation_bar.lists', defaultMessage: 'Lists' },
   followed_tags: { id: 'navigation_bar.followed_tags', defaultMessage: 'Followed hashtags' },
   blocks: { id: 'navigation_bar.blocks', defaultMessage: 'Blocked users' },
@@ -46,6 +47,7 @@ class ActionBar extends PureComponent {
     menu.push(null);
     menu.push({ text: intl.formatMessage(messages.follow_requests), to: '/follow_requests' });
     menu.push({ text: intl.formatMessage(messages.favourites), to: '/favourites' });
+    menu.push({ text: intl.formatMessage(messages.reactions), to: '/reactions' });
     menu.push({ text: intl.formatMessage(messages.bookmarks), to: '/bookmarks' });
     menu.push({ text: intl.formatMessage(messages.lists), to: '/lists' });
     menu.push({ text: intl.formatMessage(messages.followed_tags), to: '/followed_tags' });

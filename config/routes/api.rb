@@ -10,11 +10,19 @@ namespace :api, format: false do
       scope module: :statuses do
         resources :reblogged_by, controller: :reblogged_by_accounts, only: :index
         resources :favourited_by, controller: :favourited_by_accounts, only: :index
+        resources :reacted_by, controller: :reacted_by_accounts, only: :index
         resource :reblog, only: :create
         post :unreblog, to: 'reblogs#destroy'
 
         resource :favourite, only: :create
         post :unfavourite, to: 'favourites#destroy'
+
+        resource :reaction, only: :create
+        post :unreaction, to: 'reactions#destroy'
+
+        # Fedibird copatible endpoints
+        resources :emoji_reactions, only: [:update, :destroy], constraints: { id: /[^\/]+/ }, controller: 'reactions'
+        post :emoji_unreactions, to: 'reactions#destroy_all'
 
         resource :bookmark, only: :create
         post :unbookmark, to: 'bookmarks#destroy'
@@ -89,12 +97,15 @@ namespace :api, format: false do
     resources :blocks, only: [:index]
     resources :mutes, only: [:index]
     resources :favourites, only: [:index]
+    resources :reactions, only: [:index]
     resources :bookmarks, only: [:index]
     resources :reports, only: [:create]
     resources :trends, only: [:index], controller: 'trends/tags'
     resources :filters, only: [:index, :create, :show, :update, :destroy]
     resources :endorsements, only: [:index]
     resources :markers, only: [:index, :create]
+    # Fedibird compatible endpoints
+    resources :emoji_reactions, only: [:index], controller: 'reactions'
 
     namespace :profile do
       resource :avatar, only: :destroy

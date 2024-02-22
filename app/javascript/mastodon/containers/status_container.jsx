@@ -24,6 +24,7 @@ import {
 import {
   reblog,
   favourite,
+  reaction,
   bookmark,
   unreblog,
   unfavourite,
@@ -117,6 +118,10 @@ const mapDispatchToProps = (dispatch, { intl, contextType }) => ({
     } else {
       dispatch(favourite(status));
     }
+  },
+
+  onReaction (status, name) {
+    dispatch(reaction(status, name));
   },
 
   onBookmark (status) {

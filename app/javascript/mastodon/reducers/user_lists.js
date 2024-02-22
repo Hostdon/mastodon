@@ -57,6 +57,7 @@ import {
   FAVOURITES_EXPAND_REQUEST,
   FAVOURITES_EXPAND_SUCCESS,
   FAVOURITES_EXPAND_FAIL,
+  REACTIONS_FETCH_SUCCESS,
 } from '../actions/interactions';
 import {
   MUTES_FETCH_REQUEST,
@@ -83,6 +84,7 @@ const initialState = ImmutableMap({
   following: initialListState,
   reblogged_by: initialListState,
   favourited_by: initialListState,
+  reacted_by: initialListState,
   follow_requests: initialListState,
   blocks: initialListState,
   mutes: initialListState,
@@ -163,6 +165,8 @@ export default function userLists(state = initialState, action) {
   case FAVOURITES_FETCH_FAIL:
   case FAVOURITES_EXPAND_FAIL:
     return state.setIn(['favourited_by', action.id, 'isLoading'], false);
+  case REACTIONS_FETCH_SUCCESS:
+    return state.setIn(['reacted_by', action.id], ImmutableList(action.accounts.map(item => item.id)));
   case NOTIFICATIONS_UPDATE:
     return action.notification.type === 'follow_request' ? normalizeFollowRequest(state, action.notification) : state;
   case FOLLOW_REQUESTS_FETCH_SUCCESS:

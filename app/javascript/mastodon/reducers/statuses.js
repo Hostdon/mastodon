@@ -11,6 +11,9 @@ import {
   FAVOURITE_FAIL,
   UNFAVOURITE_REQUEST,
   UNFAVOURITE_FAIL,
+  REACTION_REQUEST,
+  REACTION_FAIL,
+  UNREACTION_SUCCESS,
   BOOKMARK_REQUEST,
   BOOKMARK_FAIL,
   UNBOOKMARK_REQUEST,
@@ -83,6 +86,12 @@ export default function statuses(state = initialState, action) {
     return state.setIn([action.status.get('id'), 'favourited'], false);
   case UNFAVOURITE_FAIL:
     return state.get(action.status.get('id')) === undefined ? state : state.setIn([action.status.get('id'), 'favourited'], true);
+  case REACTION_REQUEST:
+    return state.setIn([action.status.get('id'), 'reacted'], true);
+  case UNREACTION_SUCCESS:
+    return state.updateIn([action.status.get('id'), 'reactions_count'], x => Math.max(0, x - 1));
+  case REACTION_FAIL:
+    return state.get(action.status.get('id')) === undefined ? state : state.setIn([action.status.get('id'), 'reacted'], false);
   case BOOKMARK_REQUEST:
     return state.get(action.status.get('id')) === undefined ? state : state.setIn([action.status.get('id'), 'bookmarked'], true);
   case BOOKMARK_FAIL:

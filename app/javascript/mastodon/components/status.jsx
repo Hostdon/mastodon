@@ -12,6 +12,7 @@ import { HotKeys } from 'react-hotkeys';
 import { Icon }  from 'mastodon/components/icon';
 import PictureInPicturePlaceholder from 'mastodon/components/picture_in_picture_placeholder';
 
+import StatusReactionBar from '../containers/status_reaction_bar_container';
 import Card from '../features/status/components/card';
 // We use the component (and not the container) since we do not want
 // to use the progress bar to show download progress
@@ -26,7 +27,7 @@ import { getHashtagBarForStatus } from './hashtag_bar';
 import { RelativeTimestamp } from './relative_timestamp';
 import StatusActionBar from './status_action_bar';
 import StatusContent from './status_content';
-
+ 
 const domParser = new DOMParser();
 
 export const textForScreenReader = (intl, status, rebloggedByText = false) => {
@@ -74,6 +75,7 @@ class Status extends ImmutablePureComponent {
 
   static contextTypes = {
     router: PropTypes.object,
+    identity: PropTypes.object,
   };
 
   static propTypes = {
@@ -85,6 +87,7 @@ class Status extends ImmutablePureComponent {
     onClick: PropTypes.func,
     onReply: PropTypes.func,
     onFavourite: PropTypes.func,
+    onReaction: PropTypes.func,
     onReblog: PropTypes.func,
     onDelete: PropTypes.func,
     onDirect: PropTypes.func,
@@ -346,6 +349,7 @@ class Status extends ImmutablePureComponent {
 
   render () {
     const { intl, hidden, featured, unread, showThread, scrollKey, pictureInPicture, previousId, nextInReplyToId, rootId } = this.props;
+    const { signedIn } = this.context.identity;
 
     let { status, account, ...other } = this.props;
 
@@ -587,6 +591,7 @@ class Status extends ImmutablePureComponent {
 
             {expanded && hashtagBar}
 
+            <StatusReactionBar status={status} signedIn={signedIn} />
             <StatusActionBar scrollKey={scrollKey} status={status} account={account} onFilter={matchedFilters ? this.handleFilterClick : null} {...other} />
           </div>
         </div>

@@ -11,6 +11,7 @@ import { connect } from 'react-redux';
 import { PERMISSION_MANAGE_USERS, PERMISSION_MANAGE_FEDERATION } from 'mastodon/permissions';
 
 import DropdownMenuContainer from '../containers/dropdown_menu_container';
+import ReactionDropdownMenuContainer from '../containers/reaction_dropdown_menu_container';
 import { me } from '../initial_state';
 
 import { IconButton } from './icon_button';
@@ -32,6 +33,7 @@ const messages = defineMessages({
   cancel_reblog_private: { id: 'status.cancel_reblog_private', defaultMessage: 'Unboost' },
   cannot_reblog: { id: 'status.cannot_reblog', defaultMessage: 'This post cannot be boosted' },
   favourite: { id: 'status.favourite', defaultMessage: 'Favorite' },
+  reaction: { id: 'status.reaction', defaultMessage: 'Reaction' },
   bookmark: { id: 'status.bookmark', defaultMessage: 'Bookmark' },
   removeBookmark: { id: 'status.remove_bookmark', defaultMessage: 'Remove bookmark' },
   open: { id: 'status.open', defaultMessage: 'Expand this status' },
@@ -70,6 +72,7 @@ class StatusActionBar extends ImmutablePureComponent {
     relationship: ImmutablePropTypes.map,
     onReply: PropTypes.func,
     onFavourite: PropTypes.func,
+    onReaction: PropTypes.func,
     onReblog: PropTypes.func,
     onDelete: PropTypes.func,
     onDirect: PropTypes.func,
@@ -368,6 +371,18 @@ class StatusActionBar extends ImmutablePureComponent {
         <IconButton className='status__action-bar__button bookmark-icon' disabled={!signedIn} active={status.get('bookmarked')} title={intl.formatMessage(messages.bookmark)} icon='bookmark' onClick={this.handleBookmarkClick} />
 
         {filterButton}
+
+        <div className='status__action-bar__dropdown'>
+          <ReactionDropdownMenuContainer
+            disabled={!signedIn}
+            status={status}
+            onReaction={this.props.onReaction}
+            icon='smile-o'
+            size={18}
+            direction='right'
+            title={intl.formatMessage(messages.reaction)}
+          />
+        </div>
 
         <div className='status__action-bar__dropdown'>
           <DropdownMenuContainer

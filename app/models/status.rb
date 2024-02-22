@@ -63,6 +63,7 @@ class Status < ApplicationRecord
   belongs_to :reblog, foreign_key: 'reblog_of_id', class_name: 'Status', inverse_of: :reblogs, optional: true
 
   has_many :favourites, inverse_of: :status, dependent: :destroy
+  has_many :reactions, inverse_of: :status, dependent: :destroy
   has_many :bookmarks, inverse_of: :status, dependent: :destroy
   has_many :reblogs, foreign_key: 'reblog_of_id', class_name: 'Status', inverse_of: :reblog, dependent: :destroy
   has_many :reblogged_by_accounts, through: :reblogs, class_name: 'Account', source: :account
@@ -289,6 +290,25 @@ class Status < ApplicationRecord
     status_stat&.favourites_count || 0
   end
 
+  def reactions_count
+    status_stat&.reactions_count || 0
+  end
+
+  def reactions_hash(account = nil)
+    records = begin
+      scope = reactions.group(:status_id, :name, :custom_emoji_id).order(Arel.sql('MIN(created_at) ASC'))
+
+      if account.nil?
+        scope.select('status_id, name, custom_emoji_id, count(*) as count, false as me')
+      else
+        scope.select("status_id, name, custom_emoji_id, count(*) as count, exists(select 1 from reactions r where r.account_id = #{account.id} and r.status_id = reactions.status_id and ((reactions.custom_emoji_id is not null and r.custom_emoji_id = reactions.custom_emoji_id) or (r.custom_emoji_id is null and r.name = reactions.name))) as me")
+      end
+    end
+
+    ActiveRecord::Associations::Preloader.new(records: records, associations: :custom_emoji)
+    records
+  end
+
   def increment_count!(key)
     update_status_stat!(key => public_send(key) + 1)
   end
@@ -320,6 +340,10 @@ class Status < ApplicationRecord
 
     def favourites_map(status_ids, account_id)
       Favourite.select('status_id').where(status_id: status_ids).where(account_id: account_id).each_with_object({}) { |f, h| h[f.status_id] = true }
+    end
+
+    def reactions_map(status_ids, account_id)
+      Reaction.select('status_id').where(status_id: status_ids).where(account_id: account_id).each_with_object({}) { |f, h| h[f.status_id] = true }
     end
 
     def bookmarks_map(status_ids, account_id)

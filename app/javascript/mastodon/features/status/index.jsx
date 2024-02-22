@@ -35,6 +35,7 @@ import {
 } from '../../actions/domain_blocks';
 import {
   favourite,
+  reaction,
   unfavourite,
   bookmark,
   unbookmark,
@@ -257,6 +258,15 @@ class Status extends ImmutablePureComponent {
           url: status.get('uri'),
         },
       }));
+    }
+  };
+
+  handleReactionClick = (status, name) => {
+    const { dispatch } = this.props;
+    const { signedIn } = this.context.identity;
+
+    if (signedIn) {
+      dispatch(reaction(status, name));
     }
   };
 
@@ -710,6 +720,7 @@ class Status extends ImmutablePureComponent {
                   status={status}
                   onReply={this.handleReplyClick}
                   onFavourite={this.handleFavouriteClick}
+                  onReaction={this.handleReactionClick}
                   onReblog={this.handleReblogClick}
                   onBookmark={this.handleBookmarkClick}
                   onDelete={this.handleDeleteClick}

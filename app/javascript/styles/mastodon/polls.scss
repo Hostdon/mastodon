@@ -89,6 +89,11 @@
       &:focus {
         border-color: $highlight-text-color;
       }
+
+      @media screen and (max-width: 600px) {
+        font-size: 16px;
+        padding: 5px 10px;
+      }
     }
 
     &.selectable {

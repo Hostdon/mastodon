@@ -62,6 +62,7 @@ import {
   Onboarding,
   About,
   PrivacyPolicy,
+  ReactedStatuses,
 } from './util/async-components';
 import { WrappedSwitch, WrappedRoute } from './util/react_router_helpers';
 
@@ -202,6 +203,7 @@ class SwitchingColumnsArea extends PureComponent {
           <WrappedRoute path='/lists/:id' component={ListTimeline} content={children} />
           <WrappedRoute path='/notifications' component={Notifications} content={children} />
           <WrappedRoute path='/favourites' component={FavouritedStatuses} content={children} />
+          <WrappedRoute path='/reactions' component={ReactedStatuses} content={children} />
 
           <WrappedRoute path='/bookmarks' component={BookmarkedStatuses} content={children} />
           <WrappedRoute path='/pinned' component={PinnedStatuses} content={children} />

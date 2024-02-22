@@ -83,6 +83,8 @@ export function importFetchedStatuses(statuses) {
       if (status.poll && status.poll.id) {
         pushUnique(polls, normalizePoll(status.poll, getState().getIn(['polls', status.poll.id])));
       }
+
+      status.reactions.flatMap(reaction => reaction.users).forEach(user => pushUnique(accounts, user));
     }
 
     statuses.forEach(processStatus);

@@ -116,6 +116,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_07_150100) do
     t.integer "min_reblogs"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "keep_self_reaction", default: true, null: false
+    t.integer "min_reactions"
     t.index ["account_id"], name: "index_account_statuses_cleanup_policies_on_account_id"
   end
 
@@ -548,7 +550,10 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_07_150100) do
     t.datetime "expires_at", precision: nil
     t.inet "ip", default: "0.0.0.0", null: false
     t.integer "severity", default: 0, null: false
+    t.datetime "expires_at"
     t.text "comment", default: "", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["ip"], name: "index_ip_blocks_on_ip", unique: true
   end
 
@@ -813,6 +818,19 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_07_150100) do
     t.bigint "status_id", null: false
   end
 
+  create_table "reactions", force: :cascade do |t|
+    t.bigint "account_id"
+    t.bigint "status_id"
+    t.string "name", default: "", null: false
+    t.bigint "custom_emoji_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["account_id", "status_id", "name"], name: "index_reactions_on_account_id_and_status_id", unique: true
+    t.index ["account_id"], name: "index_reactions_on_account_id"
+    t.index ["custom_emoji_id"], name: "index_reactions_on_custom_emoji_id"
+    t.index ["status_id"], name: "index_reactions_on_status_id"
+  end
+
   create_table "relays", force: :cascade do |t|
     t.string "inbox_url", default: "", null: false
     t.string "follow_activity_id"
@@ -945,6 +963,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_07_150100) do
     t.bigint "favourites_count", default: 0, null: false
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
+    t.bigint "reactions_count", default: 0, null: false
     t.index ["status_id"], name: "index_status_stats_on_status_id", unique: true
   end
 
@@ -1243,6 +1262,9 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_07_150100) do
   add_foreign_key "polls", "accounts", on_delete: :cascade
   add_foreign_key "polls", "statuses", on_delete: :cascade
   add_foreign_key "preview_card_trends", "preview_cards", on_delete: :cascade
+  add_foreign_key "reactions", "accounts", on_delete: :cascade
+  add_foreign_key "reactions", "custom_emojis", on_delete: :cascade
+  add_foreign_key "reactions", "statuses", on_delete: :cascade
   add_foreign_key "report_notes", "accounts", on_delete: :cascade
   add_foreign_key "report_notes", "reports", on_delete: :cascade
   add_foreign_key "reports", "accounts", column: "action_taken_by_account_id", name: "fk_bca45b75fd", on_delete: :nullify
