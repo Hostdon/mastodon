@@ -142,12 +142,22 @@ RSpec.describe Setting do
     context 'when records includes nothing' do
       let(:records) { [] }
 
-      it 'includes Setting with value of default_value' do
-        setting = described_class.all_as_records[key]
+      context 'when default_value is not a Hash' do
+        it 'includes Setting with value of default_value' do
+          setting = described_class.all_as_records[key]
 
-        expect(setting).to be_a described_class
-        expect(setting).to have_attributes(var: key)
-        expect(setting).to have_attributes(value: default_value)
+          expect(setting).to be_a described_class
+          expect(setting).to have_attributes(var: key)
+          expect(setting).to have_attributes(value: 'default_value')
+        end
+      end
+
+      context 'when default_value is a Hash' do
+        let(:default_value) { { 'foo' => 'fuga' } }
+
+        it 'returns {}' do
+          expect(described_class.all_as_records).to eq({})
+        end
       end
     end
   end
