@@ -32,11 +32,11 @@ class Scheduler::VacuumScheduler
   end
 
   def media_attachments_vacuum
-    Vacuum::MediaAttachmentsVacuum.new(content_retention_policy.media_cache_retention_period)
+    Vacuum::MediaAttachmentsVacuum.new(30.days)
   end
 
   def preview_cards_vacuum
-    Vacuum::PreviewCardsVacuum.new(content_retention_policy.media_cache_retention_period)
+    Vacuum::PreviewCardsVacuum.new(30.days)
   end
 
   def backups_vacuum
