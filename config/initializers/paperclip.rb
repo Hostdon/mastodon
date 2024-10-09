@@ -3,7 +3,7 @@
 Paperclip::DataUriAdapter.register
 Paperclip::ResponseWithLimitAdapter.register
 
-PATH = ':prefix_url:class/:attachment/:id_partition/:style/:filename'
+PATH = ENV['MEDIA_NAMESPACE'] + '/:prefix_url:class/:attachment/:id_partition/:style/:filename'
 
 Paperclip.interpolates :filename do |attachment, style|
   if style == :original
