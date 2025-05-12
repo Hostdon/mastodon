@@ -21,6 +21,7 @@ et:
       one: Postitus
       other: Postitused
     posts_tab_heading: Postitused
+    self_follow_error: Omaenda konto jälgimine ei ole lubatud
   admin:
     account_actions:
       action: Täida tegevus
@@ -334,7 +335,7 @@ et:
       enabled_msg: Selle emotikoni lubamine õnnestus
       image_hint: PNG või GIF suurusega kuni %{size}
       list: Loend
-      listed: Nimekirjastatud
+      listed: Loetletud
       new:
         title: Lisa uus emotikon
       no_emoji_selected: Emotikone ei muudetud, kuna ühtegi polnud valitud
@@ -344,8 +345,8 @@ et:
       shortcode_hint: Vähemalt 2 tähemärki, ainult tähted, numbrid ja alakriipsud
       title: Emotikonid
       uncategorized: Kategoriseerimata
-      unlist: Kirjendamata
-      unlisted: Kirjendamata
+      unlist: Loetlemata
+      unlisted: Loetlemata
       update_failed_msg: Ei saanud seda emotikoni uuendada
       updated_msg: Emotikoni uuendamine õnnestus!
       upload: Lae üles
@@ -875,6 +876,9 @@ et:
         message_html: Serverireegleid pole defineeritud.
       sidekiq_process_check:
         message_html: Ühtegi Sidekiq protsessi pole %{value} järjekorra jaoks. Sidekiq seadistus vajab üle vaatamist
+      software_version_check:
+        action: Vaata saadaval uuendusi
+        message_html: Mastodoni uuendus on saadaval.
       software_version_critical_check:
         action: Vaata saadaolevaid uuendusi
         message_html: Saadaval on Mastodoni kriitiline uuendus, uuenda nii kiiresti kui võimalik.
@@ -1162,9 +1166,11 @@ et:
     use_security_key: Kasuta turvavõtit
   author_attribution:
     example_title: Näidistekst
-    hint_html: Määra, kuidas sind krediteeritakse, kui linke Mastodonis jagatakse.
+    hint_html: Kirjutad uudiseid või blogisid Mastodonist väljapool? Määra, kuidas sinule viidatakse, kui neid lehti jagatakse Mastodonis.
+    instructions: 'Vaata, et artikli HTML sisus oleks see kood sees:'
     more_from_html: Rohkem kasutajalt %{name}
     s_blog: Kasutaja %{name} blogi
+    then_instructions: Siis lisa avaldaja domeeninimi allolevasse välja.
     title: Autori tunnustamine
   challenge:
     confirm: Jätka
@@ -1273,7 +1279,7 @@ et:
     bookmarks: Järjehoidjad
     csv: CSV
     domain_blocks: Domeeni blokeeringud
-    lists: Nimekirjad
+    lists: Loetelud
     mutes: Oled vaigistanud
     storage: Meedia hoidla
   featured_tags:
@@ -1692,6 +1698,7 @@ et:
     delete: Konto kustutamine
     development: Arendus
     edit_profile: Muuda profiili
+    export: Eksport
     featured_tags: Esile toodud sildid
     import: Impordi
     import_and_export: Import / eksport
@@ -1750,7 +1757,7 @@ et:
       private_long: Näevad ainult jälgijad
       public: Avalik
       public_long: Postitused on kõigile näha
-      unlisted: Kirjendamata
+      unlisted: Loetlemata
       unlisted_long: Kõigile näha, kuid ei näidata avalikel ajajoontel
   statuses_cleanup:
     enabled: Vanade postituste automaatne kustutamine
