@@ -28,7 +28,7 @@ public/packs-test
 /coverage
 .env
 .env.production
-/node_modules/
+node_modules/
 /build/
 
 # Ignore Vagrant files
