@@ -2,6 +2,153 @@
 
 All notable changes to this project will be documented in this file.
 
+## [4.2.23] - 2025-07-23
+
+### Security
+
+- Updated dependencies
+
+## [4.2.22] - 2025-07-02
+
+### Changed
+
+- Change passthrough video processing to emit `moov` atom at start of video (#34726 by @ClearlyClaire)
+
+### Fixed
+
+- Fix `NoMethodError` in edge case of emoji cache handling (#34749 by @dariusk)
+- Fix error when viewing statuses to deleted replies in moderation view (#32986 by @ClearlyClaire)
+- Fix search operators sometimes getting lost (#35190 by @ClearlyClaire)
+- Fix handling of remote attachments with multiple media types (#34996 by @ClearlyClaire)
+- Fix inconsistent filtering of silenced accounts for other silenced accounts (#34863 by @ClearlyClaire)
+- Fix handling of inlined `featured` collections in ActivityPub actor objects (#34789 and #34811 by @ClearlyClaire)
+- Fix admin dashboard crash on specific Elasticsearch connection errors (#34683 by @ClearlyClaire)
+- Fix OIDC account creation failing for long display names (#34639 by @defnull)
+- Fix `/share` not using server-set characters limit (#33459 by @kescherCode)
+- Fix wrong video dimensions for some rotated videos (#33008 and #33261 by @Gargron and @tribela)
+
+## [4.2.21] - 2025-05-06
+
+### Security
+
+- Update dependencies
+- Check scheme on account, profile, and media URLs ([GHSA-x2rc-v5wx-g3m5](https://github.com/mastodon/mastodon/security/advisories/GHSA-x2rc-v5wx-g3m5))
+
+### Added
+
+- Add warning for REDIS_NAMESPACE deprecation at startup (#34581 by @ClearlyClaire)
+- Add built-in context for interaction policies (#34574 by @ClearlyClaire)
+
+### Changed
+
+- Change activity distribution error handling to skip retrying for deleted accounts (#33617 by @ClearlyClaire)
+
+### Removed
+
+- Remove double-query for signed query strings (#34610 by @ClearlyClaire)
+
+### Fixed
+
+- Fix incorrect redirect in response to unauthenticated API requests in limited federation mode (#34549 by @ClearlyClaire)
+- Fix sign-up e-mail confirmation page reloading on error or redirect (#34548 by @ClearlyClaire)
+
+## [4.2.20] - 2025-04-02
+
+### Add
+
+- Add delay to profile updates to debounce them (#34137 by @ClearlyClaire)
+- Add support for paginating partial collections in `SynchronizeFollowersService` (#34272 and #34277 by @ClearlyClaire)
+
+### Changed
+
+- Change account suspensions to be federated to recently-followed accounts as well (#34294 by @ClearlyClaire)
+- Change `AccountReachFinder` to consider statuses based on suspension date (#32805 and #34291 by @ClearlyClaire and @mjankowski)
+- Change user archive signed URL TTL from 10 seconds to 1 hour (#34254 by @ClearlyClaire)
+
+### Fixed
+
+- Fix incorrect URL being used when cache busting (#34189 by @ClearlyClaire)
+
+## [4.2.19] - 2025-03-13
+
+### Security
+
+- Update dependency `omniauth-saml`
+- Update dependency `rack`
+
+### Fixed
+
+- Fix Stoplight errors when using `REDIS_NAMESPACE` ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/34126))
+
+## [4.2.18] - 2025-03-10
+
+### Changed
+
+- Change hashtag suggestion to prefer personal history capitalization (#34070 by @ClearlyClaire)
+
+### Fixed
+
+- Fix processing errors for some HEIF images from iOS 18 (#34086 by @renchap)
+- Fix streaming server not filtering unknown-language posts from public timelines (#33774 by @ClearlyClaire)
+
+## [4.2.17] - 2025-02-27
+
+### Security
+
+- Update dependencies
+
+### Removed
+
+- Remove support for Ruby 3.0
+
+## [4.2.16] - 2025-02-27
+
+### Security
+
+- Update dependencies
+- Change HTML sanitization to remove unusable and unused `embed` tag (#34021 by @ClearlyClaire, [GHSA-mq2m-hr29-8gqf](https://github.com/mastodon/mastodon/security/advisories/GHSA-mq2m-hr29-8gqf))
+- Fix rate-limit on sign-up email verification ([GHSA-v39f-c9jj-8w7h](https://github.com/mastodon/mastodon/security/advisories/GHSA-v39f-c9jj-8w7h))
+- Fix improper disclosure of domain blocks to unverified users ([GHSA-94h4-fj37-c825](https://github.com/mastodon/mastodon/security/advisories/GHSA-94h4-fj37-c825))
+
+### Fixed
+
+- Fix emoji rewrite adding unnecessary curft to the DOM for most emoji (#33818 by @ClearlyClaire)
+- Fix incorrect signature after HTTP redirect (#33757 and #33769 by @ClearlyClaire)
+- Fix polls not being validated on edition (#33755 by @ClearlyClaire)
+- Fix featured tags for remote accounts not being kept up to date (#33372, #33406, and #33425 by @ClearlyClaire and @mjankowski)
+- Fix exclusive lists interfering with notifications (#28162 by @ShadowJonathan)
+
+## [4.2.15] - 2025-01-16
+
+### Security
+
+- Fix insufficient validation of account URIs ([GHSA-5wxh-3p65-r4g6](https://github.com/mastodon/mastodon/security/advisories/GHSA-5wxh-3p65-r4g6))
+- Update dependencies
+
+### Fixed
+
+- Fix `libyaml` missing from `Dockerfile` build stage (#33591 by @vmstan)
+- Fix deletion of unconfirmed users with Webauthn set (#33186 by @ClearlyClaire)
+
+## [4.2.14] - 2024-02-03
+
+### Added
+
+- Add `tootctl feeds vacuum` (#33065 by @ClearlyClaire)
+
+### Fixed
+
+- Fix inactive users' timelines being backfilled on follow and unsuspend (#33094 by @ClearlyClaire)
+- Fix direct inbox delivery pushing posts into inactive followers' timelines (#33067 by @ClearlyClaire)
+- Fix `TagFollow` records not being correctly handled in account operations (#33063 by @ClearlyClaire)
+- Fix pushing hashtag-followed posts to feeds of inactive users (#33018 by @Gargron)
+- Fix and improve batch attachment deletion handling when using OpenStack Swift (#32637 by @hugogameiro)
+- Fix tl language native name (#32606 by @seav)
+
+### Security
+
+- Update dependencies
+
 ## [4.2.13] - 2024-09-30
 
 ### Security

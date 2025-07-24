@@ -13,7 +13,7 @@ module Mastodon
     end
 
     def patch
-      13
+      23
     end
 
     def default_prerelease

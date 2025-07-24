@@ -69,6 +69,7 @@ class Account < ApplicationRecord
   MENTION_RE    = %r{(?<![=/[:word:]])@((#{USERNAME_RE})(?:@[[:word:]]+([.-]+[[:word:]]+)*)?)}
   URL_PREFIX_RE = %r{\Ahttp(s?)://[^/]+}
   USERNAME_ONLY_RE = /\A#{USERNAME_RE}\z/i
+  DISPLAY_NAME_LENGTH_LIMIT = 30
 
   include Attachmentable
   include AccountAssociations
@@ -99,7 +100,7 @@ class Account < ApplicationRecord
   # Local user validations
   validates :username, format: { with: /\A[a-z0-9_]+\z/i }, length: { maximum: 30 }, if: -> { local? && will_save_change_to_username? && actor_type != 'Application' }
   validates_with UnreservedUsernameValidator, if: -> { local? && will_save_change_to_username? && actor_type != 'Application' }
-  validates :display_name, length: { maximum: 30 }, if: -> { local? && will_save_change_to_display_name? }
+  validates :display_name, length: { maximum: DISPLAY_NAME_LENGTH_LIMIT }, if: -> { local? && will_save_change_to_display_name? }
   validates :note, note_length: { maximum: 500 }, if: -> { local? && will_save_change_to_note? }
   validates :fields, length: { maximum: 4 }, if: -> { local? && will_save_change_to_fields? }
   validates :uri, absence: true, if: :local?, on: :create
@@ -133,6 +134,7 @@ class Account < ApplicationRecord
   scope :by_domain_and_subdomains, ->(domain) { where(domain: Instance.by_domain_and_subdomains(domain).select(:domain)) }
   scope :not_excluded_by_account, ->(account) { where.not(id: account.excluded_from_timeline_account_ids) }
   scope :not_domain_blocked_by_account, ->(account) { where(arel_table[:domain].eq(nil).or(arel_table[:domain].not_in(account.excluded_from_timeline_domains))) }
+  scope :with_username, ->(value) { value.is_a?(Array) ? where(arel_table[:username].lower.in(value.map { |x| x.to_s.downcase })) : where(arel_table[:username].lower.eq(value.to_s.downcase)) }
 
   after_update_commit :trigger_update_webhooks
 
