@@ -59,6 +59,10 @@ tok:
     dashboard:
       top_languages: toki pi kepeken suli
       top_servers: ma pi toki suli
+    fasp:
+      debug:
+        callbacks:
+          ip: nanpa IP
     follow_recommendations:
       language: toki seme
       status: nasin
@@ -67,16 +71,7 @@ tok:
         instance_languages_dimension: toki pi kepeken suli
     reports:
       are_you_sure: sina wile ala wile?
-    statuses:
-      title: toki suli pi jan ni
     tags:
       search: o alasa
-  imports:
-    overwrite_preambles:
-      blocking_html: "<strong>jan %{total_items}</strong> li lon lipu <strong>%{filename}</strong>. sina wile ala lukin e toki jan la, sina ni la <strong>kulupu pi lukin ala li kama</strong> kulupu lipu."
-      bookmarks_html: "<strong>toki %{total_items}</strong> li lon lipu <strong>%{filename}</strong>. toki li suli tawa sina la, sina ni la <strong>kulupu pi toki suli li kama</strong> kulupu lipu."
-      domain_blocking_html: "<strong>ma %{total_items}</strong> li lon lipu <strong>%{filename}</strong>. sina wile ala lukin e toki tan ma la, sina ni la <strong>kulupu pi lukin ala li kama</strong> kulupu lipu."
-      following_html: "<strong>jan %{total_items}</strong> li lon lipu <strong>%{filename}</strong>. sina wile <strong>kute</strong> e jan la, sina ni la <strong>kulupu kute li kama</strong> kulupu lipu."
-      lists_html: "<strong>jan %{total_items}</strong> li lon lipu <strong>%{filename}</strong>. sina jo e kulupu jan. sina ni la <strong>kulupu sina li weka</strong>, sina kama jo e kulupu lipu."
   privacy:
     search: o alasa
