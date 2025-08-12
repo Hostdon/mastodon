@@ -95,6 +95,9 @@ export const accountDefaultValues: AccountShape = {
   limited: false,
   moved: null,
   hide_collections: false,
+  // This comes from `ApiMutedAccountJSON`, but we should eventually
+  // store that in a different object.
+  mute_expires_at: null,
 };
 
 const AccountFactory = ImmutableRecord<AccountShape>(accountDefaultValues);
@@ -147,5 +150,10 @@ export function createAccountFromServerJSON(serverJSON: ApiAccountJSON) {
     ),
     note_emojified: emojify(accountJSON.note, emojiMap),
     note_plain: unescapeHTML(accountJSON.note),
+    url:
+      accountJSON.url.startsWith('http://') ||
+      accountJSON.url.startsWith('https://')
+        ? accountJSON.url
+        : accountJSON.uri,
   });
 }
