@@ -22,7 +22,6 @@ class ApplicationController < ActionController::Base
   helper_method :use_seamless_external_login?
   helper_method :sso_account_settings
   helper_method :limited_federation_mode?
-  helper_method :body_class_string
   helper_method :skip_csrf_meta_tags?
 
   rescue_from ActionController::ParameterMissing, Paperclip::AdapterRegistry::NoHandlerError, with: :bad_request
@@ -32,7 +31,7 @@ class ApplicationController < ActionController::Base
   rescue_from ActionController::InvalidAuthenticityToken, with: :unprocessable_entity
   rescue_from Mastodon::RateLimitExceededError, with: :too_many_requests
 
-  rescue_from HTTP::Error, OpenSSL::SSL::SSLError, with: :internal_server_error
+  rescue_from(*Mastodon::HTTP_CONNECTION_ERRORS, with: :internal_server_error)
   rescue_from Mastodon::RaceConditionError, Stoplight::Error::RedLight, ActiveRecord::SerializationFailure, with: :service_unavailable
 
   rescue_from Seahorse::Client::NetworkingError do |e|
@@ -75,7 +74,11 @@ class ApplicationController < ActionController::Base
 
     respond_to do |format|
       format.any do
-        redirect_to edit_user_registration_path
+        if current_user.confirmed?
+          redirect_to edit_user_registration_path
+        else
+          redirect_to auth_setup_path
+        end
       end
 
       format.json do
@@ -95,7 +98,7 @@ class ApplicationController < ActionController::Base
   end
 
   def after_sign_out_path_for(_resource_or_scope)
-    if ENV['OMNIAUTH_ONLY'] == 'true' && ENV['OIDC_ENABLED'] == 'true'
+    if ENV['OMNIAUTH_ONLY'] == 'true' && Rails.configuration.x.omniauth.oidc_enabled?
       '/auth/auth/openid_connect/logout'
     else
       new_user_session_path
@@ -172,10 +175,6 @@ class ApplicationController < ActionController::Base
     return Setting.theme unless Themes.instance.names.include? current_user&.setting_theme
 
     current_user.setting_theme
-  end
-
-  def body_class_string
-    @body_classes || ''
   end
 
   def respond_with_error(code)
