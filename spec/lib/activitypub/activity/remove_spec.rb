@@ -51,7 +51,7 @@ RSpec.describe ActivityPub::Activity::Remove do
       end
 
       before do
-        sender.featured_tags.find_or_create_by!(name: tag.name)
+        sender.featured_tags.find_or_create_by!(tag: tag)
       end
 
       it 'removes a pin' do
