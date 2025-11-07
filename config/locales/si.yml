@@ -607,7 +607,6 @@ si:
       open: ලිපිය අරින්න
       original_status: මුල් ලිපිය
       status_changed: ලිපිය සංශෝධිතයි
-      title: ගිණුමේ ලිපි
       trending: නැගී එන
       with_media: මාධ්‍ය සමඟ
     strikes:
@@ -1177,8 +1176,6 @@ si:
     content_warning: 'අන්තර්ගත අනතුරු ඇඟවීම:'
     descriptions:
       account: "@%{acct} වෙතින් ප්‍රසිද්ධ ලිපි"
-  scheduled_statuses:
-    too_soon: නියමිත දිනය අනාගතයේ විය යුතුය
   sessions:
     activity: අවසාන ක්‍රියාකාරකම
     browser: අතිරික්සුව
@@ -1271,7 +1268,6 @@ si:
       ownership: වෙනත් අයගේ ලිපි ඇමිණීමට නොහැකිය
     title: '%{name}: "%{quote}"'
     visibilities:
-      direct: සෘජු
       private: අනුගාමිකයින් පමණි
       private_long: අනුගාමිකයින්ට පමණක් පෙන්වන්න
       public: ප්‍රසිද්ධ

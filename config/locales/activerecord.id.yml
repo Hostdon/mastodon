@@ -15,8 +15,6 @@ id:
       user/invite_request:
         text: Alasan
     errors:
-      messages:
-        too_many_lines: melewati batas dari %{limit} baris
       models:
         account:
           attributes:
