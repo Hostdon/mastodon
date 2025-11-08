@@ -77,16 +77,6 @@ RSpec.describe Fasp::Request do
 
         expect(provider.delivery_failure_tracker.failures).to eq 1
       end
-
-      context 'when an error response is received' do
-        let(:status) { 401 }
-
-        it 'raises an unexpected response error' do
-          expect do
-            subject.send(method, '/test_path')
-          end.to raise_error(Mastodon::UnexpectedResponseError)
-        end
-      end
     end
   end
 

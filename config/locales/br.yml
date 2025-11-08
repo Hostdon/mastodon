@@ -820,8 +820,6 @@ br:
     visibilities:
       direct: Meneg prevez
       public: Publik
-      public_long: Pep hini a c'hall gwelet
-      unlisted: Anlistennet
   statuses_cleanup:
     keep_direct: Mirout ar c'hannadoù eeun
     keep_media: Derc'hel an embannadurioù gant restroù stag

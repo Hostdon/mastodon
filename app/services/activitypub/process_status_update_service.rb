@@ -304,8 +304,6 @@ class ActivityPub::ProcessStatusUpdateService < BaseService
       approval_uri = nil if unsupported_uri_scheme?(approval_uri) || TagManager.instance.local_url?(approval_uri)
 
       if @status.quote.present?
-        state = @status_parser.deleted_quote? ? :deleted : :pending
-
         # If the quoted post has changed, discard the old object and create a new one
         if @status.quote.quoted_status.present? && ActivityPub::TagManager.instance.uri_for(@status.quote.quoted_status) != quote_uri
           # Revoke the quote while we get a chance… maybe this should be a `before_destroy` hook?

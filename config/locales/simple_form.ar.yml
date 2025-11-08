@@ -236,7 +236,6 @@ ar:
         setting_emoji_style: نمط الوجوه التعبيرية
         setting_expand_spoilers: توسيع المنشورات التي تحتوي على تحذيرات عن المحتوى دائما
         setting_hide_network: إخفِ شبكتك
-        setting_missing_alt_text_modal: إظهار حوار التأكيد قبل نشر وسائط دون نص بديل
         setting_reduce_motion: تخفيض عدد الصور في الوسائط المتحركة
         setting_system_font_ui: استخدم الخطوط الافتراضية للنظام
         setting_system_scrollbars_ui: استخدام شريط التمرير الافتراضي للنظام
