@@ -1,2 +1,11 @@
 @use 'black/variables';
 @use 'application';
+
+// Fix QR code visibility in black theme
+.qr-code {
+  background: #fff !important;
+
+  svg path {
+    fill: #000;
+  }
+}
