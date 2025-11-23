@@ -14,7 +14,7 @@ import spring from 'react-motion/lib/spring';
 import Overlay from 'react-overlays/Overlay';
 
 import { AnimatedNumber } from 'mastodon/components/animated_number';
-import unicodeMapping from 'mastodon/features/emoji/emoji_unicode_mapping_light';
+import { unicodeMapping } from 'mastodon/features/emoji/emoji_unicode_mapping_light';
 import { autoPlayGif, reduceMotion } from 'mastodon/initial_state';
 import { assetHost } from 'mastodon/utils/config';
 
