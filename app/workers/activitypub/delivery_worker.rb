@@ -59,19 +59,25 @@ class ActivityPub::DeliveryWorker
   end
 
   def perform_request
-    light = Stoplight(@inbox_url) do
+    stoplight_wrapper.run do
       request_pool.with(@host) do |http_client|
         build_request(http_client).perform do |response|
-          raise Mastodon::UnexpectedResponseError, response unless response_successful?(response) || response_error_unsalvageable?(response)
+          raise Mastodon::UnexpectedResponseError, response unless response_successful?(response) || response_error_unsalvageable?(response) || unsalvageable_authorization_failure?(response)
 
           @performed = true
         end
       end
     end
+  end
 
-    light.with_threshold(STOPLIGHT_FAILURE_THRESHOLD)
-         .with_cool_off_time(STOPLIGHT_COOLDOWN)
-         .run
+  def unsalvageable_authorization_failure?(response)
+    @source_account.permanently_unavailable? && response.code == 401
+  end
+
+  def stoplight_wrapper
+    Stoplight(@inbox_url)
+      .with_threshold(STOPLIGHT_FAILURE_THRESHOLD)
+      .with_cool_off_time(STOPLIGHT_COOLDOWN)
   end
 
   def failure_tracker

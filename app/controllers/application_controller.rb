@@ -9,16 +9,17 @@ class ApplicationController < ActionController::Base
   include UserTrackingConcern
   include SessionTrackingConcern
   include CacheConcern
+  include PreloadingConcern
   include DomainControlHelper
   include DatabaseHelper
   include AuthorizedFetchHelper
+  include SelfDestructHelper
 
   helper_method :current_account
   helper_method :current_session
   helper_method :current_theme
   helper_method :single_user_mode?
   helper_method :use_seamless_external_login?
-  helper_method :omniauth_only?
   helper_method :sso_account_settings
   helper_method :limited_federation_mode?
   helper_method :body_class_string
@@ -38,6 +39,8 @@ class ApplicationController < ActionController::Base
     Rails.logger.warn "Storage server error: #{e}"
     service_unavailable
   end
+
+  before_action :check_self_destruct!
 
   before_action :store_referrer, except: :raise_not_found, if: :devise_controller?
   before_action :require_functional!, if: :user_signed_in?
@@ -68,7 +71,23 @@ class ApplicationController < ActionController::Base
   end
 
   def require_functional!
-    redirect_to edit_user_registration_path unless current_user.functional?
+    return if current_user.functional?
+
+    respond_to do |format|
+      format.any do
+        redirect_to edit_user_registration_path
+      end
+
+      format.json do
+        if !current_user.confirmed?
+          render json: { error: 'Your login is missing a confirmed e-mail address' }, status: 403
+        elsif !current_user.approved?
+          render json: { error: 'Your login is currently pending approval' }, status: 403
+        elsif !current_user.functional?
+          render json: { error: 'Your login is currently disabled' }, status: 403
+        end
+      end
+    end
   end
 
   def skip_csrf_meta_tags?
@@ -126,15 +145,11 @@ class ApplicationController < ActionController::Base
   end
 
   def single_user_mode?
-    @single_user_mode ||= Rails.configuration.x.single_user_mode && Account.where('id > 0').exists?
+    @single_user_mode ||= Rails.configuration.x.single_user_mode && Account.without_internal.exists?
   end
 
   def use_seamless_external_login?
     Devise.pam_authentication || Devise.ldap_authentication
-  end
-
-  def omniauth_only?
-    ENV['OMNIAUTH_ONLY'] == 'true'
   end
 
   def sso_account_settings
@@ -167,6 +182,15 @@ class ApplicationController < ActionController::Base
     respond_to do |format|
       format.any  { render "errors/#{code}", layout: 'error', status: code, formats: [:html] }
       format.json { render json: { error: Rack::Utils::HTTP_STATUS_CODES[code] }, status: code }
+    end
+  end
+
+  def check_self_destruct!
+    return unless self_destruct?
+
+    respond_to do |format|
+      format.any  { render 'errors/self_destruct', layout: 'auth', status: 410, formats: [:html] }
+      format.json { render json: { error: Rack::Utils::HTTP_STATUS_CODES[410] }, status: 410 }
     end
   end
 

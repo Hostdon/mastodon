@@ -15,6 +15,12 @@ es-MX:
       user/invite_request:
         text: Motivo
     errors:
+      attributes:
+        domain:
+          invalid: no es un nombre de dominio válido
+      messages:
+        invalid_domain_on_line: "%{value} no es un nombre de dominio válido"
+        too_many_lines: excede el límite de %{limit} líneas
       models:
         account:
           attributes:
@@ -36,7 +42,7 @@ es-MX:
         status:
           attributes:
             reblog:
-              taken: del estado ya existe
+              taken: de la publicación ya existe
         user:
           attributes:
             email:

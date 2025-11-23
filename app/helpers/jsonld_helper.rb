@@ -26,6 +26,8 @@ module JsonLdHelper
   # The url attribute can be a string, an array of strings, or an array of objects.
   # The objects could include a mimeType. Not-included mimeType means it's text/html.
   def url_to_href(value, preferred_type = nil)
+    value = [value] if value.is_a?(Hash)
+
     single_value = if value.is_a?(Array) && !value.first.is_a?(String)
                      value.find { |link| preferred_type.nil? || ((link['mimeType'].presence || 'text/html') == preferred_type) }
                    elsif value.is_a?(Array)
@@ -39,6 +41,15 @@ module JsonLdHelper
     else
       single_value['href']
     end
+  end
+
+  def url_to_media_type(value, preferred_type = nil)
+    value = [value] if value.is_a?(Hash)
+    return unless value.is_a?(Array) && !value.first.is_a?(String)
+
+    single_value = value.find { |link| preferred_type.nil? || ((link['mimeType'].presence || 'text/html') == preferred_type) }
+
+    single_value['mediaType'] unless single_value.nil?
   end
 
   def as_array(value)
@@ -141,7 +152,7 @@ module JsonLdHelper
   def safe_for_forwarding?(original, compacted)
     original.without('@context', 'signature').all? do |key, value|
       compacted_value = compacted[key]
-      return false unless value.class == compacted_value.class
+      return false unless value.instance_of?(compacted_value.class)
 
       if value.is_a?(Hash)
         safe_for_forwarding?(value, compacted_value)
@@ -198,14 +209,6 @@ module JsonLdHelper
     json
   rescue Oj::ParseError
     nil
-  end
-
-  def merge_context(context, new_context)
-    if context.is_a?(Array)
-      context << new_context
-    else
-      [context, new_context]
-    end
   end
 
   def response_successful?(response)

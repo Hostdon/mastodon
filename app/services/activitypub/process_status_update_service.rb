@@ -23,6 +23,9 @@ class ActivityPub::ProcessStatusUpdateService < BaseService
 
     if @status_parser.edited_at.present? && (@status.edited_at.nil? || @status_parser.edited_at > @status.edited_at)
       handle_explicit_update!
+    elsif @status.edited_at.present? && (@status_parser.edited_at.nil? || @status_parser.edited_at < @status.edited_at)
+      # This is an older update, reject it
+      return @status
     else
       handle_implicit_update!
     end
@@ -73,7 +76,7 @@ class ActivityPub::ProcessStatusUpdateService < BaseService
     as_array(@json['attachment']).each do |attachment|
       media_attachment_parser = ActivityPub::Parser::MediaAttachmentParser.new(attachment)
 
-      next if media_attachment_parser.remote_url.blank? || @next_media_attachments.size > 4
+      next if media_attachment_parser.remote_url.blank? || @next_media_attachments.size > Status::MEDIA_ATTACHMENTS_LIMIT
 
       begin
         media_attachment   = previous_media_attachments.find { |previous_media_attachment| previous_media_attachment.remote_url == media_attachment_parser.remote_url }
@@ -97,11 +100,11 @@ class ActivityPub::ProcessStatusUpdateService < BaseService
       end
     end
 
-    added_media_attachments = @next_media_attachments - previous_media_attachments
-
     @status.ordered_media_attachment_ids = @next_media_attachments.map(&:id)
 
     @media_attachments_changed = true if @status.ordered_media_attachment_ids != previous_media_attachments_ids
+
+    @status.media_attachments.reload if @media_attachments_changed
   end
 
   def download_media_files!
@@ -172,9 +175,9 @@ class ActivityPub::ProcessStatusUpdateService < BaseService
 
     as_array(@json['tag']).each do |tag|
       if equals_or_includes?(tag['type'], 'Hashtag')
-        @raw_tags << tag['name']
+        @raw_tags << tag['name'] if tag['name'].present?
       elsif equals_or_includes?(tag['type'], 'Mention')
-        @raw_mentions << tag['href']
+        @raw_mentions << tag['href'] if tag['href'].present?
       elsif equals_or_includes?(tag['type'], 'Emoji')
         @raw_emojis << tag
       end
@@ -186,37 +189,58 @@ class ActivityPub::ProcessStatusUpdateService < BaseService
   end
 
   def update_tags!
-    @status.tags = Tag.find_or_create_by_names(@raw_tags)
+    previous_tags = @status.tags.to_a
+    current_tags = @status.tags = Tag.find_or_create_by_names(@raw_tags)
+
+    return unless @status.distributable?
+
+    added_tags = current_tags - previous_tags
+
+    unless added_tags.empty?
+      @account.featured_tags.where(tag_id: added_tags.pluck(:id)).find_each do |featured_tag|
+        featured_tag.increment(@status.created_at)
+      end
+    end
+
+    removed_tags = previous_tags - current_tags
+
+    unless removed_tags.empty?
+      @account.featured_tags.where(tag_id: removed_tags.pluck(:id)).find_each do |featured_tag|
+        featured_tag.decrement(@status)
+      end
+    end
   end
 
   def update_mentions!
-    previous_mentions = @status.active_mentions.includes(:account).to_a
-    current_mentions  = []
+    unresolved_mentions = []
 
-    @raw_mentions.each do |href|
+    currently_mentioned_account_ids = @raw_mentions.filter_map do |href|
       next if href.blank?
 
       account   = ActivityPub::TagManager.instance.uri_to_resource(href, Account)
       account ||= ActivityPub::FetchRemoteAccountService.new.call(href, request_id: @request_id)
 
-      next if account.nil?
-
-      mention   = previous_mentions.find { |x| x.account_id == account.id }
-      mention ||= account.mentions.new(status: @status)
-
-      current_mentions << mention
+      account&.id
+    rescue Mastodon::UnexpectedResponseError, HTTP::TimeoutError, HTTP::ConnectionError, OpenSSL::SSL::SSLError
+      # Since previous mentions are about already-known accounts,
+      # they don't try to resolve again and won't fall into this case.
+      # In other words, this failure case is only for new mentions and won't
+      # affect `removed_mentions` so they can safely be retried asynchronously
+      unresolved_mentions << href
+      nil
     end
 
-    current_mentions.each do |mention|
-      mention.save if mention.new_record?
-    end
+    @status.mentions.upsert_all(currently_mentioned_account_ids.uniq.map { |id| { account_id: id, silent: false } }, unique_by: %w(status_id account_id))
 
     # If previous mentions are no longer contained in the text, convert them
     # to silent mentions, since withdrawing access from someone who already
     # received a notification might be more confusing
-    removed_mentions = previous_mentions - current_mentions
+    @status.mentions.where.not(account_id: currently_mentioned_account_ids).update_all(silent: true)
 
-    Mention.where(id: removed_mentions.map(&:id)).update_all(silent: true) unless removed_mentions.empty?
+    # Queue unresolved mentions for later
+    unresolved_mentions.uniq.each do |uri|
+      MentionResolveWorker.perform_in(rand(30...600).seconds, @status.id, uri, { 'request_id' => @request_id })
+    end
   end
 
   def update_emojis!
@@ -282,7 +306,7 @@ class ActivityPub::ProcessStatusUpdateService < BaseService
   end
 
   def reset_preview_card!
-    @status.preview_cards.clear
+    @status.reset_preview_card!
     LinkCrawlWorker.perform_in(rand(1..59).seconds, @status.id)
   end
 

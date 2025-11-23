@@ -28,15 +28,11 @@ public/packs-test
 /coverage
 .env
 .env.production
-.env.development
 /node_modules/
 /build/
 
 # Ignore Vagrant files
 .vagrant/
-
-# Ignore Capistrano customizations
-/config/deploy/*
 
 # Ignore IDE files
 .vscode/
@@ -62,9 +58,23 @@ npm-debug.log
 yarn-error.log
 yarn-debug.log
 
+# From https://yarnpkg.com/getting-started/qa#which-files-should-be-gitignored
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
 # Ignore vagrant log files
 *-cloudimg-console.log
 
 # Ignore Docker option files
 docker-compose.override.yml
-.github
+
+# Ignore dotenv .local files
+.env*.local
+
+# Ignore local-only rspec configuration
+.rspec-local

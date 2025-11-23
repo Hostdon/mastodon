@@ -28,7 +28,7 @@ class DeliveryFailureTracker
   end
 
   def available?
-    !UnavailableDomain.where(domain: @host).exists?
+    !UnavailableDomain.exists?(domain: @host)
   end
 
   def exhausted_deliveries_days
@@ -46,6 +46,8 @@ class DeliveryFailureTracker
       urls.reject do |url|
         host = Addressable::URI.parse(url).normalized_host
         unavailable_domains_map[host]
+      rescue Addressable::URI::InvalidURIError, IDN::Idna::IdnaError
+        true
       end
     end
 
@@ -62,7 +64,7 @@ class DeliveryFailureTracker
         key.delete_prefix(exhausted_deliveries_key_by(''))
       end
 
-      domains - UnavailableDomain.all.pluck(:domain)
+      domains - UnavailableDomain.pluck(:domain)
     end
 
     def warning_domains_map(domains = nil)

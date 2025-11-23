@@ -6,12 +6,13 @@ class ActivityPub::Parser::StatusParser
   NORMALIZED_LOCALE_NAMES = LanguagesHelper::SUPPORTED_LOCALES.keys.index_by(&:downcase).freeze
 
   # @param [Hash] json
-  # @param [Hash] magic_values
-  # @option magic_values [String] :followers_collection
-  def initialize(json, magic_values = {})
-    @json         = json
-    @object       = json['object'] || json
-    @magic_values = magic_values
+  # @param [Hash] options
+  # @option options [String] :followers_collection
+  # @option options [Hash]   :object
+  def initialize(json, **options)
+    @json    = json
+    @object  = options[:object] || json['object'] || json
+    @options = options
   end
 
   def uri
@@ -27,7 +28,10 @@ class ActivityPub::Parser::StatusParser
   end
 
   def url
-    url_to_href(@object['url'], 'text/html') if @object['url'].present?
+    return if @object['url'].blank?
+
+    url = url_to_href(@object['url'], 'text/html')
+    url unless unsupported_uri_scheme?(url)
   end
 
   def text
@@ -80,7 +84,7 @@ class ActivityPub::Parser::StatusParser
       :public
     elsif audience_cc.any? { |cc| ActivityPub::TagManager.instance.public_collection?(cc) }
       :unlisted
-    elsif audience_to.include?(@magic_values[:followers_collection])
+    elsif audience_to.include?(@options[:followers_collection])
       :private
     else
       :direct

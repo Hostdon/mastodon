@@ -4,6 +4,7 @@ require 'singleton'
 
 class ActivityPub::TagManager
   include Singleton
+  include JsonLdHelper
   include RoutingHelper
 
   CONTEXT = 'https://www.w3.org/ns/activitystreams'
@@ -17,7 +18,7 @@ class ActivityPub::TagManager
   end
 
   def url_for(target)
-    return target.url if target.respond_to?(:local?) && !target.local?
+    return unsupported_uri_scheme?(target.url) ? nil : target.url if target.respond_to?(:local?) && !target.local?
 
     return unless target.respond_to?(:object_type)
 
@@ -72,6 +73,18 @@ class ActivityPub::TagManager
     raise ArgumentError, 'target must be a local activity' unless %i(note comment activity).include?(target.object_type) && target.local?
 
     account_status_replies_url(target.account, target, page_params)
+  end
+
+  def likes_uri_for(target)
+    raise ArgumentError, 'target must be a local activity' unless %i(note comment activity).include?(target.object_type) && target.local?
+
+    account_status_likes_url(target.account, target)
+  end
+
+  def shares_uri_for(target)
+    raise ArgumentError, 'target must be a local activity' unless %i(note comment activity).include?(target.object_type) && target.local?
+
+    account_status_shares_url(target.account, target)
   end
 
   def followers_uri_for(target)

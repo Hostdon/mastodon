@@ -17,7 +17,7 @@ class Admin::SystemCheck::ElasticsearchCheck < Admin::SystemCheck::BaseCheck
     return true unless Chewy.enabled?
 
     running_version.present? && compatible_version? && cluster_health['status'] == 'green' && indexes_match? && preset_matches?
-  rescue Faraday::ConnectionFailed, Elasticsearch::Transport::Transport::Error
+  rescue Faraday::ConnectionFailed, Elasticsearch::Transport::Transport::Error, HTTPClient::KeepAliveDisconnected
     false
   end
 
@@ -49,7 +49,7 @@ class Admin::SystemCheck::ElasticsearchCheck < Admin::SystemCheck::BaseCheck
     else
       Admin::SystemCheck::Message.new(:elasticsearch_preset, nil, 'https://docs.joinmastodon.org/admin/elasticsearch/#scaling')
     end
-  rescue Faraday::ConnectionFailed, Elasticsearch::Transport::Transport::Error
+  rescue Faraday::ConnectionFailed, Elasticsearch::Transport::Transport::Error, HTTPClient::KeepAliveDisconnected
     Admin::SystemCheck::Message.new(:elasticsearch_running_check)
   end
 
@@ -76,12 +76,33 @@ class Admin::SystemCheck::ElasticsearchCheck < Admin::SystemCheck::BaseCheck
   end
 
   def compatible_version?
-    return false if running_version.nil?
-
-    Gem::Version.new(running_version) >= Gem::Version.new(required_version) ||
-      Gem::Version.new(compatible_wire_version) >= Gem::Version.new(required_version)
+    running_version_ok? || compatible_wire_version_ok?
   rescue ArgumentError
     false
+  end
+
+  def running_version_ok?
+    return false if running_version.blank?
+
+    gem_version_running >= gem_version_required
+  end
+
+  def compatible_wire_version_ok?
+    return false if compatible_wire_version.blank?
+
+    gem_version_compatible_wire >= gem_version_required
+  end
+
+  def gem_version_running
+    Gem::Version.new(running_version)
+  end
+
+  def gem_version_required
+    Gem::Version.new(required_version)
+  end
+
+  def gem_version_compatible_wire
+    Gem::Version.new(compatible_wire_version)
   end
 
   def mismatched_indexes
