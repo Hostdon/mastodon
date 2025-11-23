@@ -11,6 +11,7 @@ import { connect } from 'react-redux';
 
 import BookmarkIcon from '@/material-icons/400-24px/bookmark-fill.svg';
 import BookmarkBorderIcon from '@/material-icons/400-24px/bookmark.svg?react';
+import FilterAltIcon from '@/material-icons/400-24px/filter_alt.svg?react';
 import MoreHorizIcon from '@/material-icons/400-24px/more_horiz.svg?react';
 import RepeatIcon from '@/material-icons/400-24px/repeat.svg?react';
 import ReplyIcon from '@/material-icons/400-24px/reply.svg?react';
@@ -375,6 +376,12 @@ class StatusActionBar extends ImmutablePureComponent {
     }
 
     const isReply = status.get('in_reply_to_account_id') === status.getIn(['account', 'id']);
+
+    const filterButton = this.props.onFilter && (
+      <div className='status__action-bar__button-wrapper'>
+        <IconButton className='status__action-bar__button' title={intl.formatMessage(messages.filter)} icon='filter' iconComponent={FilterAltIcon} onClick={this.handleFilterClick} />
+      </div>
+    );
 
     return (
       <div className='status__action-bar'>
