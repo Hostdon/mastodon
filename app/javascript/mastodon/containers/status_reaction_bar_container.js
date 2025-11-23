@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 
 import { reaction, unreaction } from 'mastodon/actions/interactions';
+import { me } from 'mastodon/initial_state';
 
 import StatusReactionBar from '../components/status_reaction_bar';
 
@@ -10,6 +11,7 @@ const customEmojiMap = createSelector([state => state.get('custom_emojis')], ite
 
 const mapStateToProps = state => ({
   emojiMap: customEmojiMap(state),
+  signedIn: !!me,
 });
 
 const mapDispatchToProps = dispatch => ({

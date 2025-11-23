@@ -1398,6 +1398,12 @@ body > [data-popper-placement] {
   &:focus {
     outline: 0;
     background: rgba($ui-highlight-color, 0.05);
+
+    .detailed-status,
+    .detailed-status-reaction-bar,
+    .detailed-status__action-bar {
+      background: lighten($ui-base-color, 8%);
+    }
   }
 }
 
@@ -5187,6 +5193,34 @@ a.status-card {
   }
 }
 
+.reaction-picker {
+  max-width: 350px;
+}
+
+.reaction-picker__menu {
+  position: relative;
+  z-index: 2;
+  background: var(--dropdown-background-color);
+  backdrop-filter: var(--background-filter);
+  border: 1px solid var(--dropdown-border-color);
+  box-shadow: var(--dropdown-shadow);
+  border-radius: 5px;
+  max-width: 350px;
+
+  .emoji-mart {
+    max-width: 100%;
+  }
+
+  .emoji-mart-scroll {
+    transition: opacity 200ms ease;
+    max-width: 100%;
+  }
+
+  &.selecting .emoji-mart-scroll {
+    opacity: 0.5;
+  }
+}
+
 .emoji-picker-dropdown__modifiers {
   position: absolute;
   top: 60px;
@@ -8801,6 +8835,7 @@ noscript {
   width: 100%;
 }
 
+.status-reaction-bar,
 .reactions-bar {
   display: flex;
   flex-wrap: wrap;
@@ -8809,12 +8844,15 @@ noscript {
   margin-inline-start: -2px;
   width: calc(100% - (90px - 33px));
 
+  &__wrapper {
+    margin: 2px;
+  }
+
   &__item {
     flex-shrink: 0;
     background: lighten($ui-base-color, 12%);
     border: 0;
     border-radius: 3px;
-    margin: 2px;
     cursor: pointer;
     user-select: none;
     padding: 0 6px;
@@ -8863,6 +8901,13 @@ noscript {
       }
     }
 
+    &:disabled {
+      border: 1px dashed lighten($ui-base-color, 16%);
+      background: transparent;
+      cursor: default;
+      pointer-events: none;
+    }
+
     &.active {
       transition: all 100ms ease-in;
       transition-property: background-color, color;
@@ -8872,6 +8917,7 @@ noscript {
         80%
       );
 
+      .status-reaction-bar__item__count,
       .reactions-bar__item__count {
         color: lighten($highlight-text-color, 8%);
       }
@@ -8913,6 +8959,60 @@ noscript {
   &--empty {
     .emoji-button {
       padding: 0;
+    }
+  }
+}
+
+.status-reaction-bar {
+  width: 100%;
+}
+
+.detailed-status-reaction-bar {
+  .status-reaction-bar {
+    margin-top: 16px;
+    justify-content: left;
+  }
+}
+
+.status-reaction-bar__item__users {
+  color: $inverted-text-color;
+  background: $ui-secondary-color;
+  display: flex;
+  padding: 12px;
+  border-radius: 4px;
+  box-shadow: 2px 4px 15px rgba($base-shadow-color, 0.4);
+  z-index: 9999;
+  font-size: 13px;
+
+  &__emoji {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-right: 16px;
+    width: 80px;
+
+    .emojione {
+      width: 60px;
+      height: auto;
+    }
+
+    &__code {
+      margin-top: 6px;
+      word-break: break-all;
+    }
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 4px;
+
+    .account__avatar {
+      margin-right: 6px;
+    }
+
+    .display-name__account {
+      display: none;
     }
   }
 }
@@ -10829,6 +10929,18 @@ noscript {
       font-size: 15px;
       line-height: 22px;
       color: $dark-text-color;
+    }
+
+    &__reactions {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+
+      .emojione {
+        width: 18px;
+        height: 18px;
+        vertical-align: middle;
+      }
     }
   }
 }

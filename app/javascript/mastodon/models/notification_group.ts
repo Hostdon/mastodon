@@ -37,6 +37,12 @@ export type NotificationGroupStatus = BaseNotificationWithStatus<'status'>;
 export type NotificationGroupMention = BaseNotificationWithStatus<'mention'>;
 export type NotificationGroupPoll = BaseNotificationWithStatus<'poll'>;
 export type NotificationGroupUpdate = BaseNotificationWithStatus<'update'>;
+export interface NotificationGroupReaction extends BaseNotificationWithStatus<'emoji_reaction'> {
+  sampleReactions: Array<{
+    name: string;
+    customEmojiId: string | null;
+  }>;
+}
 export type NotificationGroupFollow = BaseNotification<'follow'>;
 export type NotificationGroupFollowRequest = BaseNotification<'follow_request'>;
 export type NotificationGroupAdminSignUp = BaseNotification<'admin.sign_up'>;
@@ -82,6 +88,7 @@ export type NotificationGroup =
   | NotificationGroupMention
   | NotificationGroupPoll
   | NotificationGroupUpdate
+  | NotificationGroupReaction
   | NotificationGroupFollow
   | NotificationGroupFollowRequest
   | NotificationGroupModerationWarning
@@ -128,6 +135,19 @@ export function createNotificationGroupFromJSON(
       const { status_id: statusId, ...groupWithoutStatus } = group;
       return {
         statusId: statusId ?? undefined,
+        sampleAccountIds,
+        partial: false,
+        ...groupWithoutStatus,
+      };
+    }
+    case 'emoji_reaction': {
+      const { status_id: statusId, sample_reactions: sampleReactions, ...groupWithoutStatus } = group;
+      return {
+        statusId: statusId ?? undefined,
+        sampleReactions: sampleReactions.map(r => ({
+          name: r.name,
+          customEmojiId: r.custom_emoji_id,
+        })),
         sampleAccountIds,
         partial: false,
         ...groupWithoutStatus,

@@ -405,7 +405,7 @@ class StatusActionBar extends ImmutablePureComponent {
             disabled={!signedIn}
             status={status}
             onReaction={this.props.onReaction}
-            icon='smile-o'
+            icon='mood'
             size={18}
             direction='right'
             title={intl.formatMessage(messages.reaction)}

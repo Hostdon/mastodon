@@ -5,6 +5,7 @@ import ImmutablePropTypes from 'react-immutable-proptypes';
 import { defineMessages, injectIntl, FormattedMessage } from 'react-intl';
 import { connect } from 'react-redux';
 import ColumnHeader from 'mastodon/components/column_header';
+import RefreshIcon from '@/material-icons/400-24px/refresh.svg?react';
 import { Icon } from 'mastodon/components/icon';
 import { fetchReactions } from 'mastodon/actions/interactions';
 import { LoadingIndicator } from 'mastodon/components/loading_indicator';
@@ -66,7 +67,7 @@ class Reactions extends ImmutablePureComponent {
           showBackButton
           multiColumn={multiColumn}
           extraButton={(
-            <button type='button' className='column-header__button' title={intl.formatMessage(messages.refresh)} aria-label={intl.formatMessage(messages.refresh)} onClick={this.handleRefresh}><Icon id='refresh' /></button>
+            <button type='button' className='column-header__button' title={intl.formatMessage(messages.refresh)} aria-label={intl.formatMessage(messages.refresh)} onClick={this.handleRefresh}><Icon id='refresh' icon={RefreshIcon} /></button>
           )}
         />
 

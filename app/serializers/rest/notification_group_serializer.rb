@@ -2,7 +2,14 @@
 
 class REST::NotificationGroupSerializer < ActiveModel::Serializer
   # Please update app/javascript/api_types/notification.ts when making changes to the attributes
-  attributes :group_key, :notifications_count, :type, :most_recent_notification_id
+  attributes :group_key, :notifications_count, :most_recent_notification_id
+
+  attribute :type
+
+  def type
+    # Convert internal reaction type to emoji_reaction for frontend compatibility
+    object.type == :reaction ? :emoji_reaction : object.type
+  end
 
   attribute :page_min_id, if: :paginated?
   attribute :page_max_id, if: :paginated?
@@ -10,6 +17,7 @@ class REST::NotificationGroupSerializer < ActiveModel::Serializer
 
   attribute :sample_account_ids
   attribute :status_id, if: :status_type?
+  attribute :sample_reactions, if: :reaction_type?
   belongs_to :report, if: :report_type?, serializer: REST::ReportSerializer
   belongs_to :account_relationship_severance_event, key: :event, if: :relationship_severance_event?, serializer: REST::AccountRelationshipSeveranceEventSerializer
   belongs_to :account_warning, key: :moderation_warning, if: :moderation_warning_event?, serializer: REST::AccountWarningSerializer
@@ -23,7 +31,7 @@ class REST::NotificationGroupSerializer < ActiveModel::Serializer
   end
 
   def status_type?
-    [:favourite, :reblog, :status, :mention, :poll, :update].include?(object.type)
+    [:favourite, :reblog, :status, :mention, :poll, :update, :reaction].include?(object.type)
   end
 
   def report_type?
@@ -36,6 +44,14 @@ class REST::NotificationGroupSerializer < ActiveModel::Serializer
 
   def moderation_warning_event?
     object.type == :moderation_warning
+  end
+
+  def reaction_type?
+    object.type == :reaction
+  end
+
+  def sample_reactions
+    object.sample_reactions
   end
 
   def page_min_id

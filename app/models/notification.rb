@@ -33,7 +33,7 @@ class Notification < ApplicationRecord
   }.freeze
 
   # `set_group_key!` needs to be updated if this list changes
-  GROUPABLE_NOTIFICATION_TYPES = %i(favourite reblog follow).freeze
+  GROUPABLE_NOTIFICATION_TYPES = %i(favourite reblog follow reaction).freeze
   MAXIMUM_GROUP_SPAN_HOURS = 12
 
   # Please update app/javascript/api_types/notification.ts if you change this
@@ -161,13 +161,15 @@ class Notification < ApplicationRecord
 
   class << self
     def browserable(types: [], exclude_types: [], from_account_id: nil, include_filtered: false)
+      # Map emoji_reaction to reaction for frontend compatibility
       requested_types = if types.empty?
                           TYPES
                         else
-                          types.map(&:to_sym) & TYPES
+                          types.map { |type| type.to_sym == :emoji_reaction ? :reaction : type.to_sym } & TYPES
                         end
 
-      requested_types -= exclude_types.map(&:to_sym)
+      exclude_types_normalized = exclude_types.map { |type| type.to_sym == :emoji_reaction ? :reaction : type.to_sym }
+      requested_types -= exclude_types_normalized
 
       all.tap do |scope|
         scope.merge!(where(filtered: false)) unless include_filtered || from_account_id.present?
@@ -188,7 +190,9 @@ class Notification < ApplicationRecord
         if grouped_types.present?
           # Normalize `grouped_types` so the number of different SQL query shapes remains small, and
           # the queries can be analyzed in monitoring/telemetry tools
-          grouped_types = (grouped_types.map(&:to_sym) & GROUPABLE_NOTIFICATION_TYPES).sort
+          # Map emoji_reaction to reaction for frontend compatibility
+          grouped_types = grouped_types.map { |type| type.to_sym == :emoji_reaction ? :reaction : type.to_sym }
+          grouped_types = (grouped_types & GROUPABLE_NOTIFICATION_TYPES).sort
 
           sanitize_sql_array([<<~SQL.squish, { types: grouped_types }])
             COALESCE(

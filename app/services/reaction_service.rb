@@ -33,14 +33,13 @@ class ReactionService < BaseService
 
     if status.account.local?
       LocalNotificationWorker.perform_async(status.account_id, reaction.id, 'Reaction', 'reaction')
+    elsif status.account.activitypub?
+      ActivityPub::ReactionsDistributionWorker.perform_async(build_json(reaction), current_account.id, status.account.shared_inbox_url)
     end
-    ActivityPub::ReactionsDistributionWorker.perform_async(build_json(reaction), current_account.id, status.account.shared_inbox_url)
   end
 
   def bump_potential_friendship(account, status)
     ActivityTracker.increment('activity:interactions')
-    return if account.following?(status.account_id)
-    PotentialFriendshipTracker.record(account.id, status.account_id, :reaction)
   end
 
   def build_json(reaction)

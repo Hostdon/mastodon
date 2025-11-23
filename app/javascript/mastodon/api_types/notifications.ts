@@ -20,6 +20,7 @@ export const allNotificationTypes = [
   'admin.report',
   'moderation_warning',
   'severed_relationships',
+  'emoji_reaction',
 ];
 
 export type NotificationWithStatusType =
@@ -28,7 +29,8 @@ export type NotificationWithStatusType =
   | 'status'
   | 'mention'
   | 'poll'
-  | 'update';
+  | 'update'
+  | 'emoji_reaction';
 
 export type NotificationType =
   | NotificationWithStatusType
@@ -61,6 +63,15 @@ export interface BaseNotificationGroupJSON {
 interface NotificationGroupWithStatusJSON extends BaseNotificationGroupJSON {
   type: NotificationWithStatusType;
   status_id: string | null;
+}
+
+interface NotificationGroupReactionJSON extends BaseNotificationGroupJSON {
+  type: 'emoji_reaction';
+  status_id: string | null;
+  sample_reactions: Array<{
+    name: string;
+    custom_emoji_id: string | null;
+  }>;
 }
 
 interface NotificationWithStatusJSON extends BaseNotificationJSON {
@@ -142,6 +153,7 @@ export type ApiNotificationGroupJSON =
   | ReportNotificationGroupJSON
   | AccountRelationshipSeveranceNotificationGroupJSON
   | NotificationGroupWithStatusJSON
+  | NotificationGroupReactionJSON
   | ModerationWarningNotificationGroupJSON;
 
 export interface ApiNotificationGroupsResultJSON {

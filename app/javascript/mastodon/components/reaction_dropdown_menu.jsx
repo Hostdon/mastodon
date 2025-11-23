@@ -8,6 +8,7 @@ import ImmutablePropTypes from 'react-immutable-proptypes';
 import { supportsPassiveEvents } from 'detect-passive-events';
 import Overlay from 'react-overlays/Overlay';
 
+import MoodIcon from '@/material-icons/400-24px/mood.svg?react';
 import { CircularProgress } from 'mastodon/components/circular_progress';
 
 import ReactionPickerContainer from '../containers/reaction_picker_container';
@@ -126,14 +127,18 @@ export default class ReactionDropdown extends React.PureComponent {
   };
 
   handlePickEmoji = (data) => {
-    this.props.onReaction(this.props.status, data.native.replace(/:/g, ''));
+    if (this.props.status) {
+      this.props.onReaction(this.props.status, data.native.replace(/:/g, ''));
+    }
+    this.handleClose();
   };
 
-  handleClick = ({ type }) => {
+  handleClick = (e) => {
+    const type = e?.type || 'click';
     if (this.state.id === this.props.openDropdownId) {
       this.handleClose();
     } else {
-      this.props.onOpen(this.state.id, this.handleItemClick, type !== 'click');
+      this.props.onOpen(this.state.id, type !== 'click');
     }
   };
 
@@ -211,10 +216,11 @@ export default class ReactionDropdown extends React.PureComponent {
       onKeyPress: this.handleKeyPress,
     }) : (
       <IconButton
-        className='smile-o-icon'
+        className='mood-icon'
         icon={icon}
+        iconComponent={MoodIcon}
         title={title}
-        active={status.get('reacted')}
+        active={status && status.get('reacted')}
         disabled={disabled}
         size={size}
         onClick={this.handleClick}

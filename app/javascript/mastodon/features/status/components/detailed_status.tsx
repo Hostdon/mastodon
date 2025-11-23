@@ -27,6 +27,7 @@ import { Avatar } from '../../../components/avatar';
 import { DisplayName } from '../../../components/display_name';
 import MediaGallery from '../../../components/media_gallery';
 import StatusContent from '../../../components/status_content';
+import StatusReactionBar from '../../../containers/status_reaction_bar_container';
 import Audio from '../../audio';
 import scheduleIdleTask from '../../ui/util/schedule_idle_task';
 import Video from '../../video';
@@ -53,6 +54,7 @@ export const DetailedStatus: React.FC<{
   pictureInPicture: any;
   onToggleHidden?: (status: any) => void;
   onToggleMediaVisibility?: () => void;
+  signedIn?: boolean;
 }> = ({
   status,
   onOpenMedia,
@@ -66,6 +68,7 @@ export const DetailedStatus: React.FC<{
   pictureInPicture,
   onToggleMediaVisibility,
   onToggleHidden,
+  signedIn,
 }) => {
   const properStatus = status?.get('reblog') ?? status;
   const [height, setHeight] = useState(0);
@@ -293,6 +296,22 @@ export const DetailedStatus: React.FC<{
     </Link>
   );
 
+  const reactionLink = (
+    <Link
+      to={`/@${status.getIn(['account', 'acct'])}/${status.get('id')}/reactions`}
+      className='detailed-status__link'
+    >
+      <span className='detailed-status__reactions'>
+        <AnimatedNumber value={status.get('reactions_count')} />
+      </span>
+      <FormattedMessage
+        id='status.reactions'
+        defaultMessage='{count, plural, one {reaction} other {reactions}}'
+        values={{ count: status.get('reactions_count') }}
+      />
+    </Link>
+  );
+
   const { statusContentProps, hashtagBar } = getHashtagBarForStatus(
     status as StatusLike,
   );
@@ -371,6 +390,10 @@ export const DetailedStatus: React.FC<{
           </>
         )}
 
+        <div className='detailed-status-reaction-bar'>
+          <StatusReactionBar status={properStatus} signedIn={signedIn} />
+        </div>
+
         <div className='detailed-status__meta'>
           <div className='detailed-status__meta__line'>
             <a
@@ -406,6 +429,8 @@ export const DetailedStatus: React.FC<{
             {reblogLink}
             {reblogLink && <>·</>}
             {favouriteLink}
+            <>·</>
+            {reactionLink}
           </div>
         </div>
       </div>

@@ -106,6 +106,12 @@
 // Change the background colors of statuses
 .focusable:focus {
   background: lighten($white, 4%);
+
+  .detailed-status,
+  .detailed-status-reaction-bar,
+  .detailed-status__action-bar {
+    background: lighten($ui-base-color, 8%);
+  }
 }
 
 // Change the background colors of status__content__spoiler-link
@@ -530,6 +536,19 @@ a.sparkline {
     scrollbar-color: rgba($action-button-color, 0.25)
       var(--background-border-color);
   }
+}
+
+.status-reaction-bar__item,
+.status-reaction-bar__item:hover,
+.status-reaction-bar__item:focus,
+.status-reaction-bar__item:active,
+.status-reaction-bar__item.active,
+.reactions-bar__item,
+.reactions-bar__item:hover,
+.reactions-bar__item:focus,
+.reactions-bar__item:active,
+.reactions-bar__item.active {
+  background: $ui-base-color;
 }
 
 ::-webkit-scrollbar-thumb {

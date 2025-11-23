@@ -14,6 +14,7 @@ import EditIcon from '@/material-icons/400-24px/edit.svg?react';
 import FlagIcon from '@/material-icons/400-24px/flag-fill.svg?react';
 import HomeIcon from '@/material-icons/400-24px/home-fill.svg?react';
 import InsertChartIcon from '@/material-icons/400-24px/insert_chart.svg?react';
+import MoodIcon from '@/material-icons/400-24px/mood.svg?react';
 import PersonIcon from '@/material-icons/400-24px/person-fill.svg?react';
 import PersonAddIcon from '@/material-icons/400-24px/person_add-fill.svg?react';
 import RepeatIcon from '@/material-icons/400-24px/repeat.svg?react';
@@ -229,12 +230,10 @@ class Notification extends ImmutablePureComponent {
       <HotKeys handlers={this.getHandlers()}>
         <div className={classNames('notification notification-reaction focusable', { unread })} tabIndex='0' aria-label={notificationForScreenReader(intl, intl.formatMessage(messages.reaction, { name: notification.getIn(['account', 'acct']) }), notification.get('created_at'))}>
           <div className='notification__message'>
-            <div className='notification__reaction-icon-wrapper'>
-              <Icon id='smile-o' className='smile-o-icon' fixedWidth />
-            </div>
+            <Icon id='mood' icon={MoodIcon} />
 
             <span title={notification.get('created_at')}>
-              <FormattedMessage id='notification.reaction' defaultMessage='{name} reacted your status' values={{ name: link }} />
+              <FormattedMessage id='notification.reaction' defaultMessage='{name} reacted to your post' values={{ name: link }} />
             </span>
           </div>
 

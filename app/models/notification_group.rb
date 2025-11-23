@@ -9,7 +9,8 @@ class NotificationGroup < ActiveModelSerializers::Model
   def self.from_notifications(notifications, pagination_range: nil, grouped_types: nil)
     return [] if notifications.empty?
 
-    grouped_types = grouped_types.presence&.map(&:to_sym) || Notification::GROUPABLE_NOTIFICATION_TYPES
+    # Map emoji_reaction to reaction for frontend compatibility
+    grouped_types = grouped_types.presence&.map { |type| type.to_sym == :emoji_reaction ? :reaction : type.to_sym } || Notification::GROUPABLE_NOTIFICATION_TYPES
 
     grouped_notifications = notifications.filter { |notification| notification.group_key.present? && grouped_types.include?(notification.type) }
     group_keys = grouped_notifications.pluck(:group_key)
@@ -52,6 +53,22 @@ class NotificationGroup < ActiveModelSerializers::Model
            :account_relationship_severance_event,
            :account_warning,
            to: :notification, prefix: false
+
+  def sample_reactions
+    return [] unless notification.type == :reaction
+
+    # Get the most recent reactions from the group
+    results = Reaction
+      .joins('INNER JOIN notifications ON notifications.activity_id = reactions.id AND notifications.activity_type = \'Reaction\'')
+      .where(notifications: { account_id: notification.account_id, group_key: group_key })
+      .order('notifications.id DESC')
+      .limit(3)
+      .pluck(:name, :custom_emoji_id)
+      .map { |name, custom_emoji_id| { name: name, custom_emoji_id: custom_emoji_id } }
+
+    # Remove duplicates based on name
+    results.uniq { |r| r[:name] }
+  end
 
   class << self
     private

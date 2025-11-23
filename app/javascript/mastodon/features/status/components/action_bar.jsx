@@ -21,7 +21,7 @@ import RepeatDisabledIcon from '@/svg-icons/repeat_disabled.svg?react';
 import RepeatPrivateIcon from '@/svg-icons/repeat_private.svg?react';
 import RepeatPrivateActiveIcon from '@/svg-icons/repeat_private_active.svg?react';
 import { identityContextPropShape, withIdentity } from 'mastodon/identity_context';
-import Reaction_dropdown_menu_container from 'mastodon/containers/reaction_dropdown_menu_container';
+import ReactionDropdownMenuContainer from 'mastodon/containers/reaction_dropdown_menu_container';
 import { PERMISSION_MANAGE_USERS, PERMISSION_MANAGE_FEDERATION } from 'mastodon/permissions';
 
 import { IconButton } from '../../../components/icon_button';
@@ -315,7 +315,7 @@ class ActionBar extends PureComponent {
         <div className='detailed-status__button'><IconButton className='bookmark-icon' disabled={!signedIn} active={status.get('bookmarked')} title={intl.formatMessage(messages.bookmark)} icon='bookmark' iconComponent={status.get('bookmarked') ? BookmarkIcon : BookmarkBorderIcon} onClick={this.handleBookmarkClick} /></div>
 
         <div className='status__action-bar__dropdown'>
-          <Reaction_dropdown_menu_container
+          <ReactionDropdownMenuContainer
             disabled={!signedIn}
             status={status}
             onReaction={this.props.onReaction}
