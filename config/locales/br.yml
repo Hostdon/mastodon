@@ -229,6 +229,20 @@ br:
       no_file: Restr ebet diuzet
     export_domain_blocks:
       no_file: Restr ebet diuzet
+    fasp:
+      debug:
+        callbacks:
+          delete: Dilemel
+          ip: Chomlec'h IP
+      providers:
+        active: Oberiant
+        delete: Dilemel
+        edit: Kemmañ ar pourvezer
+        name: Anv
+        registrations:
+          confirm: Kadarnaat
+        save: Enrollañ
+        status: Statud
     follow_recommendations:
       language: Evit ar yezh
       status: Statud
@@ -346,9 +360,14 @@ br:
         view_devops: DevOps
       title: Rolloù
     rules:
+      add_translation: Ouzhpennañ un droidigezh
       delete: Dilemel
       edit: Kemmañ ar reolenn
+      move_down: D'an traoñ
+      move_up: D'ar c'hrec'h
       title: Reolennoù ar servijer
+      translation: Troidigezh
+      translations: Troidigezhioù
     settings:
       about:
         manage_rules: Merañ reolennoù ar servijer
@@ -359,6 +378,7 @@ br:
       content_retention:
         danger_zone: Takad dañjer
       discovery:
+        privacy: Buhez prevez
         profile_directory: Kavlec'h ar profiloù
         publish_statistics: Embann ar stadegoù
         title: Dizoloadur
@@ -386,11 +406,12 @@ br:
       media:
         title: Media
       metadata: Metaroadennoù
+      no_history: An toud-mañ n'eo ket bet kemmet
       open: Digeriñ ar c'hannad
       original_status: Toud orin
       reblogs: Skignadennoù
       status_changed: Toud kemmet
-      title: Embannadurioù ar gont
+      status_title: Embannadenn gant @%{name}
       trending: Diouzh ar c'hiz
       visibility: Gwelusted
       with_media: Gant mediaoù
@@ -420,6 +441,14 @@ br:
     tags:
       search: Klask
       title: Gerioù-klik
+    terms_of_service:
+      history: Roll-istor
+      preview:
+        send_preview: Kas ur rakwel da %{email}
+      publish: Embann
+      published_on_html: Embannet d'an %{date}
+      save_draft: Enrollañ ar brouilhed
+      title: Divizoù implijout
     title: Merañ
     trends:
       allow: Aotren
@@ -771,9 +800,13 @@ br:
     pin_errors:
       ownership: N'hallit ket spilhennañ embannadurioù ar re all
       reblog: N'haller ket spilhennañ ur skignadenn
+    quote_policies:
+      followers: Heulierien·ezed hepken
+      nobody: Me hepken
+      public: Pep hini
     title: '%{name}: "%{quote}"'
     visibilities:
-      direct: War-eeun
+      direct: Meneg prevez
       private: Heulierien·ezed hepken
       public: Publik
       public_long: Pep hini a c'hall gwelet
@@ -796,6 +829,8 @@ br:
       '604800': 1 sizhunvezh
       '63113904': 2 vloavezh
       '7889238': 3 mizvezh
+  terms_of_service:
+    title: Divizoù implijout
   themes:
     contrast: Mastodon (Dargemm kreñv)
     default: Mastodon (Teñval)
@@ -820,6 +855,10 @@ br:
       subject: Prest eo ho tielloù da vezañ pellgarget
     suspicious_sign_in:
       change_password: kemmañ ho ker-tremen
+    terms_of_service_changed:
+      sign_off: Skipailh %{domain}
+      subject: Kemmoù en hon divizoù implijout
+      subtitle: Cheñchet o deus divizoù implijout %{domain}
     warning:
       categories:
         spam: Spam
@@ -849,7 +888,6 @@ br:
       hashtags_title: Gerioù-klik diouzh ar c'hiz
       hashtags_view_more: Gwelet muioc'h a c'herioù-klik diouzh ar c'hiz
       post_title: Grit hoc'h embannadur kentañ
-      share_action: Rannañ
       share_title: Rannit ho kont Mastodon
       sign_in_action: Kevreañ
       subject: Donemat e Mastodon

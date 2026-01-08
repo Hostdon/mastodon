@@ -113,6 +113,7 @@ const hasMyReaction = (status) => {
   return status.get('reactions').find((reaction) => reaction.get('me'));
 };
 
+/** @type {import('@reduxjs/toolkit').Reducer<typeof initialState>} */
 export default function statusLists(state = initialState, action) {
   switch(action.type) {
   case FAVOURITED_STATUSES_FETCH_REQUEST:

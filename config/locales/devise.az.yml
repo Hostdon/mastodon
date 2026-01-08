@@ -94,11 +94,6 @@ az:
       updated_not_active: Parolunuz uğurla dəyişdirildi.
     registrations:
       destroyed: Xudahafiz! Hesabınız uğurla ləğv edilib. Sizi tezliklə yenidən görməyi ümid edirik.
-      signed_up: Xoş gəlmisiniz! Uğurla qeydiyyatdan keçmisiniz.
-      signed_up_but_inactive: Uğurla qeydiyyatdan keçdiniz. Ancaq, hesabınız hələ aktivləşdirilmədiyi üçün hesabınıza daxil ola bilmirsiniz.
-      signed_up_but_locked: Uğurla qeydiyyatdan keçdiniz. Ancaq, hesabınız kilidləndiyi üçün hesabınıza daxil ola bilmirsiniz.
-      signed_up_but_pending: Təsdiq keçidi olan bir mesaj e-poçt ünvanınıza göndərilib. Keçidə kliklədikdən sonra müraciətinizi incələyəcəyik. Təsdiqləndiyi halda sizə məlumat veriləcək.
-      signed_up_but_unconfirmed: Təsdiq keçidi olan bir mesaj e-poçt ünvanınıza göndərilib. Hesabınızı aktivləşdirmək üçün lütfən keçidi izləyin. Bu e-poçtu almamısınızsa, lütfən spam qovluğunuza baxın.
       update_needs_confirmation: Hesabınızı uğurla güncəllədiniz, ancaq yeni e-poçt ünvanını doğrulamağımız lazımdır. Lütfən e-poçtunuzu yoxlayın, yeni e-poçt ünvanınızı təsdiqləmək üçün təsdiq keçidini izləyin. Əgər bu e-poçtu almamısınızsa spam qovluğunu yoxlayın.
       updated: Hesabınız uğurla güncəllənib.
     sessions:

@@ -38,6 +38,11 @@ br:
           attributes:
             data:
               malformed: a zo stummet fall
+        list_account:
+          attributes:
+            account_id:
+              taken: a zo er listenn dija
+          must_be_following: a dle bezañ ur gont heuliet
         status:
           attributes:
             reblog:

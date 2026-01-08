@@ -59,6 +59,10 @@ az:
         instance_follows_measure: buradakı izləyiciləri
       moderation:
         title: Moderasiya
+      moderation_notes:
+        create: Moderasiya notu əlavə et
+        description_html: Notlara baxın, gələcəkdə özünüz və digər moderatorlar üçün notlar buraxın
+        title: Moderasiya notları
     reports:
       actions:
         suspend_description_html: Hesab və onun bütün məzmunları əlçatmaz olacaq və nəticədə silinəcək və onunla əlaqə qurmaq mümkün olmayacaq. 30 gün ərzində geri qaytarıla bilər. Bu hesaba aid bütün hesabatları bağlayır.
@@ -87,7 +91,6 @@ az:
         title: Görünüş
       discovery:
         public_timelines: Ümumi zaman xətləri
-        publish_discovered_servers: Kəşf edilmiş serverləri dərc et
         title: Kəşf et
       registrations:
         moderation_recommandation: Hər kəs üçün qeydiyyatı açmazdan əvvəl lütfən əmin olun ki, adekvat və reaktiv moderasiya komandanız var!
@@ -97,7 +100,6 @@ az:
     statuses:
       application: Tətbiq
       metadata: Meta veri
-      title: Hesab göndərişləri
     system_checks:
       elasticsearch_version_check:
         message_html: 'Uyumlu olmayan Elasticsearch versiyası: %{value}'
@@ -144,7 +146,6 @@ az:
     link_to_otp: Telefonunuzdan iki faktorlu kodu və ya bir geri qaytarma kodunu daxil edin
     migrate_account: Fərqli bir hesaba daşı
     migrate_account_html: Bu hesabı başqa bir hesaba yönləndirmək istəyirsinizsə, <a href="%{path}">burada konfiqurasiya edə</a> bilərsiniz.
-    privacy_policy_agreement_html: <a href="%{privacy_policy_path}" target="_blank">Gizlilik siyasətini</a> oxumuşam və razılaşıram
     resend_confirmation: Təsdiq keçidini təkrar göndər
     reset_password: Parolu sıfırla
     rules:
@@ -154,11 +155,11 @@ az:
     set_new_password: Yeni parol təyin et
     setup:
       email_below_hint_html: Spam qovluğunuzu yoxlayın, ya da başqasını tələb edin. Əgər yanlışdırsa, e-poçt ünvanınızı düzəldə bilərsiniz.
-      email_settings_hint_html: "%{email} ünvanını doğrulamaq üçün sizə göndərdiyimiz keçidə klikləyin. Sizi burada gözləyirik."
+      email_settings_hint_html: Mastodon istifadə etməyə başlamaq üçün %{email} ünvanına göndərdiyimiz keçidə klikləyin. Biz burada gözləyirik.
       link_not_received: Keçidi almamısınız?
       title: Gələn qutunuzu yoxlayın
     sign_up:
-      preamble: Bu Mastodon serveri üzərindəki hesabla, hesabın yarada yerləşməsindən asılı olmayaraq şəbəkədəki istənilən şəxsi izləyə biləcəksiniz.
+      preamble: Bu Mastodon serveri üzərindəki hesabla, hesabın yarada yerləşməsindən asılı olmayaraq fediverse-dəki istənilən şəxsi izləyə biləcəksiniz.
       title: "%{domain} üzərində qeydiyyatınızı başladaq."
     status:
       account_status: Hesab statusu
@@ -200,10 +201,6 @@ az:
   imports:
     errors:
       incompatible_type: Seçilmiş daxilə köçürmə növü ilə uyumlu deyil
-    overwrite_preambles:
-      blocking_html: "<strong>Əngəlləmə siyahınızı</strong> <strong>%{filename}</strong> faylından <strong>%{total_items} hesabla</strong> əvəz etmək üzrəsiniz."
-      bookmarks_html: "<strong>Əlfəcinlərinizi</strong> <strong>%{filename}</strong> faylından <strong>%{total_items} göndərişlə</strong> əvəz etmək üzrəsiniz."
-      domain_blocking_html: "<strong>Domen əngəlləmə siyahınızı</strong> <strong>%{filename}</strong> faylından <strong>%{total_items} domenlə</strong> əvəz etmək üzrəsiniz."
     preface: Başqa serverdən xaricə köçürdüyünüz veriləri (məsələn, izlədiyiniz və ya əngəllədiyiniz insanların siyahısını) daxilə köçürə bilərsiniz.
     type_groups:
       constructive: İzlənilənlər və Əlfəcinlər
@@ -337,6 +334,8 @@ az:
     suspicious_sign_in:
       change_password: parolu dəyişdir
       subject: Hesabınıza yeni bir IP ünvanından erişildi
+    terms_of_service_changed:
+      title: Vacib güncəlləmə
     warning:
       explanation:
         disable: Artıq hesabınızı istifadə edə bilməzsiniz, ancaq profiliniz və digər veriləriniz olduğu kimi qalacaq. Verilərinizin bir nüsxəsini tələb edə, hesab ayarlarınızı dəyişdirə və ya hesabınızı silə bilərsiniz.
@@ -345,7 +344,6 @@ az:
       edit_profile_step: Profilinizi tam dolduraraq qarşılıqlı əlaqələrinizi artırın.
       feature_creativity: Mastodon özünüzü onlayn mühitdə ifadə etməyinizə kömək edəcək səs, video və şəkil göndərişləri, erişiləbilənlik açıqlamaları, anketlər, məzmun xəbərdarlıqları, animasiyalı avatarlar, özəl emojilər, kiçik şəkli kəsmə nəzarəti və daha çoxunu dəstəkləyir. Öz sənətinizi, musiqinizi və ya podkastınızı dərc edirsinizsə, Mastodon sizin üçün buradadır.
       feature_moderation_title: Olmalı olduğu şəkildə moderasiya
-      share_action: Paylaş
   users:
     go_to_sso_account_settings: Kimlik provayderinizin hesab ayarlarına gedin
     otp_lost_help_html: Hər ikisinə də erişə bilmirsinizsə, %{email} ilə əlaqə saxlayın

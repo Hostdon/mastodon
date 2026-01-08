@@ -278,6 +278,23 @@ kab:
       no_file: Ula d yiwen ufaylu ma yettwafran
     export_domain_blocks:
       no_file: Ulac afaylu yettwafernen
+    fasp:
+      debug:
+        callbacks:
+          delete: Kkes
+          ip: Tansa IP
+      providers:
+        active: D urmid
+        delete: Kkes
+        edit: Ẓreg asaǧǧaw
+        finish_registration: Fakk ajerred
+        name: Isem
+        providers: Asaǧǧaw
+        registrations:
+          confirm: Sentem
+        save: Sekles
+        sign_in: Qqen
+      title: FASP
     follow_recommendations:
       language: I tutlayt
       status: Addad
@@ -400,16 +417,20 @@ kab:
         view_dashboard: Timẓriwt n tfelwit
     rules:
       add_new: Rnu alugen
+      add_translation: Ad yernu tasuqilt
       delete: Kkes
       edit: Ẓreg alugen
       empty: Mazal ur ttwasbadun ara yilugan n uqeddac.
       title: Ilugan n uqeddac
+      translation: Tasuqilt
+      translations: Tisuqilin
     settings:
       about:
         title: Ɣef
       appearance:
         title: Udem
       discovery:
+        privacy: Tabaḍnit
         profile_directory: Akaram n imaɣnuten
         title: Asnirem
         trends: Ayen mucaɛen
@@ -434,6 +455,7 @@ kab:
       account: Ameskar
       application: Asnas
       back_to_account: Tuɣalin ɣer usebter n umiḍan
+      contents: Agbur
       deleted: Yettwakkes
       favourites: Imenyafen
       in_reply_to: Tiririt i
@@ -441,7 +463,7 @@ kab:
       media:
         title: Amidya
       open: Ldi tasuffeɣt
-      title: Tisuffaɣ n umiḍan
+      status_title: Tasuffeɣt sɣur @%{name}
       trending: Inezzaɣ
       visibility: Abani
       with_media: S umidya
@@ -464,6 +486,17 @@ kab:
       oldest: Aqbur
       search: Anadi
       title: Ihacṭagen
+    terms_of_service:
+      changelog: Amaynut
+      create: Sqedcet ayla-nwen
+      draft: Arewway
+      generates:
+        action: Sirew
+      history: Amazray
+      live: Srid
+      publish: Asuffeɣ
+      save_draft: Sekles arewway
+      title: Tiwtilin n useqdec
     title: Tadbelt
     trends:
       allow: Sireg
@@ -537,7 +570,6 @@ kab:
     logout: Ffeɣ
     migrate_account: Gujj ɣer umiḍan nniḍen
     or_log_in_with: Neɣ eqqen s
-    privacy_policy_agreement_html: Ɣriɣ yerna qebleɣ <a href="%{privacy_policy_path}" target="_blank">tasertit n tbaḍnit</a>
     progress:
       confirm: Asentem n imayl
       details: Isalli-inek·inem
@@ -561,18 +593,19 @@ kab:
     security: Taɣellist
     set_new_password: Egr-d awal uffir amaynut
     setup:
-      email_settings_hint_html: Sit ɣef useɣwen i ak-d-nceyyeε akken ad tesfeqdeḍ %{email}. Ad nerǧu da kan.
       link_not_received: Ur k-id-iṣaḥ ara wassaɣ ?
     sign_in:
       preamble_html: Kcem ar <strong>%{domain}</strong> s inekcam-inek n tuqqna. Ma yella yezga-d umiḍan-ik deg uqeddac-nniḍen, ur tezmireḍ ara ad tkecmeḍ sya.
       title: Akeččum ɣer %{domain}
     sign_up:
-      preamble: S umiḍan deg uqeddac-a n Mastodon, ad tizmireḍ ad tḍefreḍ win i ak·kem-yehwan deg uẓeṭṭa, anida yebɣu yili umiḍan-nnsen.
+      preamble: S umiḍan yellan deg uqeddac-a n Mastodon, ad tizimreḍ ad t-ḍefreḍ yal yiwen nniḍen i yellan deg fediverse, akken yebɣu yili wanda i yella umiḍan-nsen.
       title: Iyya ad d-nessewjed tiɣawsiwin i %{domain}.
     status:
       account_status: Addad n umiḍan
       functional: Amiḍan-inek·inem yetteddu s lekmal-is.
     use_security_key: Seqdec tasarut n teɣlist
+    user_agreement_html: Ɣriɣ yerna qebleɣ <a href="<a href="%{terms_of_service_path}" target="_blank">" target="_blank">tiwtilin ne useqdec</a> akked <a href="%{privacy_policy_path}" target="_blank">tsertit n tbaḍnit</a>
+    user_privacy_agreement_html: Ɣriɣ yerna qebleɣ <a href="%{privacy_policy_path}" target="_blank">tasertit n tbaḍnit</a>
   author_attribution:
     example_title: Amedya n weḍris
     more_from_html: Ugar s ɣur %{name}
@@ -858,9 +891,13 @@ kab:
     edited_at_html: Tettwaẓreg ass n %{date}
     pin_errors:
       reblog: Azuzer ur yezmir ara ad yili d unṭiḍ
+    quote_policies:
+      followers: Imeḍfaṛen kan
+      nobody: Nekki kan
+      public: Yal yiwen
     title: '%{name} : "%{quote}"'
     visibilities:
-      direct: Usrid
+      direct: Abdar uslig
       private: Imeḍfaṛen kan
       private_long: Ssken i ymeḍfaṛen kan
       public: Azayez
@@ -880,6 +917,8 @@ kab:
       '7889238': 3 n wayyuren
   stream_entries:
     sensitive_content: Agbur amḥulfu
+  terms_of_service:
+    title: Tiwtilin n useqdec
   themes:
     contrast: Maṣṭudun (agnil awriran)
     default: Maṣṭudun (Aberkan)
@@ -904,6 +943,8 @@ kab:
       action: Iɣewwaṛen n umiḍan
     suspicious_sign_in:
       change_password: snifel awal-ik·im n uɛeddi
+    terms_of_service_changed:
+      sign_off: Agraw n %{domain}
     warning:
       categories:
         spam: Aspam
@@ -932,7 +973,6 @@ kab:
       post_action: Aru
       post_step: Ini-as azul i umaḍal s uḍris, s tiwlafin, s tividyutin neɣ s tefranin.
       post_title: Aru tasuffeɣt-inek·inem tamezwarut
-      share_action: Bḍu
       share_step: Init-asen i yimeddukal-nwen amek ara ken-id-afen deg Mastodon.
       share_title: Bḍu amaɣnu-inek·inem n Mastodon
       sign_in_action: Qqen

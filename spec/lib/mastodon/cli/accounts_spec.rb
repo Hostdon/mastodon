@@ -32,6 +32,7 @@ RSpec.describe Mastodon::CLI::Accounts do
 
   describe '#create' do
     let(:action) { :create }
+    let(:username) { 'tootctl_username' }
 
     shared_examples 'a new user with given email address and username' do
       it 'creates user and accounts from options and displays success message' do
@@ -48,17 +49,23 @@ RSpec.describe Mastodon::CLI::Accounts do
       end
 
       def account_from_options
-        Account.find_local('tootctl_username')
+        Account.find_local(username)
       end
     end
 
     context 'when required USERNAME and --email are provided' do
-      let(:arguments) { ['tootctl_username'] }
+      let(:arguments) { [username] }
 
       context 'with USERNAME and --email only' do
         let(:options) { { email: 'tootctl@example.com' } }
 
         it_behaves_like 'a new user with given email address and username'
+
+        context 'with a reserved username' do
+          let(:username) { 'security' }
+
+          it_behaves_like 'a new user with given email address and username'
+        end
 
         context 'with invalid --email value' do
           let(:options) { { email: 'invalid' } }
@@ -67,6 +74,25 @@ RSpec.describe Mastodon::CLI::Accounts do
             expect { subject }
               .to raise_error(Thor::Error, %r{Failure/Error: email})
           end
+        end
+      end
+
+      context 'with min_age setting' do
+        let(:options) { { email: 'tootctl@example.com', confirmed: true } }
+
+        before do
+          Setting.min_age = 42
+        end
+
+        it_behaves_like 'a new user with given email address and username'
+
+        it 'creates a new user with confirmed status' do
+          expect { subject }
+            .to output_results('New password')
+
+          user = User.find_by(email: options[:email])
+
+          expect(user.confirmed?).to be(true)
         end
       end
 

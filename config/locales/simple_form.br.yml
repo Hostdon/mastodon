@@ -58,10 +58,12 @@ br:
         password: Ger-tremen
         phrase: Ger-alc'hwez pe frazenn
         setting_default_language: Yezh an embann
+        setting_default_quote_policy: Piv a c'hall menegiñ
         setting_display_media_default: Dre ziouer
         setting_display_media_hide_all: Kuzhat pep tra
         setting_display_media_show_all: Diskouez pep tra
         setting_system_font_ui: Implijout nodrezh dre ziouer ar reizhiad
+        setting_system_scrollbars_ui: Implijout barrenn dibunañ dre ziouer ar reizhiad
         setting_theme: Neuz al lec'hienn
         setting_use_pending_items: Mod gorrek
         title: Titl
@@ -101,7 +103,13 @@ br:
         name: Ger-klik
         trendable: Aotren ar ger-klik-mañ da zont war wel dindan tuadurioù
         usable: Aotren an embannadurioù da implijout ar ger-klik-mañ ent-lec'hel
+      terms_of_service_generator:
+        domain: Domani
+        jurisdiction: Barnadurezh
       user:
+        date_of_birth_1i: Devezh
+        date_of_birth_2i: Mizvezh
+        date_of_birth_3i: Bloavezh
         role: Roll
         time_zone: Gwerzhid eur
       user_role:

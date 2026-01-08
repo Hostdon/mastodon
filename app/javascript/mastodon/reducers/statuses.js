@@ -67,6 +67,12 @@ const statusTranslateUndo = (state, id) => {
   });
 };
 
+const removeStatusStub = (state, id) => {
+  return state.getIn([id, 'id']) ? state.deleteIn([id, 'isLoading']) : state.delete(id);
+}
+
+
+/** @type {ImmutableMap<string, import('mastodon/models/status').Status>} */
 const initialState = ImmutableMap();
 
 /** @type {import('@reduxjs/toolkit').Reducer<typeof initialState>} */
@@ -74,8 +80,14 @@ export default function statuses(state = initialState, action) {
   switch(action.type) {
   case STATUS_FETCH_REQUEST:
     return state.setIn([action.id, 'isLoading'], true);
-  case STATUS_FETCH_FAIL:
-    return state.delete(action.id);
+  case STATUS_FETCH_FAIL: {
+    if (action.parentQuotePostId && action.error.status === 404) {
+      return removeStatusStub(state, action.id)
+        .setIn([action.parentQuotePostId, 'quote', 'state'], 'deleted')
+    } else {
+      return removeStatusStub(state, action.id);
+    }
+  }
   case STATUS_IMPORT:
     return importStatus(state, action.status);
   case STATUSES_IMPORT:

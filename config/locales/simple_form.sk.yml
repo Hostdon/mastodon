@@ -3,13 +3,14 @@ sk:
   simple_form:
     hints:
       account:
-        attribution_domains_as_text: Jeden na riadok. Chráni vás pred falošným pripisovaním autorstva.
+        attribution_domains: Jeden na riadok. Chráni vás pred falošným pripisovaním autorstva.
         discoverable: Vaše verejné príspevky a profil môžu byť zobrazované a odporúčané v rôznych častiach Mastodonu a váš profil môže byť navrhovaný ostatným.
         display_name: Vaše meno a priezvisko alebo prezývka.
         fields: Váš web, zámená, vek, čokoľvek, čo chcete o sebe uviesť.
         indexable: Vaše verejné príspevky sa môžu zobrazovať vo výsledkoch vyhľadávania na Mastodone. Ľudia, ktorí s nimi interagovali, ich môžu nájsť vždy.
         note: 'Môžete @označiť iných ľudí alebo #hashtagy.'
         show_collections: Ľudia si budú môcť prezrieť, ktoré účty sledujete a ktoré účty sledujú vás. Ľudia, ktorých sledujete, o tom budú vždy vedieť.
+        unlocked: Ľudia vás budú môcť sledovať bez vášho schválenia. Zrušenie vám dá možnosť kontrolovať žiadosti o sledovanie a rozhodovať sa o prijímaní alebo zamietaní nových sledujúcich.
       account_alias:
         acct: Urči prezyvku@domenu účtu, s ktorého sa chceš presunúť
       account_migration:
@@ -44,6 +45,7 @@ sk:
         setting_display_media_default: Skrývať médiá označené ako citlivé
         setting_display_media_hide_all: Vždy skrývať médiá
         setting_display_media_show_all: Vždy zobrazovať médiá
+        setting_system_scrollbars_ui: Platí len pre počítačové prehliadače využívajúce technológiu Chrome alebo Safari
         setting_use_blurhash: Prechody sú založené na farbách skrytých vizuálov, ale skrývajú akékoľvek podrobnosti
         setting_use_pending_items: Časová os bude aktualizovaná až po kliknutí, feed sa nebúde posúvať automaticky
         whole_word: Ak je kľúčové slovo, alebo fráza poskladaná iba s písmen a čísel, bude použité iba ak sa zhoduje s celým výrazom
@@ -75,7 +77,7 @@ sk:
         chosen_languages: Po zaškrtnutí budú na verejných časových osiach zobrazované iba príspevky vo vybraných jazykoch
     labels:
       account:
-        attribution_domains_as_text: Weby, ktoré vám môžu pripisovať autorstvo
+        attribution_domains: Weby, ktoré vám môžu pripisovať autorstvo
         discoverable: Zobrazovať profil a príspevky v objavovacích algoritmoch
         fields:
           name: Definícia
@@ -137,6 +139,7 @@ sk:
         setting_boost_modal: Zobrazovať potvrdzovacie okno pred zdieľaním
         setting_default_language: Jazyk príspevkov
         setting_default_privacy: Súkromie príspevkov
+        setting_default_quote_policy: Kto vás môže citovať
         setting_default_sensitive: Vždy označovať médiá ako citlivé
         setting_delete_modal: Zobrazovať potvrdzovacie okno pred vymazaním príspevku
         setting_disable_hover_cards: Vypnúť náhľady profilov pri ukázaní kurzorom
@@ -147,8 +150,10 @@ sk:
         setting_display_media_show_all: Ukáž všetky
         setting_expand_spoilers: Stále rozbaľovať príspevky označené varovaním o obsahu
         setting_hide_network: Ukry svoju sieť kontaktov
+        setting_missing_alt_text_modal: Zobrazovať potvrdzovacie okno pred uverejnením média bez opisu
         setting_reduce_motion: Stlmiť animácie
         setting_system_font_ui: Používať predvolené písmo systému
+        setting_system_scrollbars_ui: Používať predvolený posuvník systému
         setting_theme: Vzhľad webu
         setting_trends: Zobrazovať dnešné trendy
         setting_unfollow_modal: Vyžaduj potvrdenie pred tým, než niekoho prestaneš sledovať

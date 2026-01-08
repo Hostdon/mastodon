@@ -19,9 +19,9 @@ import PersonIcon from '@/material-icons/400-24px/person-fill.svg?react';
 import PersonAddIcon from '@/material-icons/400-24px/person_add-fill.svg?react';
 import RepeatIcon from '@/material-icons/400-24px/repeat.svg?react';
 import StarIcon from '@/material-icons/400-24px/star-fill.svg?react';
+import { Account } from 'mastodon/components/account';
 import { Icon }  from 'mastodon/components/icon';
-import AccountContainer from 'mastodon/containers/account_container';
-import StatusContainer from 'mastodon/containers/status_container';
+import { StatusQuoteManager } from 'mastodon/components/status_quoted';
 import { me } from 'mastodon/initial_state';
 import { WithRouterPropTypes } from 'mastodon/utils/react_router';
 
@@ -149,7 +149,7 @@ class Notification extends ImmutablePureComponent {
             </span>
           </div>
 
-          <AccountContainer id={account.get('id')} hidden={this.props.hidden} />
+          <Account id={account.get('id')} hidden={this.props.hidden} />
         </div>
       </HotKeys>
     );
@@ -169,7 +169,7 @@ class Notification extends ImmutablePureComponent {
             </span>
           </div>
 
-          <FollowRequestContainer id={account.get('id')} withNote={false} hidden={this.props.hidden} />
+          <FollowRequestContainer id={account.get('id')} hidden={this.props.hidden} />
         </div>
       </HotKeys>
     );
@@ -177,7 +177,7 @@ class Notification extends ImmutablePureComponent {
 
   renderMention (notification) {
     return (
-      <StatusContainer
+      <StatusQuoteManager
         id={notification.get('status')}
         withDismiss
         hidden={this.props.hidden}
@@ -207,7 +207,7 @@ class Notification extends ImmutablePureComponent {
             </span>
           </div>
 
-          <StatusContainer
+          <StatusQuoteManager
             id={notification.get('status')}
             account={notification.get('account')}
             muted
@@ -267,7 +267,7 @@ class Notification extends ImmutablePureComponent {
             </span>
           </div>
 
-          <StatusContainer
+          <StatusQuoteManager
             id={notification.get('status')}
             account={notification.get('account')}
             muted
@@ -301,7 +301,7 @@ class Notification extends ImmutablePureComponent {
             </span>
           </div>
 
-          <StatusContainer
+          <StatusQuoteManager
             id={notification.get('status')}
             account={notification.get('account')}
             contextType='notifications'
@@ -336,7 +336,7 @@ class Notification extends ImmutablePureComponent {
             </span>
           </div>
 
-          <StatusContainer
+          <StatusQuoteManager
             id={notification.get('status')}
             account={notification.get('account')}
             contextType='notifications'
@@ -377,7 +377,7 @@ class Notification extends ImmutablePureComponent {
             </span>
           </div>
 
-          <StatusContainer
+          <StatusQuoteManager
             id={notification.get('status')}
             account={account}
             contextType='notifications'
@@ -452,7 +452,7 @@ class Notification extends ImmutablePureComponent {
             </span>
           </div>
 
-          <AccountContainer id={account.get('id')} hidden={this.props.hidden} />
+          <Account id={account.get('id')} hidden={this.props.hidden} />
         </div>
       </HotKeys>
     );
