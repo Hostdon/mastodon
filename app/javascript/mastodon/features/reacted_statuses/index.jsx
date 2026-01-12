@@ -1,11 +1,15 @@
-import { debounce } from 'lodash';
 import PropTypes from 'prop-types';
-import React from 'react';
+
+import { defineMessages, injectIntl, FormattedMessage } from 'react-intl';
+
 import { Helmet } from 'react-helmet';
+
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import ImmutablePureComponent from 'react-immutable-pure-component';
-import { defineMessages, injectIntl, FormattedMessage } from 'react-intl';
 import { connect } from 'react-redux';
+
+import { debounce } from 'lodash';
+
 import { addColumn, removeColumn, moveColumn } from 'mastodon/actions/columns';
 import { fetchReactedStatuses, expandReactedStatuses } from 'mastodon/actions/reactions';
 import ColumnHeader from 'mastodon/components/column_header';
@@ -34,7 +38,7 @@ class Reactions extends ImmutablePureComponent {
     isLoading: PropTypes.bool,
   };
 
-  componentWillMount () {
+  UNSAFE_componentWillMount () {
     this.props.dispatch(fetchReactedStatuses());
   }
 

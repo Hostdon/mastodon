@@ -1,18 +1,21 @@
 import PropTypes from 'prop-types';
-import React from 'react';
-import ImmutablePureComponent from 'react-immutable-pure-component';
-import ImmutablePropTypes from 'react-immutable-proptypes';
+
 import { defineMessages, injectIntl, FormattedMessage } from 'react-intl';
+
+import ImmutablePropTypes from 'react-immutable-proptypes';
+import ImmutablePureComponent from 'react-immutable-pure-component';
 import { connect } from 'react-redux';
-import ColumnHeader from 'mastodon/components/column_header';
+
+import { Helmet } from 'react-helmet';
+
 import RefreshIcon from '@/material-icons/400-24px/refresh.svg?react';
-import { Icon } from 'mastodon/components/icon';
 import { fetchReactions } from 'mastodon/actions/interactions';
+import { Account } from 'mastodon/components/account';
+import ColumnHeader from 'mastodon/components/column_header';
+import { Icon } from 'mastodon/components/icon';
 import { LoadingIndicator } from 'mastodon/components/loading_indicator';
 import ScrollableList from 'mastodon/components/scrollable_list';
-import AccountContainer from 'mastodon/containers/account_container';
 import Column from 'mastodon/features/ui/components/column';
-import { Helmet } from 'react-helmet';
 
 const messages = defineMessages({
   refresh: { id: 'refresh', defaultMessage: 'Refresh' },
@@ -32,13 +35,13 @@ class Reactions extends ImmutablePureComponent {
     intl: PropTypes.object.isRequired,
   };
 
-  componentWillMount () {
+  UNSAFE_componentWillMount () {
     if (!this.props.accountIds) {
       this.props.dispatch(fetchReactions(this.props.params.statusId));
     }
   }
 
-  componentWillReceiveProps (nextProps) {
+  UNSAFE_componentWillReceiveProps (nextProps) {
     if (nextProps.params.statusId !== this.props.params.statusId && nextProps.params.statusId) {
       this.props.dispatch(fetchReactions(nextProps.params.statusId));
     }
@@ -77,7 +80,7 @@ class Reactions extends ImmutablePureComponent {
           bindToDocument={!multiColumn}
         >
           {accountIds.map(id =>
-            <AccountContainer key={id} id={id} withNote={false} />,
+            <Account key={id} id={id} />,
           )}
         </ScrollableList>
 
