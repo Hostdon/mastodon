@@ -4,7 +4,7 @@
                   @typescript-eslint/no-unsafe-assignment */
 
 import type { CSSProperties } from 'react';
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 
 import { FormattedMessage } from 'react-intl';
 
@@ -32,6 +32,7 @@ import StatusReactionBar from '../../../containers/status_reaction_bar_container
 import { Audio } from 'mastodon/features/audio';
 import scheduleIdleTask from 'mastodon/features/ui/util/schedule_idle_task';
 import { Video } from 'mastodon/features/video';
+import { useIdentity } from 'mastodon/identity_context';
 
 import Card from './card';
 
@@ -55,7 +56,8 @@ export const DetailedStatus: React.FC<{
   pictureInPicture: any;
   onToggleHidden?: (status: any) => void;
   onToggleMediaVisibility?: () => void;
-  signedIn?: boolean;
+  ancestors?: number;
+  multiColumn?: boolean;
 }> = ({
   status,
   onOpenMedia,
@@ -70,12 +72,15 @@ export const DetailedStatus: React.FC<{
   pictureInPicture,
   onToggleMediaVisibility,
   onToggleHidden,
-  signedIn,
+  ancestors = 0,
+  multiColumn = false,
 }) => {
   const properStatus = status?.get('reblog') ?? status;
   const [height, setHeight] = useState(0);
   const [showDespiteFilter, setShowDespiteFilter] = useState(false);
   const nodeRef = useRef<HTMLDivElement>();
+
+  const { signedIn } = useIdentity();
 
   const handleOpenVideo = useCallback(
     (options: VideoModalOptions) => {
@@ -123,6 +128,30 @@ export const DetailedStatus: React.FC<{
     if (onTranslate) onTranslate(status);
   }, [onTranslate, status]);
 
+  // The component is managed and will change if the status changes
+  // Ancestors can increase when loading a thread, in which case we want to scroll,
+  // or decrease if a post is deleted, in which case we don't want to mess with it
+  const previousAncestors = useRef(-1);
+  useEffect(() => {
+    if (nodeRef.current && previousAncestors.current < ancestors) {
+      nodeRef.current.scrollIntoView(true);
+
+      // In the single-column interface, `scrollIntoView` will put the post behind the header, so compensate for that.
+      if (!multiColumn) {
+        const offset = document
+          .querySelector('.column-header__wrapper')
+          ?.getBoundingClientRect().bottom;
+
+        if (offset) {
+          const scrollingElement = document.scrollingElement ?? document.body;
+          scrollingElement.scrollBy(0, -offset);
+        }
+      }
+    }
+
+    previousAncestors.current = ancestors;
+  }, [ancestors, multiColumn]);
+
   if (!properStatus) {
     return null;
   }
@@ -130,6 +159,7 @@ export const DetailedStatus: React.FC<{
   let media;
   let applicationLink;
   let reblogLink;
+  let quotesLink;
   let attachmentAspectRatio;
 
   if (properStatus.get('media_attachments').getIn([0, 'type']) === 'video') {
@@ -282,6 +312,39 @@ export const DetailedStatus: React.FC<{
     );
   }
 
+  if (['private', 'direct'].includes(status.get('visibility') as string)) {
+    quotesLink = '';
+  } else if (signedIn) {
+    quotesLink = (
+      <Link
+        to={`/@${status.getIn(['account', 'acct'])}/${status.get('id')}/quotes`}
+        className='detailed-status__link'
+      >
+        <span className='detailed-status__quotes'>
+          <AnimatedNumber value={status.get('quotes_count')} />
+        </span>
+        <FormattedMessage
+          id='status.quotes'
+          defaultMessage='{count, plural, one {quote} other {quotes}}'
+          values={{ count: status.get('quotes_count') }}
+        />
+      </Link>
+    );
+  } else {
+    quotesLink = (
+      <span className='detailed-status__link'>
+        <span className='detailed-status__quotes'>
+          <AnimatedNumber value={status.get('quotes_count')} />
+        </span>
+        <FormattedMessage
+          id='status.quotes'
+          defaultMessage='{count, plural, one {quote} other {quotes}}'
+          values={{ count: status.get('quotes_count') }}
+        />
+      </span>
+    );
+  }
+
   const favouriteLink = (
     <Link
       to={`/@${status.getIn(['account', 'acct'])}/${status.get('id')}/favourites`}
@@ -376,17 +439,13 @@ export const DetailedStatus: React.FC<{
           />
         )}
 
-        {status.get('spoiler_text').length > 0 &&
-          (!matchedFilters || showDespiteFilter) && (
-            <ContentWarning
-              text={
-                status.getIn(['translation', 'spoilerHtml']) ||
-                status.get('spoilerHtml')
-              }
-              expanded={expanded}
-              onClick={handleExpandedToggle}
-            />
-          )}
+        {(!matchedFilters || showDespiteFilter) && (
+          <ContentWarning
+            status={status}
+            expanded={expanded}
+            onClick={handleExpandedToggle}
+          />
+        )}
 
         {expanded && (
           <>
@@ -447,6 +506,8 @@ export const DetailedStatus: React.FC<{
           <div className='detailed-status__meta__line'>
             {reblogLink}
             {reblogLink && <>·</>}
+            {quotesLink}
+            {quotesLink && <>·</>}
             {favouriteLink}
             <>·</>
             {reactionLink}

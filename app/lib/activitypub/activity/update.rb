@@ -11,10 +11,8 @@ class ActivityPub::Activity::Update < ActivityPub::Activity
 
     if equals_or_includes_any?(@object['type'], %w(Application Group Organization Person Service))
       update_account
-    elsif equals_or_includes_any?(@object['type'], %w(Note Question))
+    elsif supported_object_type? || converted_object_type?
       update_status
-    elsif converted_object_type?
-      Status.find_by(uri: object_uri, account_id: @account.id)
     end
   end
 
@@ -32,7 +30,8 @@ class ActivityPub::Activity::Update < ActivityPub::Activity
     @status = Status.find_by(uri: object_uri, account_id: @account.id)
 
     # Ignore updates for old unknown objects, since those are updates we are not interested in
-    return if @status.nil? && object_too_old?
+    # Also ignore unknown objects from suspended users for the same reasons
+    return if @status.nil? && (@account.suspended? || object_too_old?)
 
     # We may be getting `Create` and `Update` out of order
     @status ||= ActivityPub::Activity::Create.new(@json, @account, **@options).perform

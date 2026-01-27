@@ -31,6 +31,7 @@
 #  outbox_url                    :string           default(""), not null
 #  shared_inbox_url              :string           default(""), not null
 #  followers_url                 :string           default(""), not null
+#  following_url                 :string           default(""), not null
 #  protocol                      :integer          default("ostatus"), not null
 #  memorial                      :boolean          default(FALSE), not null
 #  moved_to_account_id           :bigint(8)
@@ -51,6 +52,7 @@
 #  requested_review_at           :datetime
 #  indexable                     :boolean          default(FALSE), not null
 #  attribution_domains           :string           default([]), is an Array
+#  id_scheme                     :integer          default("numeric_ap_id")
 #
 
 class Account < ApplicationRecord
@@ -78,6 +80,13 @@ class Account < ApplicationRecord
   DISPLAY_NAME_LENGTH_LIMIT = 30
   NOTE_LENGTH_LIMIT = 500
 
+  # Hard limits for federated content
+  USERNAME_LENGTH_HARD_LIMIT = 2048
+  DISPLAY_NAME_LENGTH_HARD_LIMIT = 2048
+  NOTE_LENGTH_HARD_LIMIT = 20.kilobytes
+  ATTRIBUTION_DOMAINS_HARD_LIMIT = 256
+  ALSO_KNOWN_AS_HARD_LIMIT = 256
+
   AUTOMATED_ACTOR_TYPES = %w(Application Service).freeze
 
   include Attachmentable # Load prior to Avatar & Header concerns
@@ -104,12 +113,13 @@ class Account < ApplicationRecord
 
   enum :protocol, { ostatus: 0, activitypub: 1 }
   enum :suspension_origin, { local: 0, remote: 1 }, prefix: true
+  enum :id_scheme, { username_ap_id: 0, numeric_ap_id: 1 }
 
   validates :username, presence: true
   validates_with UniqueUsernameValidator, if: -> { will_save_change_to_username? }
 
   # Remote user validations, also applies to internal actors
-  validates :username, format: { with: USERNAME_ONLY_RE }, if: -> { (remote? || actor_type_application?) && will_save_change_to_username? }
+  validates :username, format: { with: USERNAME_ONLY_RE }, length: { maximum: USERNAME_LENGTH_HARD_LIMIT }, if: -> { (remote? || actor_type_application?) && will_save_change_to_username? }
 
   # Remote user validations
   validates :uri, presence: true, unless: :local?, on: :create
@@ -123,6 +133,7 @@ class Account < ApplicationRecord
   validates_with EmptyProfileFieldNamesValidator, if: -> { local? && will_save_change_to_fields? }
   with_options on: :create, if: :local? do
     validates :followers_url, absence: true
+    validates :following_url, absence: true
     validates :inbox_url, absence: true
     validates :shared_inbox_url, absence: true
     validates :uri, absence: true

@@ -14,6 +14,8 @@ class FanOutOnWriteService < BaseService
     @account   = status.account
     @options   = options
 
+    return if @status.proper.account.suspended?
+
     check_race_condition!
     warm_payload_cache!
 
@@ -40,6 +42,7 @@ class FanOutOnWriteService < BaseService
     deliver_to_self!
 
     unless @options[:skip_notifications]
+      notify_quoted_account!
       notify_mentioned_accounts!
       notify_about_update! if update?
     end
@@ -69,6 +72,12 @@ class FanOutOnWriteService < BaseService
     FeedManager.instance.push_to_home(@account, @status, update: update?) if @account.local?
   end
 
+  def notify_quoted_account!
+    return unless @status.quote&.quoted_account&.local? && @status.quote&.accepted?
+
+    LocalNotificationWorker.perform_async(@status.quote.quoted_account_id, @status.quote.id, 'Quote', 'quote')
+  end
+
   def notify_mentioned_accounts!
     @status.active_mentions.where.not(id: @options[:silenced_account_ids] || []).joins(:account).merge(Account.local).select(:id, :account_id).reorder(nil).find_in_batches do |mentions|
       LocalNotificationWorker.push_bulk(mentions) do |mention|
@@ -90,6 +99,12 @@ class FanOutOnWriteService < BaseService
     @status.reblogged_by_accounts.merge(Account.local).select(:id).reorder(nil).find_in_batches do |accounts|
       LocalNotificationWorker.push_bulk(accounts) do |account|
         [account.id, @status.id, 'Status', 'update']
+      end
+    end
+
+    @status.quotes.accepted.find_in_batches do |quotes|
+      LocalNotificationWorker.push_bulk(quotes) do |quote|
+        [quote.account_id, quote.status_id, 'Status', 'quoted_update']
       end
     end
   end

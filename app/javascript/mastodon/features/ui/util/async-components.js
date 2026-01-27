@@ -90,6 +90,10 @@ export function Reactions () {
   return import(/* webpackChunkName: "features/reactions" */'../../reactions');
 }
 
+export function Quotes () {
+  return import('../../quotes');
+}
+
 export function FollowRequests () {
   return import('../../follow_requests');
 }

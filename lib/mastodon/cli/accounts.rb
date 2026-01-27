@@ -176,11 +176,6 @@ module Mastodon::CLI
       password = SecureRandom.hex if options[:reset_password]
       user.change_password!(password) if options[:reset_password]
 
-      # Password changes are a little different, as we also need to ensure
-      # sessions, subscriptions, and access tokens are revoked after changing:
-      password = SecureRandom.hex if options[:reset_password]
-      user.change_password!(password) if options[:reset_password]
-
       if user.save
         user.confirm if options[:confirm]
 

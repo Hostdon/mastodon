@@ -31,6 +31,9 @@ import {
   UNPIN_SUCCESS,
 } from '../actions/interactions';
 import {
+  fetchQuotes
+} from '../actions/interactions_typed';
+import {
   PINNED_STATUSES_FETCH_SUCCESS,
 } from '../actions/pin_statuses';
 import {
@@ -75,6 +78,12 @@ const initialState = ImmutableMap({
     next: null,
     loaded: false,
     items: ImmutableOrderedSet(),
+  }),
+  quotes: ImmutableMap({
+    next: null,
+    loaded: false,
+    items: ImmutableOrderedSet(),
+    statusId: null,
   }),
 });
 
@@ -181,6 +190,13 @@ export default function statusLists(state = initialState, action) {
   case muteAccountSuccess.type:
     return state.updateIn(['trending', 'items'], ImmutableOrderedSet(), list => list.filterNot(statusId => action.payload.statuses.getIn([statusId, 'account']) === action.payload.relationship.id));
   default:
-    return state;
+    if (fetchQuotes.fulfilled.match(action))
+      return normalizeList(state, 'quotes', action.payload.statuses, action.payload.next).set('statusId', action.meta.arg.statusId);
+    else if (fetchQuotes.pending.match(action))
+      return state.setIn(['quotes', 'isLoading'], true).setIn(['quotes', 'statusId'], action.meta.arg.statusId);
+    else if (fetchQuotes.rejected.match(action))
+      return state.setIn(['quotes', 'isLoading', false]).setIn(['quotes', 'statusId'], action.meta.arg.statusId);
+    else
+      return state;
   }
 }
