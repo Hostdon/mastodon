@@ -86,7 +86,7 @@ export const NotificationReaction: React.FC<{
 
   const customEmojis = useAppSelector((state: any) => state.custom_emojis);
 
-  const reactionEmojis = sampleReactions.map((reaction) => {
+  const reactionEmojis = (sampleReactions ?? []).map((reaction) => {
     if (reaction.customEmojiId) {
       const customEmoji = customEmojis.find((e: any) => e.shortcode === reaction.name);
       return (
@@ -106,7 +106,7 @@ export const NotificationReaction: React.FC<{
     );
   });
 
-  const additionalContent = sampleReactions.length > 0 ? (
+  const additionalContent = (sampleReactions ?? []).length > 0 ? (
     <div className='notification-group__embedded-status__reactions'>
       {reactionEmojis}
     </div>

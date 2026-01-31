@@ -165,7 +165,7 @@ export function createNotificationGroupFromJSON(
       const { status_id: statusId, sample_reactions: sampleReactions, ...groupWithoutStatus } = group;
       return {
         statusId: statusId ?? undefined,
-        sampleReactions: sampleReactions.map(r => ({
+        sampleReactions: (sampleReactions ?? []).map(r => ({
           name: r.name,
           customEmojiId: r.custom_emoji_id,
         })),
