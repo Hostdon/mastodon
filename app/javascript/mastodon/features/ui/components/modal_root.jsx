@@ -45,6 +45,7 @@ import {
 import { ImageModal } from './image_modal';
 import MediaModal from './media_modal';
 import { ModalPlaceholder } from './modal_placeholder';
+import ReactionModal from './reaction_modal';
 import VideoModal from './video_modal';
 import { VisibilityModal } from './visibility_modal';
 import { PrivateQuoteNotify } from './confirmation_modals/private_quote_notify';
@@ -86,6 +87,7 @@ export const MODAL_COMPONENTS = {
   'IGNORE_NOTIFICATIONS': IgnoreNotificationsModal,
   'ANNUAL_REPORT': AnnualReportModal,
   'COMPOSE_PRIVACY': () => Promise.resolve({ default: VisibilityModal }),
+  'REACTION': () => Promise.resolve({ default: ReactionModal }),
 };
 
 export default class ModalRoot extends PureComponent {
