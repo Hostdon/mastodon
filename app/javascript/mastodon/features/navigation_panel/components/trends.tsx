@@ -32,7 +32,7 @@ export const Trends: React.FC = () => {
     };
   }, [dispatch]);
 
-  if (!showTrends || trends.isEmpty()) {
+  if (!showTrends || !trends || trends.isEmpty()) {
     return null;
   }
 
