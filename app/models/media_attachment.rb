@@ -286,7 +286,6 @@ class MediaAttachment < ApplicationRecord
 
   after_commit :enqueue_processing, on: :create
   after_commit :reset_parent_cache, on: :update
-  after_post_process { set_file_extension(file) }
   after_post_process :set_meta
 
   class << self
@@ -307,6 +306,8 @@ class MediaAttachment < ApplicationRecord
     def file_styles(attachment)
       if attachment.instance.file_content_type == 'image/gif' || VIDEO_CONVERTIBLE_MIME_TYPES.include?(attachment.instance.file_content_type)
         VIDEO_CONVERTED_STYLES
+      elsif should_convert_png_to_jpeg?(attachment)
+        IMAGE_CONVERTED_STYLES
       elsif IMAGE_CONVERTIBLE_MIME_TYPES.include?(attachment.instance.file_content_type)
         IMAGE_CONVERTED_STYLES
       elsif IMAGE_MIME_TYPES.include?(attachment.instance.file_content_type)
@@ -321,8 +322,6 @@ class MediaAttachment < ApplicationRecord
     def file_processors(instance)
       if instance.file_content_type == 'image/gif'
         [:gif_transcoder, :blurhash_transcoder]
-      elsif instance.file_content_type == 'image/png'
-        [:png_converter, :lazy_thumbnail, :blurhash_transcoder, :type_corrector]
       elsif VIDEO_MIME_TYPES.include?(instance.file_content_type)
         [:transcoder, :blurhash_transcoder, :type_corrector]
       elsif AUDIO_MIME_TYPES.include?(instance.file_content_type)
@@ -330,6 +329,25 @@ class MediaAttachment < ApplicationRecord
       else
         [:lazy_thumbnail, :blurhash_transcoder, :type_corrector]
       end
+    end
+
+    def should_convert_png_to_jpeg?(attachment)
+      attachment.instance.file_content_type == 'image/png' &&
+        new_png_upload?(attachment) &&
+        png_upload_without_alpha?(attachment)
+    end
+
+    def new_png_upload?(attachment)
+      attachment.instance.new_record? && attachment.queued_for_write[:original].present?
+    end
+
+    def png_upload_without_alpha?(attachment)
+      source = attachment.queued_for_write[:original]
+      return false if source.blank?
+
+      Paperclip.run('identify', '-format %[opaque] :file[0]', file: source.path).to_s.strip.casecmp('true').zero?
+    rescue Terrapin::CommandLineError
+      false
     end
   end
 
