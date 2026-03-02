@@ -34,9 +34,9 @@ const messages = defineMessages({
 
 let EmojiPicker, Emoji; // load asynchronously
 
-const listenerOptions = supportsPassiveEvents ? { passive: true } : false;
+const listenerOptions = supportsPassiveEvents ? { passive: true, capture: true } : true;
 
-const backgroundImageFn = () => `${assetHost}/emoji/sheet_15_1.png`;
+const backgroundImageFn = () => `${assetHost}/emoji/sheet_16_0.png`;
 
 const notFoundFn = () => (
   <div className='emoji-mart-no-results'>
@@ -66,7 +66,7 @@ class ModifierPickerMenu extends React.PureComponent {
     this.props.onSelect(e.currentTarget.getAttribute('data-index') * 1);
   };
 
-  componentWillReceiveProps (nextProps) {
+  UNSAFE_componentWillReceiveProps (nextProps) {
     if (nextProps.active) {
       this.attachListeners();
     } else {
@@ -85,12 +85,12 @@ class ModifierPickerMenu extends React.PureComponent {
   };
 
   attachListeners () {
-    document.addEventListener('click', this.handleDocumentClick, false);
+    document.addEventListener('click', this.handleDocumentClick, { capture: true });
     document.addEventListener('touchend', this.handleDocumentClick, listenerOptions);
   }
 
   removeListeners () {
-    document.removeEventListener('click', this.handleDocumentClick, false);
+    document.removeEventListener('click', this.handleDocumentClick, { capture: true });
     document.removeEventListener('touchend', this.handleDocumentClick, listenerOptions);
   }
 
@@ -174,6 +174,16 @@ class ReactionPickerMenu extends React.PureComponent {
     readyToFocus: false,
   };
 
+  handleDocumentClick = e => {
+    if (this.node && !this.node.contains(e.target)) {
+      this.props.onClose();
+    }
+  };
+
+  setRef = c => {
+    this.node = c;
+  };
+
   getI18n = () => {
     const { intl } = this.props;
 
@@ -218,6 +228,17 @@ class ReactionPickerMenu extends React.PureComponent {
   };
 
   componentDidMount () {
+    document.addEventListener('click', this.handleDocumentClick, { capture: true });
+    document.addEventListener('touchend', this.handleDocumentClick, listenerOptions);
+
+    requestAnimationFrame(() => {
+      this.setState({ readyToFocus: true });
+      if (this.node) {
+        const element = this.node.querySelector('input[type="search"]');
+        if (element) element.focus();
+      }
+    });
+
     if (!EmojiPicker) {
       this.setState({ loading: true });
 
@@ -232,6 +253,11 @@ class ReactionPickerMenu extends React.PureComponent {
     } else {
       this.setState({ loading: false });
     }
+  }
+
+  componentWillUnmount () {
+    document.removeEventListener('click', this.handleDocumentClick, { capture: true });
+    document.removeEventListener('touchend', this.handleDocumentClick, listenerOptions);
   }
 
   render () {
@@ -260,7 +286,7 @@ class ReactionPickerMenu extends React.PureComponent {
     categoriesSort.splice(1, 0, ...Array.from(categoriesFromEmojis(custom_emojis)).sort());
 
     return (
-      <div className={classNames('reaction-picker__menu', { selecting: modifierOpen })}>
+      <div className={classNames('reaction-picker__menu', { selecting: modifierOpen })} ref={this.setRef}>
         <EmojiPicker
           perLine={8}
           emojiSize={22}
