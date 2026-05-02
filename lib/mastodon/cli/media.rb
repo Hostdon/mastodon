@@ -253,6 +253,76 @@ module Mastodon::CLI
       say("Downloaded #{processed} media attachments (approx. #{number_to_human_size(aggregate)})#{dry_run_mode_suffix}", :green, true)
     end
 
+
+    option :limit, type: :numeric
+    option :min_id, type: :numeric
+    option :dry_run, type: :boolean, default: false
+    desc 'convert-png-jpeg', 'Convert non-transparent PNG media files to JPEG while keeping the same S3 key'
+    long_desc <<~LONG_DESC
+      Finds media attachments whose original file name ends with .png and converts only non-transparent
+      images to JPEG. The converted JPEG bytes are uploaded back to the same storage key so existing links
+      keep working.
+
+      Use --limit to cap the number of converted attachments in one run.
+      Use --min-id to resume from a specific media attachment ID.
+      Use --dry-run to preview targets without uploading changes.
+    LONG_DESC
+    def convert_png_jpeg
+      require 'tempfile'
+      require 'vips'
+
+      scope = MediaAttachment.where("LOWER(file_file_name) LIKE ?", '%.png').where.not(file_file_name: nil).order(:id)
+      scope = scope.where('id >= ?', options[:min_id]) if options[:min_id].present?
+      scope = scope.limit(options[:limit]) if options[:limit].present?
+
+      processed = 0
+      converted = 0
+      skipped_transparent = 0
+      skipped_missing = 0
+
+      scope.find_each do |media_attachment|
+        processed += 1
+
+        if media_attachment.file.blank? || !media_attachment.file.exists?
+          skipped_missing += 1
+          next
+        end
+
+        media_path = media_attachment.file.path
+        image = Vips::Image.new_from_file(media_path, access: :sequential)
+
+        if image.hasalpha?
+          skipped_transparent += 1
+          next
+        end
+
+        status_url = media_attachment.status.present? ? ActivityPub::TagManager.instance.url_for(media_attachment.status) : nil
+
+        if dry_run?
+          say("[DRY RUN] convert media_attachment=#{media_attachment.id} key=#{media_attachment.file.path} status=#{status_url || '-'}", :yellow)
+          next
+        end
+
+        Tempfile.create(['media-convert', '.jpg']) do |tempfile|
+          image.write_to_file(tempfile.path, Q: 85, strip: true)
+          tempfile.flush
+
+          media_attachment.file = tempfile
+          media_attachment.file.instance_write(:file_name, media_attachment.file_file_name)
+          media_attachment.file.instance_write(:content_type, 'image/jpeg')
+          media_attachment.file.instance_write(:file_size, File.size(tempfile.path))
+          media_attachment.save!
+
+          converted += 1
+          say("Converted media_attachment=#{media_attachment.id} key=#{media_attachment.file.path} status=#{status_url || '-'}", :green)
+        end
+      rescue Vips::Error => e
+        say("Error processing media_attachment=#{media_attachment.id}: #{e}", :red)
+      end
+
+      say("Processed #{processed} attachments, converted #{converted}, skipped transparent #{skipped_transparent}, skipped missing #{skipped_missing}#{dry_run_mode_suffix}", :green, true)
+    end
+
     desc 'usage', 'Calculate disk space consumed by Mastodon'
     def usage
       print_table [
