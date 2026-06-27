@@ -86,6 +86,9 @@ class Sanitize
         encoding_attr = node.attributes['encoding']
         return false if encoding_attr.nil?
 
+        encoding_attr = node.attributes['encoding']
+        return false if encoding_attr.nil?
+
         encoding_attr.value == encoding
       end
 
@@ -109,6 +112,7 @@ class Sanitize
       elements: %w(p br span a del s pre blockquote code b strong u i em ul ol li ruby rt rp),
 
       attributes: {
+        :all => %w(lang),
         'a' => %w(href rel class translate),
         'span' => %w(class translate),
         'ol' => %w(start reversed),
