@@ -83,6 +83,7 @@ class Sanitize
       # next, we find the plain-text description
       is_annotation_with_encoding = lambda do |encoding, node|
         return false unless node.name == 'annotation'
+
         encoding_attr = node.attributes['encoding']
         return false if encoding_attr.nil?
 
@@ -109,6 +110,7 @@ class Sanitize
       elements: %w(p br span a del s pre blockquote code b strong u i em ul ol li ruby rt rp),
 
       attributes: {
+        :all => %w(lang),
         'a' => %w(href rel class translate),
         'span' => %w(class translate),
         'ol' => %w(start reversed),
