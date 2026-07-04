@@ -1,46 +1,100 @@
-@use '../mastodon/functions' as *;
+@use '../mastodon/theme/utils';
 
-// Black theme colors
-$black: #000;
-$white: #fff;
+@mixin black-tokens {
+  --color-text-primary: var(--color-white);
+  --color-text-secondary: #c2c2c2;
+  --color-text-tertiary: #9b9b9b;
+  --color-text-inverted: #151515;
+  --color-text-brand: #d7d7d7;
+  --color-text-brand-soft: #e5e5e5;
+  --color-text-on-brand-base: #151515;
+  --color-text-brand-on-inverted: #4c4c4c;
+  --color-text-error: #ff8fa1;
+  --color-text-on-error-base: var(--color-white);
+  --color-text-warning: #ffd166;
+  --color-text-on-warning-base: #151515;
+  --color-text-success: #79bd9a;
+  --color-text-on-success-base: #151515;
+  --color-text-disabled: #707070;
+  --color-text-on-disabled: #b5b5b5;
+  --color-text-bookmark-highlight: var(--color-text-error);
+  --color-text-favourite-highlight: var(--color-text-warning);
+  --color-text-on-media: var(--color-white);
+  --color-text-status-links: #d7d7d7;
 
-$classic-base-color: #2b2b2b;
-$classic-primary-color: #b5b5b5;
-$classic-secondary-color: #e5e5e5;
-$classic-highlight-color: #9b9b9b;
+  --color-bg-primary: #000;
+  --overlay-strength-secondary: 8%;
+  --color-bg-secondary: #151515;
+  --color-bg-tertiary: #242424;
+  --color-bg-inverted: var(--color-white);
+  --color-bg-overlay-base: #{utils.css-alpha(var(--color-black), 70%)};
+  --color-bg-overlay-highlight: #{utils.css-alpha(var(--color-white), 8%)};
+  --color-bg-overlay: var(--color-black);
+  --color-bg-media-base: var(--color-black);
+  --color-bg-media: #{utils.css-alpha(var(--color-black), 75%)};
+  --color-bg-disabled: #3a3a3a;
 
-$ui-base-color: $classic-base-color !default;
-$ui-primary-color: $classic-primary-color !default;
-$ui-secondary-color: $classic-secondary-color !default;
-$ui-highlight-color: $classic-highlight-color !default;
+  --color-bg-brand-base: #e5e5e5;
+  --color-bg-brand-base-hover: var(--color-white);
+  --color-bg-brand-soft: #2b2b2b;
+  --color-bg-brand-softest: #151515;
+  --color-bg-error-base: #df405a;
+  --color-bg-error-base-hover: #f15a73;
+  --color-bg-error-soft: #42141d;
+  --color-bg-error-softest: #210a0f;
+  --color-bg-warning-base: #ca8f04;
+  --color-bg-warning-soft: #3a2a08;
+  --color-bg-warning-softest: #1d1504;
+  --color-bg-success-base: #79bd9a;
+  --color-bg-success-soft: #163326;
+  --color-bg-success-softest: #0b1a13;
 
-@use '../mastodon/variables' with (
-  $success-green: #79bd9a,
-  $error-red: #df405a,
-  $warning-red: #ff5050,
-  $gold-star: #ca8f04,
+  --color-border-primary: #333;
+  --color-border-brand: #b5b5b5;
+  --color-border-brand-soft: #4c4c4c;
+  --color-border-error: #ff8fa1;
+  --color-border-media: rgb(255 255 255 / 18%);
+  --color-border-error-soft: #{utils.css-alpha(var(--color-border-error), 50%)};
+  --color-border-warning-soft: #{utils.css-alpha(var(--color-text-warning), 50%)};
+  --color-border-success-soft: #2c6b4a;
 
-  $base-shadow-color: $black,
-  $base-overlay-background: $black,
-  $base-border-color: $ui-secondary-color,
-  $simple-background-color: $black,
+  --shadow-strength-primary: 90%;
+  --color-shadow-primary: #{utils.css-alpha(
+      var(--color-black),
+      var(--shadow-strength-primary)
+    )};
+  --dropdown-shadow:
+    0 20px 25px -5px var(--color-shadow-primary),
+    0 8px 10px -6px var(--color-shadow-primary);
+  --overlay-icon-shadow: drop-shadow(0 0 8px var(--color-shadow-primary));
 
-  $ui-base-color: $classic-base-color,
-  $ui-base-lighter-color: lighten($classic-base-color, 26%),
-  $ui-primary-color: $classic-primary-color,
-  $ui-secondary-color: $classic-secondary-color,
-  $ui-highlight-color: $classic-highlight-color,
+  --color-graph-primary-stroke: var(--color-text-brand);
+  --color-graph-primary-fill: var(--color-bg-brand-softest);
+  --color-graph-warning-stroke: var(--color-text-warning);
+  --color-graph-warning-fill: var(--color-bg-warning-softest);
+  --color-graph-disabled-stroke: var(--color-text-disabled);
+  --color-graph-disabled-fill: var(--color-bg-disabled);
 
-  $primary-text-color: $white,
-  $darker-text-color: $classic-primary-color,
-  $dark-text-color: lighten($classic-base-color, 26%),
-  $secondary-text-color: $classic-secondary-color,
-  $highlight-text-color: $classic-highlight-color,
-  $action-button-color: lighten($classic-base-color, 26%),
-  $inverted-text-color: $classic-base-color,
-  $lighter-text-color: lighten($classic-base-color, 26%),
-  $light-text-color: $classic-primary-color,
+  --rich-text-container-color: rgb(43 43 43 / 100%);
+  --rich-text-text-color: rgb(229 229 229 / 100%);
+  --rich-text-decorations-color: rgb(112 112 112 / 100%);
+}
 
-  $valid-value-color: #79bd9a,
-  $error-value-color: #df405a
-);
+html,
+[data-color-scheme='dark'],
+html:not([data-color-scheme]),
+[data-color-scheme='light'] {
+  color-scheme: dark;
+
+  @include black-tokens;
+  @include utils.invert-on-dark;
+}
+
+[data-contrast='high'],
+html[data-contrast='high'],
+[data-color-scheme][data-contrast='high'],
+[data-contrast='high'] [data-color-scheme] {
+  --color-text-primary: var(--color-white);
+  --color-text-status-links: var(--color-white);
+  --color-border-primary: #707070;
+}
