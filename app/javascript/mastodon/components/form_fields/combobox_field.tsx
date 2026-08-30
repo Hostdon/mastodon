@@ -255,11 +255,6 @@ const ComboboxWithRef = <Item extends ComboboxItem, GroupKey extends string>(
   // when focus is returned to the input.
   const wasMenuJustClosedRef = useRef(false);
 
-  // This ref tracks whether the menu was just closed following a
-  // selection, and prevents the menu from re-opening again
-  // when focus is returned to the input.
-  const wasMenuJustClosedRef = useRef(false);
-
   const [highlightedItemId, setHighlightedItemId] = useState<string | null>(
     null,
   );
@@ -325,19 +320,6 @@ const ComboboxWithRef = <Item extends ComboboxItem, GroupKey extends string>(
       // This only runs when the items change so should be safe from
       // cascade renders.
       // eslint-disable-next-line react-hooks/set-state-in-effect
-      resetHighlight();
-    }
-  }, [flatItems, resetHighlight]);
-
-  const resetHighlight = useCallback(() => {
-    const firstItem = flatItems[0];
-    const firstItemId = firstItem ? getItemId(firstItem) : null;
-    highlightItem(firstItemId);
-  }, [flatItems, getItemId, highlightItem]);
-
-  // Reset scroll & highlight when menu items change
-  useEffect(() => {
-    if (flatItems.length) {
       resetHighlight();
     }
   }, [flatItems, resetHighlight]);
