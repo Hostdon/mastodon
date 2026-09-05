@@ -1,4 +1,4 @@
-@use '../mastodon/theme/utils';
+@use '../mastodon/tokens/theme/utils';
 
 @mixin black-tokens {
   --color-text-primary: var(--color-white);
